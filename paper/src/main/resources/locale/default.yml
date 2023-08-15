@@ -1,0 +1,5 @@
+locale-version: 1
+
+command:
+  unknown-command: "&cUnknown command"
+  no-permission: "&cNo permission"

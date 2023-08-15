@@ -1,0 +1,19 @@
+Minas:
+  spawn-point:
+    required: true
+    identifier: SANDSTONE
+    read-direction: true
+    default-yaw: 0
+    default-pitch: 0
+  lower-mine-corner:
+    required: true
+    identifier: COBBLESTONE
+    read-direction: false
+    default-yaw: 0
+    default-pitch: 0
+  upper-mine-corner:
+    required: true
+    identifier: SAND
+    read-direction: false
+    default-yaw: 0
+    default-pitch: 0
