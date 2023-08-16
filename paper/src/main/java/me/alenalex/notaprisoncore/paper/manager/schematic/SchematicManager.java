@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.paper.manager.schematic;
 
+import com.boydti.fawe.object.schematic.Schematic;
 import me.alenalex.notaprisoncore.api.exceptions.FailedLoadingStateException;
 import me.alenalex.notaprisoncore.api.managers.ISchematicFileManager;
 import me.alenalex.notaprisoncore.api.managers.ISchematicManager;
@@ -36,7 +37,7 @@ public class SchematicManager implements ISchematicManager {
     }
 
     @Override
-    public @NotNull ISchematicProvider<?> getHookedSchematicProvider() {
+    public @NotNull ISchematicProvider<Schematic> getHookedSchematicProvider() {
         return clipboardProvider;
     }
 

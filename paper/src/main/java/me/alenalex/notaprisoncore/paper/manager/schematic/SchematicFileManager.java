@@ -74,4 +74,16 @@ public class SchematicFileManager implements ISchematicFileManager {
     public Collection<File> getAllAvailableSchematicFiles(){
         return new HashSet<>(schematicMap.values());
     }
+
+    @Override
+    public boolean refresh() {
+        try {
+            this.schematicMap.clear();
+            this.initAndLoad();
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

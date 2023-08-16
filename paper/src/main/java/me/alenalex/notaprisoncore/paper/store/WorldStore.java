@@ -8,6 +8,7 @@ import me.alenalex.notaprisoncore.api.store.IWorldStore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.constants.StoreConstants;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
         this.distance = new AtomicInteger(this.getStoreDocument().getInt(StoreConstants.WorldStoreConstants.DISTANCE_KEY));
         this.defaultLocation = this.getPrisonDataStore().getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().mineWorldConfiguration().getDefaultLocation().to().orElse(null);
     }
+
 
     public PrisonDataStore getPrisonDataStore() {
         return prisonDataStore;
@@ -53,6 +55,8 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
         return distance.get();
     }
 
+    @Override
+    @NotNull
     public synchronized Location nextFreeLocation() {
         return this.getXZForCurrent(this.distance.incrementAndGet());
     }

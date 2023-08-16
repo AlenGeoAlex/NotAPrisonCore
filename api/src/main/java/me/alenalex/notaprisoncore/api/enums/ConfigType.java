@@ -7,6 +7,7 @@ import java.io.InputStream;
 @Getter
 public enum ConfigType {
     LOCALE("Paper Locale File", "default.yml"),
+    IDENTIFIER("Block Identifier Configuration", "identifiers.yml"),
     PLUGIN("Paper Plugin Configuration", "config.yml");
 
     private final String name;

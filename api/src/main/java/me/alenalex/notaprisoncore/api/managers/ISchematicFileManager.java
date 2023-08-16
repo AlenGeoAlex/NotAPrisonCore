@@ -19,4 +19,6 @@ public interface ISchematicFileManager {
     @NotNull
     Collection<File> getAllAvailableSchematicFiles();
 
+    boolean refresh();
+
 }

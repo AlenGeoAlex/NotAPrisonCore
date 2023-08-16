@@ -78,6 +78,10 @@
                                     <pattern>com.google.code.gson</pattern>
                                     <shadedPattern>me.alenalex.notaprisoncore.shaded.gson</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>io.papermc.lib</pattern>
+                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.paper.paperlib</shadedPattern> <!-- Replace this -->
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -132,6 +136,19 @@
             <version>21.03.26-5ff3a9b-1286-22.3.9</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/FastAsyncWorldEdit-bukkit-21.03.26-5ff3a9b-1286-22.3.9.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>FastAsyncWorldEdit-bukkit</artifactId>
+            <version>6.1.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/worldedit-bukkit-6.1.9.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.7</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

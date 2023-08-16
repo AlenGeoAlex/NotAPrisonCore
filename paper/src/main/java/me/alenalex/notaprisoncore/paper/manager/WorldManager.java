@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WorldManager implements IWorldManager {
@@ -43,8 +44,7 @@ public class WorldManager implements IWorldManager {
     }
 
     @Override
-    @Nullable
-    public World getMineWorld(){
+    public @NotNull World getMineWorld(){
         return getMineWorld(true);
     }
 

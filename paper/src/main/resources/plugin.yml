@@ -4,5 +4,6 @@ main: me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap
 prefix: NPCore
 authors: [AlenAlex]
 description: A custom and private Prison core with Multi-Server features
+database: true
 softdepend:
   - PlaceholderAPI

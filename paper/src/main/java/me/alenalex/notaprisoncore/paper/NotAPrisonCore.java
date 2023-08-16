@@ -87,6 +87,10 @@ public final class NotAPrisonCore {
         return prisonManagers;
     }
 
+    public PrisonDataStore getPrisonDataStore(){
+        return this.prisonDataStore;
+    }
+
     private void disableBukkitPlugin(String reason){
         getLogger().warning(reason);
         bukkitPlugin.getServer().getPluginManager().disablePlugin(this.bukkitPlugin);

@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.api.managers;
 
+import me.alenalex.notaprisoncore.api.config.IMineIdentifierConfiguration;
 import me.alenalex.notaprisoncore.api.config.IPluginConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,5 +15,11 @@ public interface IConfigurationManager {
      * @return The plugin configuration
      */
     @NotNull IPluginConfiguration getPluginConfiguration();
+
+    /**
+     * The mine identifier configuration
+     * @return The identifier configuration
+     */
+    @NotNull IMineIdentifierConfiguration getMineIdentifierConfiguration();
 
 }
