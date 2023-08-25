@@ -3,6 +3,7 @@ package me.alenalex.notaprisoncore.paper;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
+import me.alenalex.notaprisoncore.paper.listener.DevelopmentListener;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -64,6 +65,9 @@ public final class NotAPrisonCore {
             disableBukkitPlugin("Failed to initialize the data store for the plugin. Check the stack trace above for more error log");
             return;
         }
+
+        this.prisonDataStore.load();
+        getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
     }
 
     public void onDisable() {

@@ -13,11 +13,11 @@ import java.util.Collection;
 
 public class MineManager implements IMineManager {
 
-    private final NotAPrisonCore plugin;
+    private final PrisonManagers manager;
     private final MineGenerator mineGenerator;
 
-    public MineManager(NotAPrisonCore plugin) {
-        this.plugin = plugin;
+    public MineManager(PrisonManagers manager) {
+        this.manager = manager;
         this.mineGenerator = new MineGenerator(this);
     }
 
@@ -28,7 +28,7 @@ public class MineManager implements IMineManager {
 
     @Override
     public void registerMineIdentifiers(String schematic, MinePositionalKey key) throws DuplicateMineIdentifier {
-        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.plugin.getPrisonManagers().configurationManager().getMineIdentifierConfiguration();
+        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.getPlugin().getPrisonManagers().configurationManager().getMineIdentifierConfiguration();
         MinePositionalKeys minePositionalKeys = configuration.getOrCreate(schematic);
         boolean exists = minePositionalKeys.stream().anyMatch(minePositionalKey -> minePositionalKey.getIdentifier() == key.getIdentifier());
         if(exists)
@@ -39,7 +39,7 @@ public class MineManager implements IMineManager {
 
     @Override
     public void registerMineIdentifiersOnAllSchematics(MinePositionalKey key) throws DuplicateMineIdentifier {
-        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.plugin.getPrisonManagers().configurationManager().getMineIdentifierConfiguration();
+        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.getPlugin().getPrisonManagers().configurationManager().getMineIdentifierConfiguration();
         Collection<MinePositionalKeys> keys = configuration.getKeys();
         for (MinePositionalKeys positionalKeys : keys) {
             registerMineIdentifiers(positionalKeys.getMineName(), key);
@@ -47,6 +47,6 @@ public class MineManager implements IMineManager {
     }
 
     public NotAPrisonCore getPlugin() {
-        return plugin;
+        return manager.getPluginInstance();
     }
 }

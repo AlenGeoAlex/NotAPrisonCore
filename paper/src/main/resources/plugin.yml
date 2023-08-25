@@ -5,5 +5,8 @@ prefix: NPCore
 authors: [AlenAlex]
 description: A custom and private Prison core with Multi-Server features
 database: true
+depend:
+  - FastAsyncWorldEdit
+  - WorldEdit
 softdepend:
   - PlaceholderAPI

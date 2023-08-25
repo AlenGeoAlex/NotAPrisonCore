@@ -8,8 +8,8 @@ public class Bootstrap extends JavaPlugin {
     private final NotAPrisonCore pluginInstance;
 
     public Bootstrap() {
-        this.pluginInstance = new NotAPrisonCore(this);
         INSTANCE = this;
+        this.pluginInstance = new NotAPrisonCore(this);
     }
 
     @Override

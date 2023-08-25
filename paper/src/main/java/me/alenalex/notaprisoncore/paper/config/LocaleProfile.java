@@ -91,7 +91,7 @@ public class LocaleProfile implements ILocaleProfile {
             }
             eachLocaleKey.setAccessible(false);
         }
-        localeManager.getPrisonManagers().getPluginInstance().getLogger().info("Loaded "+pluginMessageHashMap.size()+"out of "+totalKeys+" for locale "+localeConfigurationFile.getName().split("\\.")[0]);
+        localeManager.getPrisonManagers().getPluginInstance().getLogger().info("Loaded "+pluginMessageHashMap.size()+" out of "+totalKeys+" for locale - "+localeConfigurationFile.getName().split("\\.")[0]);
     }
 
     public void load(){
@@ -114,6 +114,7 @@ public class LocaleProfile implements ILocaleProfile {
         }else{
             message = localeDocument.getStringList(messageKey);
         }
+
         this.pluginMessageHashMap.put(key, new Message(message));
     }
 

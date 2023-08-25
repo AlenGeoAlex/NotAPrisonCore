@@ -17,6 +17,9 @@ public class Message extends AbstractMessage {
     }
     @Override
     protected String colorize(String message) {
+        if(message == null)
+            return null;
+
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 

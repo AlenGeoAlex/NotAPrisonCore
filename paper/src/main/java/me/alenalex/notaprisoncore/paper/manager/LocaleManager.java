@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.*;
 
 public class LocaleManager implements ILocaleManager {
@@ -59,6 +60,11 @@ public class LocaleManager implements ILocaleManager {
             }
 
             LocaleProfile profile = new LocaleProfile(this, localeRawFile);
+            try {
+                profile.init();
+            } catch (IOException e) {
+                throw new FailedConfigurationException(ConfigType.LOCALE, "Failed to initialize the locale profile - "+localeRawFile.getName(), null);
+            }
             this.languages.put(localeName, profile);
             this.prisonManagers.getPluginInstance().getLogger().info("- "+localeName);
         }

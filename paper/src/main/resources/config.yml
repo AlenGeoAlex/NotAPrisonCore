@@ -4,11 +4,11 @@ server-configuration:
   name: "Prison-A"
 
 sql-configuration:
-  host: "127.0.0.1"
+  host: "server.alenalex.me"
   port: 3306
-  username: "root"
-  password: "Sj*gs8D&^FKn4QaJ"
-  database: "minasprivadas"
+  username: "u38_4yXN7IXahp"
+  password: "ozz2GFlPRg=jbt=vYB+KkZV8"
+  database: "s38_npc-core"
   auto-reconnect: true
   use-ssl: false
   hikari-properties:

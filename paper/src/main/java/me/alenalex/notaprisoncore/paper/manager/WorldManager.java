@@ -2,23 +2,20 @@ package me.alenalex.notaprisoncore.paper.manager;
 
 import me.alenalex.notaprisoncore.api.config.options.MineWorldConfiguration;
 import me.alenalex.notaprisoncore.api.managers.IWorldManager;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
+import org.bukkit.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WorldManager implements IWorldManager {
 
     private final PrisonManagers prisonManagers;
-    private final MineWorldConfiguration worldConfiguration;
+    private MineWorldConfiguration worldConfiguration;
     public WorldManager(PrisonManagers prisonManagers) {
         this.prisonManagers = prisonManagers;
-        this.worldConfiguration = this.prisonManagers.configurationManager().getPluginConfiguration().mineWorldConfiguration();
     }
 
     public void load(){
+        this.worldConfiguration = this.prisonManagers.configurationManager().getPluginConfiguration().mineWorldConfiguration();
         if(this.worldConfiguration.isCreateVoidWorldIfAbsent()){
             World mineWorld = getMineWorld(false);
             if(mineWorld == null){
@@ -48,6 +45,10 @@ public class WorldManager implements IWorldManager {
         return getMineWorld(true);
     }
 
+    public void loadChunkAt(Location location){
+
+    }
+
     private World createWorld(String worldName){
         final WorldCreator creator = new WorldCreator(worldName);
         creator.type(WorldType.FLAT);
@@ -55,4 +56,5 @@ public class WorldManager implements IWorldManager {
         creator.createWorld();
         return creator.createWorld();
     }
+
 }

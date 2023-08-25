@@ -28,6 +28,13 @@ public abstract class AbstractFileStore {
     }
 
     public void initStore(){
+        if(!storeFile.exists()){
+            try {
+                storeFile.createNewFile();
+            } catch (IOException e) {
+                throw new FileStoreException(e);
+            }
+        }
         if(storeDocument != null) {
             storeDocument = null;
         }
@@ -40,6 +47,7 @@ public abstract class AbstractFileStore {
                     DumperSettings.DEFAULT,
                     UpdaterSettings.DEFAULT
             );
+            this.storeDocument.save(storeFile);
         } catch (IOException e) {
             throw new FileStoreException("Failed to create a store file for store "+storeName, e);
         }

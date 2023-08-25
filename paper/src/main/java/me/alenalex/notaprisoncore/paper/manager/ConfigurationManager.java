@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.paper.manager;
 
+import me.alenalex.notaprisoncore.api.config.IMineIdentifierConfiguration;
 import me.alenalex.notaprisoncore.api.config.IPluginConfiguration;
 import me.alenalex.notaprisoncore.api.enums.ConfigType;
 import me.alenalex.notaprisoncore.api.exceptions.FailedConfigurationException;
@@ -27,6 +28,7 @@ public class ConfigurationManager implements IConfigurationManager {
             this.prisonManagers.getPluginInstance().getLogger().info("- Configuration : In progress");
             this.pluginConfiguration.create();
             this.pluginConfiguration.load();
+            System.out.println(pluginConfiguration.mineWorldConfiguration().toString());
             this.prisonManagers.getPluginInstance().getLogger().info("- Configuration : Loaded");
         } catch (IOException e) {
             throw new FailedConfigurationException(ConfigType.PLUGIN, "An unknown error occurred while create/initializing the document", e);
@@ -50,6 +52,11 @@ public class ConfigurationManager implements IConfigurationManager {
     @Override
     public @NotNull IPluginConfiguration getPluginConfiguration() {
         return pluginConfiguration;
+    }
+
+    @Override
+    public @NotNull IMineIdentifierConfiguration getMineIdentifierConfiguration() {
+        return mineIdentifierConfiguration;
     }
 
 }

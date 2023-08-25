@@ -39,7 +39,8 @@ public abstract class AbstractFileConfiguration {
                     GeneralSettings.builder().setSerializer(SpigotSerializer.getInstance()).build(),
                     LoaderSettings.builder().setCreateFileIfAbsent(true).setErrorLabel("NPCore-Config").setDetailedErrors(true).build(),
                     DumperSettings.DEFAULT,
-                    UpdaterSettings.builder().setAutoSave(true).setVersioning(new BasicVersioning("config-version")).build()
+                    //UpdaterSettings.builder().setAutoSave(true).setVersioning(new BasicVersioning("config-version")).build()
+                    UpdaterSettings.DEFAULT
             );
         }else{
             this.configDocument = YamlDocument.create(
@@ -48,7 +49,8 @@ public abstract class AbstractFileConfiguration {
                     GeneralSettings.builder().setSerializer(SpigotSerializer.getInstance()).build(),
                     LoaderSettings.builder().setCreateFileIfAbsent(true).setErrorLabel("NPCore-Config").setDetailedErrors(true).build(),
                     DumperSettings.DEFAULT,
-                    UpdaterSettings.builder().setAutoSave(true).setVersioning(new BasicVersioning("config-version")).build()
+                    //UpdaterSettings.builder().setAutoSave(true).setVersioning(new BasicVersioning("config-version")).build()
+                    UpdaterSettings.DEFAULT
             );
         }
         this.configDocument.update();

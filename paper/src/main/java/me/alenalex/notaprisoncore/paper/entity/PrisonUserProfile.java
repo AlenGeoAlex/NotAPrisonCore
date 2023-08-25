@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.ILocaleProfile;
+import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.locale.IPluginMessage;
 import me.alenalex.notaprisoncore.api.locale.LocaleKey;
@@ -36,6 +37,11 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     public PrisonUserProfile(UUID playerUniqueId) {
         this.playerUniqueId = playerUniqueId;
         this.cacheLocaleProfile();
+    }
+
+    @Override
+    public UUID getUserId() {
+        return null;
     }
 
     @Override
@@ -96,6 +102,16 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     @Override
     public void chat(IPrisonUserProfile from, String message) {
 
+    }
+
+    @Override
+    public IEntityDataHolder getSharedDataHolder() {
+        return null;
+    }
+
+    @Override
+    public IEntityDataHolder getLocalDataHolder() {
+        return null;
     }
 
     @NotNull

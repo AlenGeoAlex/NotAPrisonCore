@@ -36,8 +36,10 @@ public abstract class AbstractConfiguration extends AbstractFileConfiguration {
         if(configDocument == null)
             throw new FailedConfigurationException(configType(), "Load method has been called before initialization", null);
 
+
         for (Field declaredField : getFields()) {
             declaredField.setAccessible(true);
+
             if(!AbstractConfigurationOption.class.isAssignableFrom(declaredField.getType())){
                 continue;
             }
@@ -45,7 +47,6 @@ public abstract class AbstractConfiguration extends AbstractFileConfiguration {
             String fieldName = declaredField.getName();
             String configName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, fieldName);
             Section section = configDocument.getSection(configName);
-
             Constructor<?> constructor = null;
             try {
                 constructor = declaredField.getType().getConstructor(Section.class);
@@ -81,8 +82,9 @@ public abstract class AbstractConfiguration extends AbstractFileConfiguration {
             try {
                 Method validate = declaredField.getType().getMethod("validate");
                 AbstractConfigurationOption.ValidationResponse validateResponse = (AbstractConfigurationOption.ValidationResponse) validate.invoke(instance);
+
                 if(validateResponse == null || validateResponse.equals(AbstractConfigurationOption.ValidationResponse.OKAY)){
-                    return;
+                    continue;
                 }
 
                 String[] warnings = validateResponse.getWarnings();
@@ -96,7 +98,6 @@ public abstract class AbstractConfiguration extends AbstractFileConfiguration {
                         this.logger.warning(" - "+warning);
                     }
                 }
-
                 String[] errors = validateResponse.getErrors();
                 if(errors != null && errors.length >= 1){
                     this.logger.info("The configuration load has identified few errors on the loading of the configuration "+configName+". Please resolve it. The plugin will be disabled!");
@@ -104,7 +105,6 @@ public abstract class AbstractConfiguration extends AbstractFileConfiguration {
                         this.logger.severe(" - "+error);
                     }
                 }
-
                 if(validateResponse.getStatus() == AbstractConfigurationOption.ValidationResponse.Status.INVALID){
                     throw new FailedConfigurationException(configType(), "Failed to load the configuration. Please resolve the errors above", null);
                 }

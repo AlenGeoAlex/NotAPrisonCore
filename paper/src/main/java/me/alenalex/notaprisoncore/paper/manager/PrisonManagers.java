@@ -12,12 +12,14 @@ public class PrisonManagers implements IPrisonManagers {
     private final SchematicManager schematicManager;
     private final LocaleManager localeManager;
     private final WorldManager worldManager;
+    private final MineManager mineManager;
     public PrisonManagers(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
         this.configurationManager = new ConfigurationManager(this);
         this.schematicManager = new SchematicManager(this);
         this.localeManager = new LocaleManager(this);
         this.worldManager = new WorldManager(this);
+        this.mineManager = new MineManager(this);
     }
 
     public boolean onLoad(){
@@ -52,7 +54,6 @@ public class PrisonManagers implements IPrisonManagers {
     public @NotNull ISchematicManager schematicManager() {
         return this.schematicManager;
     }
-
     @Override
     public @NotNull ILocaleManager localeManager() {
         return this.localeManager;
@@ -61,6 +62,11 @@ public class PrisonManagers implements IPrisonManagers {
     @Override
     public @NotNull IWorldManager worldManager() {
         return worldManager;
+    }
+
+    @Override
+    public @NotNull IMineManager mineManager() {
+        return mineManager;
     }
 
     @NotNull

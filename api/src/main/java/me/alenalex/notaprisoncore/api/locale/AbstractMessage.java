@@ -151,11 +151,11 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
                     if(eachLine.isEmpty())
                         continue;
 
-                    message.add(eachLine);
+                    messages.add(eachLine);
                 }
             }
 
-            return new WrappedMessageType(message.toArray(new String[0]), title.toArray(new String[0]), actionBar, sound, parsePlaceholderApi);
+            return new WrappedMessageType(messages.toArray(new String[0]), title.toArray(new String[0]), actionBar, sound, parsePlaceholderApi);
         }
 
     }

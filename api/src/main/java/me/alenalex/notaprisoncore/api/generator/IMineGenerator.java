@@ -6,6 +6,7 @@ import me.alenalex.notaprisoncore.api.managers.ISchematicFileManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface IMineGenerator {
@@ -19,7 +20,7 @@ public interface IMineGenerator {
      * @return IMineMeta of the mine
      * @throws NoSchematicFound if no schematic with the said name exists
      */
-    IMineMeta generateMine(CommandSender requester, String schematicName) throws NoSchematicFound;
+    Optional<IMineMeta> generateMine(CommandSender requester, String schematicName) throws NoSchematicFound;
 
     /**
      * This generates a set of mines with in the provided cool down.

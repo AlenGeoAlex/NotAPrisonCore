@@ -13,4 +13,6 @@ public interface IPrisonManagers {
 
     @NotNull IWorldManager worldManager();
 
+    @NotNull IMineManager mineManager();
+
 }

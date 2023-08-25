@@ -10,20 +10,24 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.api.exceptions.FailedMineGenerationException;
 import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.managers.ISchematicFileManager;
-import me.alenalex.notaprisoncore.api.managers.IWorldManager;
 import me.alenalex.notaprisoncore.paper.manager.MineManager;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MineGenerator implements IMineGenerator {
 
@@ -34,7 +38,7 @@ public class MineGenerator implements IMineGenerator {
     }
 
     @Override
-    public IMineMeta generateMine(CommandSender requester, String schematicName) throws NoSchematicFound {
+    public Optional<IMineMeta> generateMine(CommandSender requester, String schematicName) throws NoSchematicFound {
         ISchematicFileManager schematicFileManager = this.mineManager.getPlugin().getPrisonManagers().schematicManager().getSchematicFileManager();
         Optional<File> optionalSchematicFile = schematicFileManager.getSchematicFileOfName(schematicName);
         if(!optionalSchematicFile.isPresent()){
@@ -59,6 +63,7 @@ public class MineGenerator implements IMineGenerator {
 
         try {
             schematic.paste(editSession, centerVector, true, false, null);
+            mineManager.getPlugin().getLogger().info("Successfully pasted mine at ["+centerVector.getX()+", "+centerVector.getY()+", "+centerVector.getZ()+"]");
         }catch (Exception e){
             e.printStackTrace();
             EditSession undoSession = new EditSessionBuilder(worldEditWorldWrapper).fastmode(true).checkMemory(true).limitUnlimited().build();
@@ -80,12 +85,45 @@ public class MineGenerator implements IMineGenerator {
         }
         catch (RegionOperationException e) {
             e.printStackTrace();
+            return Optional.empty();
         }
+        mineManager.getPlugin().getLogger().info("Starting to gather meta-data for mines");
         return null;
     }
 
     @Override
     public CompletableFuture<Collection<IMineMeta>> generateMines(CommandSender requester, String schematicName, int generationCount, long coolDownInterval) {
-        return null;
+        CompletableFuture<Collection<IMineMeta>> future = new CompletableFuture<>();
+        List<IMineMeta> mineMetas = new ArrayList<>();
+        AtomicInteger count = new AtomicInteger(0);
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(count.get() >= generationCount){
+                    this.cancel();
+                    future.complete(mineMetas);
+                    return;
+                }
+                try {
+                    Optional<IMineMeta> metaOptional = generateMine(requester, schematicName);
+                    IMineMeta meta = metaOptional.orElse(null);
+                    if(meta == null){
+                        this.cancel();
+                        future.completeExceptionally(new FailedMineGenerationException());
+                        return;
+                    }
+
+                    mineMetas.add(meta);
+                } catch (NoSchematicFound e) {
+                    this.cancel();
+                    future.completeExceptionally(e);
+                    return;
+                }
+                count.incrementAndGet();
+            }
+        };
+
+        this.mineManager.getPlugin().getBukkitPlugin().getServer().getScheduler().runTaskTimer(this.mineManager.getPlugin().getBukkitPlugin(), runnable, 0L, coolDownInterval);
+        return future;
     }
 }

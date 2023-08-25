@@ -37,10 +37,11 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
     }
 
     private void set(boolean save){
-        this.getStoreDocument().set(StoreConstants.WorldStoreConstants.DISTANCE_KEY, distance);
+        this.getStoreDocument().set(StoreConstants.WorldStoreConstants.DISTANCE_KEY, distance.get());
         if(save) {
             try {
-                this.getStoreDocument().save();
+                this.getStoreDocument().save(getStoreFile());
+                this.prisonDataStore.getPluginInstance().getLogger().info("Saved World Data Store!");
             } catch (IOException e) {
                 throw new WorldDataSaveException(e);
             }
@@ -58,7 +59,9 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
     @Override
     @NotNull
     public synchronized Location nextFreeLocation() {
-        return this.getXZForCurrent(this.distance.incrementAndGet());
+        int atomicDistance = this.distance.incrementAndGet();
+        set();
+        return this.getXZForCurrent(atomicDistance);
     }
 
     private Location getXZForCurrent(int np) {
