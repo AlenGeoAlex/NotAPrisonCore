@@ -46,6 +46,16 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
     }
 
     @Override
+    protected Class<IMineMeta> entityType() {
+        return IMineMeta.class;
+    }
+
+    @Override
+    protected Class<UUID> idType() {
+        return UUID.class;
+    }
+
+    @Override
     protected Optional<IMineMeta> read(@NotNull ResultSet resultSet) {
         IMineMeta meta = null;
         try {
@@ -91,21 +101,4 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public CompletableFuture<Boolean> updateAsync(IMineMeta entity) {
-        if(!getPluginDatabase().isConnected())
-            return CompletableFuture.completedFuture(false);
-
-        return null;
-    }
-
-    @Override
-    public boolean updateBatchSync(Collection<IMineMeta> entities) {
-        if(!getPluginDatabase().isConnected())
-            return false;
-
-        return false;
-    }
-
 }

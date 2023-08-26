@@ -27,6 +27,8 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
     protected SQLDatabase getPluginDatabase() {
         return pluginDatabase;
     }
+    protected abstract Class<E> entityType();
+    protected abstract Class<I> idType();
     protected abstract Optional<E> read(@NotNull ResultSet resultSet);
     protected abstract void write(@NotNull PreparedStatement preparedStatement, E entity ,boolean createStatement);
 
@@ -81,7 +83,6 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
         }
 
         return CompletableFuture.supplyAsync(() -> deleteById(entityId));
-
     }
 
     @Override
@@ -92,15 +93,63 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
             return future;
         }
 
-        return CompletableFuture.supplyAsync(() -> create(entity));
+        return CompletableFuture.supplyAsync(() -> create(entity, idType()));
     }
 
-    public I create(E entity){
-        I response = null;
-        try (final Connection connection = pluginDatabase.getConnection();
-             final PreparedStatement preparedStatement = prepareInsertStatement(connection, insertQuery(), entity);
-        ) {
+    @Override
+    public CompletableFuture<Boolean> updateAsync(E entity) {
+        if (!getPluginDatabase().isConnected()) {
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new DatabaseNotAvailableException());
+            return future;
+        }
 
+        return CompletableFuture.supplyAsync(() -> update(entity));
+    }
+
+    @Override
+    public boolean updateBatchSync(Collection<E> entities) {
+        if (!getPluginDatabase().isConnected()) {
+            throw new DatabaseNotAvailableException();
+        }
+
+        if(entities == null || entities.isEmpty())
+            return true;
+
+        try(final Connection connection = pluginDatabase.getConnection();
+            final PreparedStatement preparedStatement = connection.prepareStatement(updateQuery())
+        ) {
+            connection.setAutoCommit(true);
+            for (E entity : entities) {
+                write(preparedStatement, entity, false);
+                preparedStatement.addBatch();
+            }
+
+            preparedStatement.executeLargeBatch();
+            return true;
+        }catch (Exception e){
+            throw new RuntimeException("Error updating data batch due to - "+e.toString(), e);
+        }
+    }
+
+    private Boolean update(E entity){
+        try (final Connection connection = pluginDatabase.getConnection();
+             final PreparedStatement preparedStatement = prepareDmlStatement(connection, updateQuery(), entity, false);
+        ) {
+            if(preparedStatement.executeUpdate() == 0){
+                throw new RuntimeException("Failed to update entity. Reason: No rows affected");
+            }
+
+            return true;
+        }catch (Exception e){
+            throw new RuntimeException("Error updating data of - "+e.toString(), e);
+        }
+    }
+
+    private I create(E entity, Class<I> idType){
+        try (final Connection connection = pluginDatabase.getConnection();
+             final PreparedStatement preparedStatement = prepareDmlStatement(connection, insertQuery(), entity, true);
+        ) {
             if(preparedStatement.executeUpdate() == 0){
                 throw new RuntimeException("Failed to create entity. Reason: No rows affected");
             }
@@ -109,15 +158,28 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
                 if(!set.next()){
                     throw new RuntimeException("Failed to create entity. Reason: No ID obtained");
                 }
-
-                response = (I) UUID.fromString(set.getString(1));
-                return response;
+                I generatedId = extractGeneratedId(set, idType);
+                if (generatedId == null) {
+                    throw new RuntimeException("Failed to create entity. Reason: Invalid ID type");
+                }
+                return generatedId;
             }catch (Exception e){
                 throw new RuntimeException("Failed to create entity. Reason: Unknown error");
             }
         }catch (Exception e){
             throw new RuntimeException("Error create data of - "+e.toString(), e);
         }
+    }
+
+    private <T> T extractGeneratedId(ResultSet generatedKeys, Class<T> idType) throws SQLException {
+        if (idType.equals(Integer.class)) {
+            return idType.cast(generatedKeys.getInt(1));
+        } else if (idType.equals(Long.class)) {
+            return idType.cast(generatedKeys.getLong(1));
+        } else if (idType.equals(UUID.class)) {
+            return idType.cast(UUID.fromString(generatedKeys.getString(1)));
+        }
+        return null;
     }
 
     private boolean deleteById(I id){
@@ -161,11 +223,12 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
         return preparedStatement;
     }
 
-    protected PreparedStatement prepareInsertStatement(Connection connection, String query, E entity) throws SQLException {
+    private PreparedStatement prepareDmlStatement(Connection connection, String query, E entity, boolean isCreate) throws SQLException {
         final PreparedStatement preparedStatement = connection.prepareStatement(query);
-        write(preparedStatement, entity, true);
+        write(preparedStatement, entity, isCreate);
         return preparedStatement;
     }
+
 
     protected String stringify(Vector vector){
         return JsonWrapper.WRAPPER.get().toJson(vector);
