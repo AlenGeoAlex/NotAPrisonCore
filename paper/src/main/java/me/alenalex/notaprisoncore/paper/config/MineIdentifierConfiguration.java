@@ -45,6 +45,10 @@ public class MineIdentifierConfiguration extends AbstractFileConfiguration imple
 
                 mineKeys.add(positionalKey);
             }
+
+            if(!mineKeys.validateStrictKeys()){
+                throw new FailedConfigurationException(ConfigType.IDENTIFIER, "upper-mine-corner, lower-mine-corner, spawn-point is a requirement, Positional Identifiers for them must be strictly passed in the configuration file", null);
+            }
         }
     }
 

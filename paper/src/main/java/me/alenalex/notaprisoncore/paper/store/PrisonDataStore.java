@@ -13,8 +13,8 @@ public class PrisonDataStore implements IPrisonDataStore {
     private final File storeParentDirectory;
     public PrisonDataStore(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
-        this.worldStore = new WorldStore(this);
         this.storeParentDirectory = new File(Bootstrap.getJavaPlugin().getDataFolder(), "store");
+        this.worldStore = new WorldStore(this);
     }
 
     public void init(){
@@ -39,5 +39,9 @@ public class PrisonDataStore implements IPrisonDataStore {
 
     public NotAPrisonCore getPluginInstance() {
         return pluginInstance;
+    }
+
+    public File getStoreParentDirectory() {
+        return storeParentDirectory;
     }
 }

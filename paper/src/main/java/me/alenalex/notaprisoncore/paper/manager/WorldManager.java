@@ -45,8 +45,39 @@ public class WorldManager implements IWorldManager {
         return getMineWorld(true);
     }
 
-    public void loadChunkAt(Location location){
+    @Override
+    public boolean loadChunkAt(Location location){
+        try {
+            int x = location.getBlockX() >> 4;
+            int z = location.getBlockZ() >> 4;
+            location.getWorld().loadChunk(x, z);
+            this.prisonManagers.getPluginInstance().getBukkitPlugin().getLogger().info("Loaded chunk at ["+x+", "+z+"]");
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
+    @Override
+    public boolean loadChunkAt(Location center, int radius){
+        try {
+            int minX = (center.getBlockX() - radius) >> 4;
+            int minZ = (center.getBlockZ() - radius) >> 4;
+            int maxX = (center.getBlockX() + radius) >> 4;
+            int maxZ = (center.getBlockZ() + radius) >> 4;
+
+            for(int x = minX; x <= maxX; x++){
+                for(int z = minZ; z <= maxZ; z++){
+                    center.getWorld().loadChunk(x, z);
+                    this.prisonManagers.getPluginInstance().getBukkitPlugin().getLogger().info("Loaded chunk at ["+x+", "+z+"]");
+                }
+            }
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private World createWorld(String worldName){

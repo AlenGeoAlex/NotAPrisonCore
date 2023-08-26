@@ -24,4 +24,8 @@ public class MinePositionalKeys extends HashSet<MinePositionalKey> {
         super(c);
         this.mineName = mineName;
     }
+
+    public boolean validateStrictKeys(){
+        return this.stream().filter(x -> (x.getKey().equals("spawn-point") || x.getKey().equals("lower-mine-corner") || x.getKey().equals("upper-mine-corner"))).count() == 3;
+    }
 }

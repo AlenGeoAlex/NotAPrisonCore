@@ -13,11 +13,11 @@ import java.util.Collection;
 
 public class MineManager implements IMineManager {
 
-    private final PrisonManagers manager;
+    private final PrisonManagers managers;
     private final MineGenerator mineGenerator;
 
-    public MineManager(PrisonManagers manager) {
-        this.manager = manager;
+    public MineManager(PrisonManagers managers) {
+        this.managers = managers;
         this.mineGenerator = new MineGenerator(this);
     }
 
@@ -46,7 +46,11 @@ public class MineManager implements IMineManager {
         }
     }
 
+    public PrisonManagers getManagers() {
+        return managers;
+    }
+
     public NotAPrisonCore getPlugin() {
-        return manager.getPluginInstance();
+        return managers.getPluginInstance();
     }
 }

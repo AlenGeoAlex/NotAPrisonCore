@@ -19,7 +19,7 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
     private AtomicInteger distance = new AtomicInteger(0);
     private Location defaultLocation;
     public WorldStore(PrisonDataStore prisonDataStore) {
-        super("world-store", new File(Bootstrap.getJavaPlugin().getDataFolder()+File.pathSeparator+"store", "world-store.dat"));
+        super("world-store", new File(prisonDataStore.getStoreParentDirectory(), "world-store.dat"));
         this.prisonDataStore = prisonDataStore;
     }
 

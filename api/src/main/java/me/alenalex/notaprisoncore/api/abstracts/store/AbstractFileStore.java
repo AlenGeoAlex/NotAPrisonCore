@@ -56,4 +56,5 @@ public abstract class AbstractFileStore {
     protected YamlDocument getStoreDocument() {
         return storeDocument;
     }
+
 }

@@ -6,7 +6,7 @@ import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreInitializationEx
 import java.util.Set;
 import java.util.concurrent.*;
 
-public abstract class AutoSaveAbstractDataStore<T> extends AbstractDataStore<T> implements Runnable {
+public abstract class AutoSaveAbstractDataStore<E, I> extends AbstractDataStore<E, I> implements Runnable {
     private final ScheduledFuture<?> taskHandle;
     public AutoSaveAbstractDataStore(SQLDatabase pluginDatabase, long saveInterval, TimeUnit unit) {
         super(pluginDatabase);
@@ -26,7 +26,7 @@ public abstract class AutoSaveAbstractDataStore<T> extends AbstractDataStore<T> 
             return SINGLETON_INSTANCE;
         }
         private final ScheduledExecutorService executorService;
-        private final Set<AutoSaveAbstractDataStore<?>> runningTasks;
+        private final Set<AutoSaveAbstractDataStore<?, ?>> runningTasks;
         private TaskScheduler(){
             if(SINGLETON_INSTANCE != null)
                 throw new IllegalStateException("TaskScheduler for store is already initialized, Use the static getter");
@@ -36,14 +36,14 @@ public abstract class AutoSaveAbstractDataStore<T> extends AbstractDataStore<T> 
             this.runningTasks = ConcurrentHashMap.newKeySet();
         }
 
-        public void removeStore(AutoSaveAbstractDataStore<?> store){
+        public void removeStore(AutoSaveAbstractDataStore<?, ?> store){
             runningTasks.remove(store);
             if(runningTasks.isEmpty()){
                 executorService.shutdownNow();
             }
         }
 
-        public ScheduledFuture<?> add(AutoSaveAbstractDataStore<?> store, long saveInterval, TimeUnit unit){
+        public ScheduledFuture<?> add(AutoSaveAbstractDataStore<?, ?> store, long saveInterval, TimeUnit unit){
             if(this.runningTasks.contains(store))
                 throw new DatastoreInitializationException("This auto store has been already initialized");
 

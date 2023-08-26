@@ -17,6 +17,7 @@ public interface IMine {
     //TODO: Remember to kick out other players inside the mine if
     MineAccess access(MineAccess access);
     IMineSocialConnections getMineSocials();
+    void teleport(Player player);
     default boolean isInsideMine(Location location){
         return getMeta().isInsideMine(location);
     }
