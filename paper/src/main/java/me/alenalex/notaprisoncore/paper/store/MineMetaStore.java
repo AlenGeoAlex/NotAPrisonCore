@@ -5,7 +5,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
 import me.alenalex.notaprisoncore.api.common.json.JsonWrapper;
-import me.alenalex.notaprisoncore.api.database.SQLDatabase;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
 import me.alenalex.notaprisoncore.paper.constants.DbConstants;
@@ -17,17 +16,15 @@ import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 
 public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements IMineMetaStore {
 
-    public MineMetaStore(SQLDatabase pluginDatabase) {
-        super(pluginDatabase);
+    public MineMetaStore(PrisonDataStore store) {
+        super(store.getPluginInstance().getPrisonSqlDatabase());
     }
 
     @Override
@@ -100,5 +97,9 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void save(){
+
     }
 }

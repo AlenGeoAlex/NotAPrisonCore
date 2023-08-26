@@ -87,6 +87,9 @@ public final class NotAPrisonCore {
         return this.bukkitPlugin.getLogger();
     }
 
+    public PrisonSqlDatabase getPrisonSqlDatabase() {
+        return prisonSqlDatabase;
+    }
     public PrisonManagers getPrisonManagers() {
         return prisonManagers;
     }
