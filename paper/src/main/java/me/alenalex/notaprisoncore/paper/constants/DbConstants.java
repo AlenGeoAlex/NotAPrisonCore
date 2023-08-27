@@ -14,10 +14,11 @@ public class DbConstants {
                 "upper_mine_point, " +
                 "lower_mine_region, " +
                 "upper_mine_region, " +
-                "additional_position_map" +
+                "additional_position_map, " +
+                "id" +
                 ") " +
                 "VALUES " +
-                "(?, ?, ?, ?, ?, ?);";
+                "(?, ?, ?, ?, ?, ?, ?);";
 
         public static final String UPDATE_QUERY = "UPDATE mine_metas " +
                 "SET `spawn_point` = ?, " +

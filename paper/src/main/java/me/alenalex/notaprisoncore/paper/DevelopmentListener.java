@@ -1,6 +1,5 @@
-package me.alenalex.notaprisoncore.paper.listener;
+package me.alenalex.notaprisoncore.paper;
 
-import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;

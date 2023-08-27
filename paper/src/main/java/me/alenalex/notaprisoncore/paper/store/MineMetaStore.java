@@ -11,6 +11,7 @@ import me.alenalex.notaprisoncore.paper.constants.DbConstants;
 import me.alenalex.notaprisoncore.paper.entity.MineMeta;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
@@ -83,7 +84,7 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
     }
 
     @Override
-    protected void write(@NotNull PreparedStatement preparedStatement, @NotNull IMineMeta entity, boolean createStatement) {
+    protected void write(@NotNull PreparedStatement preparedStatement, @NotNull IMineMeta entity, boolean createStatement, @Nullable Object predefinedId) {
         try {
             preparedStatement.setString(1, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getSpawnPoint()));
             preparedStatement.setString(2, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getLowerMiningPoint()));
@@ -91,7 +92,12 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
             preparedStatement.setString(4, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getMineSchematicLowerPoint()));
             preparedStatement.setString(5, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getMineSchematicUpperPoint()));
             preparedStatement.setString(6, IJsonWrapper.DEFAULT_INSTANCE.stringify(((MineMeta) entity).getLocationIdentifier()));
-            if(!createStatement){
+            if(createStatement){
+                if(predefinedId == null)
+                    throw new RuntimeException("Please provide a valid ID for mine meta");
+
+                preparedStatement.setString(7, predefinedId.toString());
+            }else{
                 preparedStatement.setString(7, entity.getMetaId().toString());
             }
         } catch (SQLException e) {

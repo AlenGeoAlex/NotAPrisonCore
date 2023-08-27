@@ -6,7 +6,6 @@ import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
 
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
-import me.alenalex.notaprisoncore.paper.listener.DevelopmentListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.InputStream;
@@ -19,18 +18,25 @@ public final class NotAPrisonCore {
     private final PrisonManagers prisonManagers;
     private PrisonSqlDatabase prisonSqlDatabase;
     private PrisonDataStore prisonDataStore;
+    private boolean shouldRunEnable;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
+        this.shouldRunEnable = true;
     }
 
     public void onLoad(){
         if(!prisonManagers.onLoad()){
             disableBukkitPlugin("Failed to load the plugin data. Cause would be specified above. Please check the logs");
+            this.shouldRunEnable = false;
             return;
         }
     }
     public void onEnable() {
+        if(!shouldRunEnable){
+            disableBukkitPlugin("Failed to load the plugin data. Cause would be specified above. Please check the logs");
+            return;
+        }
         if(!prisonManagers.onEnable()){
             disableBukkitPlugin("Failed to enable the plugin. Cause would be specified above. Please check the logs");
             return;

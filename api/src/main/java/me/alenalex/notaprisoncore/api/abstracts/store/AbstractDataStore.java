@@ -4,6 +4,7 @@ import me.alenalex.notaprisoncore.api.database.SQLDatabase;
 import me.alenalex.notaprisoncore.api.exceptions.database.DatabaseNotAvailableException;
 import me.alenalex.notaprisoncore.api.store.IEntityStore;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
 import java.util.*;
@@ -27,7 +28,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * Get the insert query which the store uses on {@link IEntityStore#createAsync(Object)}
      * method.
      * <br>
-     * The store populates the value to the prepared statement with the help of {@link AbstractDataStore#write(PreparedStatement, Object, boolean)}
+     * The store populates the value to the prepared statement with the help of {@link AbstractDataStore#write(PreparedStatement, Object, boolean, Object)}
      * with the 3rd parameter (boolean) set to true
      * @return String, The DML Query for insertion
      */
@@ -38,7 +39,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * Get the update query which the store uses on {@link IEntityStore#updateAsync(Object)}, {@link IEntityStore#updateBatchSync(Collection)}
      * {@link IEntityStore#updateBatchSync(Collection)} methods.
      * <br>
-     * The store populates the value to the prepared statement with the help of {@link AbstractDataStore#write(PreparedStatement, Object, boolean)}
+     * The store populates the value to the prepared statement with the help of {@link AbstractDataStore#write(PreparedStatement, Object, boolean, Object)}
      * with the 3rd parameter (boolean) set to false
      * @return String, The DML Query for Updation
      */
@@ -124,8 +125,11 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * @param preparedStatement The prepared statement to write into
      * @param entity Entity which needs to be written
      * @param createStatement Whether the write is for insert or update
+     * @param predefinedId UUID's are not supported as a return Type, So a Random ID is generated from Java side itself
+     *                     which can be used to write in the prepared statement.
+     *
      */
-    protected abstract void write(@NotNull PreparedStatement preparedStatement, @NotNull E entity ,boolean createStatement);
+    protected abstract void write(@NotNull PreparedStatement preparedStatement, @NotNull E entity ,boolean createStatement, @Nullable Object predefinedId);
     @NotNull
     protected SQLDatabase getPluginDatabase() {
         return pluginDatabase;
@@ -199,7 +203,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
         ) {
             connection.setAutoCommit(true);
             for (E entity : entities) {
-                write(preparedStatement, entity, false);
+                write(preparedStatement, entity, false, null);
                 preparedStatement.addBatch();
             }
 
@@ -244,21 +248,30 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
     }
 
     private Optional<I> create(E entity, Class<I> idType){
-        try (final Connection connection = pluginDatabase.getConnection();
-             final PreparedStatement preparedStatement = prepareDmlStatement(connection, insertQuery(), entity, true);
-        ) {
+        UUID randomUid = null;
+        if(idType.equals(UUID.class))
+            randomUid = UUID.randomUUID();
 
+        try (final Connection connection = pluginDatabase.getConnection();
+             final PreparedStatement preparedStatement = prepareDmlStatement(connection, insertQuery(), entity, true, randomUid);
+        ) {
             if(preparedStatement.executeUpdate() == 0){
                 throw new RuntimeException("Failed to create entity. Reason: No rows affected");
             }
-            try (ResultSet set = preparedStatement.getGeneratedKeys()) {
-                if(!set.next()){
-                    throw new RuntimeException("Failed to create entity. Reason: No ID obtained");
+
+            if(idType.equals(UUID.class)){
+                return Optional.of(idType.cast(randomUid));
+            }else{
+                try (ResultSet set = preparedStatement.getGeneratedKeys()) {
+
+                    if(!set.first()){
+                        throw new RuntimeException("Failed to create entity. Reason: No ID obtained");
+                    }
+                    I generatedId = extractGeneratedId(set, idType);
+                    return Optional.ofNullable(generatedId);
+                }catch (Exception e){
+                    throw new RuntimeException("Failed to create entity. Reason: Unknown error", e);
                 }
-                I generatedId = extractGeneratedId(set, idType);
-                return Optional.ofNullable(generatedId);
-            }catch (Exception e){
-                throw new RuntimeException("Failed to create entity. Reason: Unknown error", e);
             }
         }catch (Exception e){
             throw new RuntimeException("Error create data of - "+e.toString(), e);
@@ -270,8 +283,6 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
             return idType.cast(generatedKeys.getInt(1));
         } else if (idType.equals(Long.class)) {
             return idType.cast(generatedKeys.getLong(1));
-        } else if (idType.equals(UUID.class)) {
-            return idType.cast(UUID.fromString(generatedKeys.getString(1)));
         }
         return null;
     }
@@ -315,14 +326,20 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
         return preparedStatement;
     }
 
-    private PreparedStatement prepareDmlStatement(Connection connection, String query, E entity, boolean isCreate) throws SQLException {
+    private PreparedStatement prepareDmlStatement(Connection connection, String query, E entity, boolean isCreate, @Nullable Object definedId) throws SQLException {
         final PreparedStatement preparedStatement;
         if(isCreate){
-            preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            if(definedId == null)
+                preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            else preparedStatement = connection.prepareStatement(query);
         }else{
             preparedStatement = connection.prepareStatement(query);
         }
-        write(preparedStatement, entity, isCreate);
+        write(preparedStatement, entity, isCreate, definedId);
         return preparedStatement;
+    }
+
+    private PreparedStatement prepareDmlStatement(Connection connection, String query, E entity, boolean isCreate) throws SQLException {
+        return prepareDmlStatement(connection, query, entity, isCreate, null);
     }
 }
