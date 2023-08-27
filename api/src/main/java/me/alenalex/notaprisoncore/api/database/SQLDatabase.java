@@ -57,9 +57,9 @@ public abstract class SQLDatabase implements IDatabase{
 
     @Override
     public boolean isConnected() {
+        System.out.println("is connected called");
         if(dataSource == null)
             return false;
-
         return dataSource.isRunning();
     }
 
@@ -100,6 +100,7 @@ public abstract class SQLDatabase implements IDatabase{
         try {
             return this.dataSource.getConnection();
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new IllegalConnectionException(e);
         }
     }

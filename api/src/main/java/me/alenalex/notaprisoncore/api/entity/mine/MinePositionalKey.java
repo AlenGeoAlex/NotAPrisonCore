@@ -1,6 +1,7 @@
 package me.alenalex.notaprisoncore.api.entity.mine;
 
 import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.route.Route;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -33,7 +34,8 @@ public class MinePositionalKey {
 
     public static Optional<MinePositionalKey> from(Section section){
         boolean required = section.getBoolean("required");
-        String key = section.getRouteAsString();
+        Route route = section.getRoute();
+        String key = route.get(route.length() - 1).toString();
         String identifierRaw = section.getString("identifier");
         boolean readDirection = section.getBoolean("read-direction");
         float defaultYaw = section.getFloat("default-yaw");

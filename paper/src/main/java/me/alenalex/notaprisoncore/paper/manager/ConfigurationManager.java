@@ -28,7 +28,6 @@ public class ConfigurationManager implements IConfigurationManager {
             this.prisonManagers.getPluginInstance().getLogger().info("- Configuration : In progress");
             this.pluginConfiguration.create();
             this.pluginConfiguration.load();
-            System.out.println(pluginConfiguration.mineWorldConfiguration().toString());
             this.prisonManagers.getPluginInstance().getLogger().info("- Configuration : Loaded");
         } catch (IOException e) {
             throw new FailedConfigurationException(ConfigType.PLUGIN, "An unknown error occurred while create/initializing the document", e);

@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.paper.manager;
 
 import me.alenalex.notaprisoncore.api.managers.*;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
+import me.alenalex.notaprisoncore.paper.manager.mine.MineManager;
 import me.alenalex.notaprisoncore.paper.manager.schematic.SchematicManager;
 import org.jetbrains.annotations.NotNull;
 

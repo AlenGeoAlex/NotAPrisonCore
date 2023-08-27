@@ -1,6 +1,8 @@
 package me.alenalex.notaprisoncore.paper.entity;
 
 import com.sk89q.worldedit.regions.Region;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
+@EqualsAndHashCode
+@ToString
 public class MineMeta implements IMineMeta {
     private UUID metaId;
     private Region mineSchematicRegion;
@@ -35,9 +39,32 @@ public class MineMeta implements IMineMeta {
         this.locationIdentifier = new HashMap<>();
     }
 
+    public MineMeta(Region mineSchematicRegion, Location lowerMiningPoint, Location upperMiningPoint, Location spawnPoint, HashMap<String, Location> locationIdentifier) {
+        this.mineSchematicRegion = mineSchematicRegion;
+        this.lowerMiningPoint = lowerMiningPoint;
+        this.upperMiningPoint = upperMiningPoint;
+        this.spawnPoint = spawnPoint;
+        this.locationIdentifier = locationIdentifier;
+    }
+
+    public MineMeta(Region mineSchematicRegion, Location lowerMiningPoint, Location upperMiningPoint, Location spawnPoint) {
+        this.mineSchematicRegion = mineSchematicRegion;
+        this.lowerMiningPoint = lowerMiningPoint;
+        this.upperMiningPoint = upperMiningPoint;
+        this.spawnPoint = spawnPoint;
+        this.locationIdentifier = new HashMap<>();
+    }
+
+
     @Override
     public UUID getMetaId() {
         return metaId;
+    }
+
+    public void setMetaId(UUID uuid) throws IllegalAccessException {
+        if(this.metaId == null)
+            this.metaId = uuid;
+        else throw new IllegalAccessException("Meta ID for the mine is already set");
     }
 
     @Override

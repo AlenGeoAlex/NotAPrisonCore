@@ -17,15 +17,8 @@ public class DbConstants {
                 "additional_position_map" +
                 ") " +
                 "VALUES " +
-                "(?, ?, ?, ?, ?);";
-        public static final String INSERT_ADDITIONAL_QUERY = "INSERT INTO metas_additional_positional " +
-                "(" +
-                "mine_meta_id, " +
-                "identifier, " +
-                "positional_value" +
-                ") " +
-                "VALUES " +
-                "(?, ?, ?);";
+                "(?, ?, ?, ?, ?, ?);";
+
         public static final String UPDATE_QUERY = "UPDATE mine_metas " +
                 "SET `spawn_point` = ?, " +
                 "`lower_mine_point` = ?, " +

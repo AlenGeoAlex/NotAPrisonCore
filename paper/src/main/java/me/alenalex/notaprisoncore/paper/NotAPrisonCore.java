@@ -3,9 +3,10 @@ package me.alenalex.notaprisoncore.paper;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
-import me.alenalex.notaprisoncore.paper.listener.DevelopmentListener;
+
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
+import me.alenalex.notaprisoncore.paper.listener.DevelopmentListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.InputStream;
@@ -17,11 +18,10 @@ public final class NotAPrisonCore {
     private final JavaPlugin bukkitPlugin;
     private final PrisonManagers prisonManagers;
     private PrisonSqlDatabase prisonSqlDatabase;
-    private final PrisonDataStore prisonDataStore;
+    private PrisonDataStore prisonDataStore;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
-        this.prisonDataStore = new PrisonDataStore(this);
     }
 
     public void onLoad(){
@@ -51,13 +51,13 @@ public final class NotAPrisonCore {
 
         try {
             final InputStream scriptStream = getBukkitPlugin().getResource("sql/script.sql");
-            this.prisonSqlDatabase.prepareFromScript(scriptStream);
+            //this.prisonSqlDatabase.prepareFromScript(scriptStream);
         }catch (Exception e){
             e.printStackTrace();
             disableBukkitPlugin("Failed to complete the execution of script");
             return;
         }
-
+            this.prisonDataStore = new PrisonDataStore(this);
         try {
             this.prisonDataStore.init();
         }catch (Exception e){
@@ -68,6 +68,7 @@ public final class NotAPrisonCore {
 
         this.prisonDataStore.load();
         getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
+
     }
 
     public void onDisable() {

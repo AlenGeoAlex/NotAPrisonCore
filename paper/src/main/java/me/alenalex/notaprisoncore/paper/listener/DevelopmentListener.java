@@ -1,6 +1,5 @@
 package me.alenalex.notaprisoncore.paper.listener;
 
-import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,13 +20,11 @@ public class DevelopmentListener implements Listener {
         Bukkit.getScheduler().runTaskLater(core.getBukkitPlugin(), new Runnable() {
             @Override
             public void run() {
-                try {
-                    core.getPrisonManagers().mineManager().generator().generateMine(event.getPlayer(), "Minas");
-                    event.getPlayer().teleport(new Location(Bukkit.getWorld("Minas"), 0, 0, 0));
-                } catch (NoSchematicFound e) {
-                    e.printStackTrace();
-                }
+                event.getPlayer().teleport(new Location(Bukkit.getWorld("Minas"), 0, 0, 0));
+                core.getPrisonManagers().mineManager().metaProvider().pasteMines(event.getPlayer(), "Minas", 1, 250);
             }
         }, 60);
     }
+
+
 }

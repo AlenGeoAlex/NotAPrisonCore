@@ -19,7 +19,7 @@ import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.managers.ISchematicFileManager;
 import me.alenalex.notaprisoncore.paper.entity.MineMeta;
-import me.alenalex.notaprisoncore.paper.manager.MineManager;
+import me.alenalex.notaprisoncore.paper.manager.mine.MineManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -142,9 +142,13 @@ public class MineGenerator implements IMineGenerator {
         boolean hasAllRequired = true;
         String missingKey = null;
         for (MinePositionalKey requiredKey : requiredKeys) {
-            if(!locationalKeyMap.containsKey(requiredKey.getKey())){
+            String key = requiredKey.getKey();
+            if(key.equals("upper-mine-corner") || key.equals("lower-mine-corner") || key.equals("spawn-point"))
+               continue;
+
+            if(!locationalKeyMap.containsKey(key)){
                 hasAllRequired = false;
-                missingKey = requiredKey.getKey();
+                missingKey = key;
                 break;
             }
         }
@@ -153,7 +157,8 @@ public class MineGenerator implements IMineGenerator {
             throw new FailedMineGenerationException("Failed to find the required block identifier "+missingKey+" while pasting schematic "+schematicName);
         }
 
-        return Optional.ofNullable(meta);
+        meta = new MineMeta(clipboard.getRegion(), lowerMiningPoint, upperMiningPoint, spawnPoint, locationalKeyMap);
+        return Optional.of(meta);
     }
 
     private Location readFromVector(MinePositionalKey key, Vector vector, World world){
@@ -195,30 +200,32 @@ public class MineGenerator implements IMineGenerator {
             @Override
             public void run() {
                 if(count.get() >= generationCount){
-                    this.cancel();
                     future.complete(mineMetas);
+                    if(!this.isCancelled())
+                        this.cancel();
                     return;
                 }
                 try {
                     Optional<IMineMeta> metaOptional = generateMine(requester, schematicName);
                     IMineMeta meta = metaOptional.orElse(null);
                     if(meta == null){
-                        this.cancel();
                         future.completeExceptionally(new FailedMineGenerationException());
+                        if(!this.isCancelled())
+                            this.cancel();
                         return;
                     }
 
                     mineMetas.add(meta);
-                } catch (NoSchematicFound e) {
-                    this.cancel();
+                } catch (Exception e) {
                     future.completeExceptionally(e);
+                    if(!this.isCancelled())
+                        this.cancel();
                     return;
                 }
                 count.incrementAndGet();
             }
         };
-
-        this.mineManager.getPlugin().getBukkitPlugin().getServer().getScheduler().runTaskTimer(this.mineManager.getPlugin().getBukkitPlugin(), runnable, 0L, coolDownInterval);
+        runnable.runTaskTimer(this.mineManager.getPlugin().getBukkitPlugin(), 0L, coolDownInterval);
         return future;
     }
 }

@@ -45,10 +45,7 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <relocations>
-<!--                                <relocation>-->
-<!--                                    <pattern>dev.dejvokep.boostedyaml</pattern>-->
-<!--                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.boostedyaml</shadedPattern>-->
-<!--                                </relocation>-->
+
                             </relocations>
                         </configuration>
                     </execution>
@@ -99,7 +96,8 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <version>2.10</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

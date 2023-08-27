@@ -1,8 +1,12 @@
 package me.alenalex.notaprisoncore.api.managers;
 
+import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.entity.mine.MinePositionalKey;
 import me.alenalex.notaprisoncore.api.exceptions.DuplicateMineIdentifier;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
+import me.alenalex.notaprisoncore.api.provider.IMineMetaProvider;
+
+import java.util.concurrent.CompletableFuture;
 
 public interface IMineManager {
     /**
@@ -10,6 +14,12 @@ public interface IMineManager {
      * @return The default mine generator instance
      */
     IMineGenerator generator();
+
+    /**
+     * Get the meta provider to paste mine schematics
+     * @return The default mine meta provider
+     */
+    IMineMetaProvider metaProvider();
 
     /**
      * Register a mine identifier on the specified schematic.
@@ -29,5 +39,7 @@ public interface IMineManager {
      * @throws DuplicateMineIdentifier If the identifier material exists with the same schematic*
      */
     void registerMineIdentifiersOnAllSchematics(MinePositionalKey key) throws DuplicateMineIdentifier;
+
+    CompletableFuture<Boolean> registerMineMeta(IMineMeta meta);
 
 }

@@ -36,19 +36,19 @@ public class MineIdentifierConfiguration extends AbstractFileConfiguration imple
                 Optional<MinePositionalKey> from = MinePositionalKey.from(mineSection.getSection(positionalKeyName));
                 if(!from.isPresent())
                 {
-                    continue;
+                    throw new FailedConfigurationException(ConfigType.IDENTIFIER, "Failed to deserialize a mine key at position "+mineSection.getRouteAsString()+"."+positionalKeyName, null);
                 }
                 MinePositionalKey positionalKey = from.get();
                 boolean exists = mineKeys.stream().anyMatch(minePositionalKey -> minePositionalKey.getIdentifier() == positionalKey.getIdentifier());
                 if(exists)
                    throw new FailedConfigurationException(ConfigType.IDENTIFIER, "An existing key already have this material selected. Please choose another one", null);
-
                 mineKeys.add(positionalKey);
             }
 
             if(!mineKeys.validateStrictKeys()){
                 throw new FailedConfigurationException(ConfigType.IDENTIFIER, "upper-mine-corner, lower-mine-corner, spawn-point is a requirement, Positional Identifiers for them must be strictly passed in the configuration file", null);
             }
+            minePositionalKeys.add(mineKeys);
         }
     }
 

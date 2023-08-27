@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.api.serializer;
+package me.alenalex.notaprisoncore.api.common.serializer;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -24,10 +24,10 @@ public class LocationSerializer extends TypeAdapter<Location> {
         out.value(value.getY());
         out.name("z");
         out.value(value.getZ());
-        out.name("pitch");
-        out.value(value.getPitch());
         out.name("yaw");
         out.value(value.getYaw());
+        out.name("pitch");
+        out.value(value.getPitch());
         out.endObject();
     }
 

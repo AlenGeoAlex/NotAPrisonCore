@@ -75,12 +75,12 @@
                                     <shadedPattern>me.alenalex.notaprisoncore.shaded.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.google.code.gson</pattern>
-                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.gson</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>io.papermc.lib</pattern>
                                     <shadedPattern>me.alenalex.notaprisoncore.shaded.paper.paperlib</shadedPattern> <!-- Replace this -->
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.gson</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -118,6 +118,12 @@
             <artifactId>paper-api</artifactId>
             <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>me.alenalex.notaprisoncore.api</groupId>
@@ -150,6 +156,7 @@
             <version>1.0.7</version>
             <scope>compile</scope>
         </dependency>
+
     </dependencies>
 
 </project>
