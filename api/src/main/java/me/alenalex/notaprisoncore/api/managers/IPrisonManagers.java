@@ -4,8 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface IPrisonManagers {
 
-    @NotNull
-    IConfigurationManager configurationManager();
+    @NotNull IConfigurationManager configurationManager();
 
     @NotNull ISchematicManager schematicManager();
 

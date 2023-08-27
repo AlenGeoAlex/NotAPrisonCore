@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.paper;
 
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
+import me.alenalex.notaprisoncore.paper.data.DataHolder;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
 
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
@@ -18,10 +19,12 @@ public final class NotAPrisonCore {
     private final PrisonManagers prisonManagers;
     private PrisonSqlDatabase prisonSqlDatabase;
     private PrisonDataStore prisonDataStore;
+    private final DataHolder dataHolder;
     private boolean shouldRunEnable;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
+        this.dataHolder = new DataHolder(this);
         this.shouldRunEnable = true;
     }
 
@@ -72,13 +75,30 @@ public final class NotAPrisonCore {
             return;
         }
 
-        this.prisonDataStore.load();
-        getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
+        getLogger().info("Starting to load data from PrisonStore");
+        try {
+            this.prisonDataStore.load();
+        }catch (Exception e){
+            e.printStackTrace();
+            disableBukkitPlugin("Failed to load the data store for the plugin. Check the stack trace above for more error log");
+            return;
+        }
+        getLogger().info("Completed data store initialization");
 
+        getLogger().info("Initializing data holder for plugin");
+        try {
+            this.dataHolder.onEnable();
+        }catch (Exception e){
+            e.printStackTrace();
+            disableBukkitPlugin("Failed to load the data holder. Check the stack trace above for more error log");
+            return;
+        }
+        getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
     }
 
     public void onDisable() {
         prisonManagers.onShutdown();
+        this.dataHolder.onDisable();
         this.prisonDataStore.disable();
         if(this.prisonSqlDatabase != null){
             try {
@@ -103,6 +123,10 @@ public final class NotAPrisonCore {
 
     public PrisonDataStore getPrisonDataStore(){
         return this.prisonDataStore;
+    }
+
+    public DataHolder getDataHolder() {
+        return dataHolder;
     }
 
     private void disableBukkitPlugin(String reason){
