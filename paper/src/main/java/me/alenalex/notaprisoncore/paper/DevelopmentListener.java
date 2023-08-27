@@ -20,7 +20,7 @@ public class DevelopmentListener implements Listener {
             @Override
             public void run() {
                 event.getPlayer().teleport(new Location(Bukkit.getWorld("Minas"), 0, 0, 0));
-                core.getPrisonManagers().mineManager().metaProvider().pasteMines(event.getPlayer(), "Minas", 1, 250);
+                core.getPrisonManagers().mineManager().metaProvider().pasteMines(event.getPlayer(), "Minas", 5, 250);
             }
         }, 60);
     }

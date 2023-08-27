@@ -12,6 +12,7 @@ import me.alenalex.notaprisoncore.api.abstracts.AbstractConfigurationOption;
 public class ServerConfiguration extends AbstractConfigurationOption {
 
     private String serverName;
+    private int metaReservationCount;
     public ServerConfiguration(Section section) {
         super(section);
     }
@@ -19,5 +20,18 @@ public class ServerConfiguration extends AbstractConfigurationOption {
     @Override
     public void load() {
         this.serverName = getSection().getString("name");
+        this.metaReservationCount = getSection().getInt("meta-reservation-count");
+    }
+
+    @Override
+    public ValidationResponse validate() {
+        ValidationResponse.Builder builder = ValidationResponse.Builder.builder();
+        if(metaReservationCount <= 0){
+            builder.withErrors("Meta Reservation Count should be greater than 0");
+        }
+        if(serverName.equals("Prison-A")){
+            builder.withWarnings("Prison-A is the default name used, If not intentional please change the configuration");
+        }
+        return builder.build();
     }
 }

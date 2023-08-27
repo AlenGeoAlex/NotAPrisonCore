@@ -2,6 +2,7 @@ config-version: 1
 
 server-configuration:
   name: "Prison-A"
+  meta-reservation-count: 3
 
 sql-configuration:
   host: "server.alenalex.me"

@@ -6,26 +6,28 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
 import me.alenalex.notaprisoncore.api.common.json.IJsonWrapper;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.api.exceptions.database.FailedDatabaseException;
+import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
 import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
 import me.alenalex.notaprisoncore.paper.constants.DbConstants;
 import me.alenalex.notaprisoncore.paper.entity.MineMeta;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.lang.reflect.Type;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements IMineMetaStore {
 
+    private final PrisonDataStore store;
     public MineMetaStore(PrisonDataStore store) {
         super(store.getPluginInstance().getPrisonSqlDatabase());
+        this.store = store;
     }
 
     @Override
@@ -107,5 +109,85 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
 
     public void save(){
 
+    }
+
+    @Override
+    public CompletableFuture<Collection<IMineMeta>> reserveMetas() {
+        String serverName = this.store.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getServerName();
+        int metaReservationCount = this.store.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getMetaReservationCount();
+        return reserveMetas(serverName, metaReservationCount);
+    }
+
+    @Override
+    public CompletableFuture<Collection<IMineMeta>> reserveMetas(@NotNull String serverName, @Range(from = 1, to = Integer.MAX_VALUE) int reservationCount) {
+        if(serverName.isEmpty())
+        {
+            CompletableFuture<Collection<IMineMeta>> future = new CompletableFuture<>();
+            future.completeExceptionally(new DatastoreException("Invalid server name provided"));
+            return future;
+        }
+
+        return CompletableFuture.supplyAsync(() -> reserveMetasInternal(serverName, reservationCount));
+    }
+
+    @Override
+    public CompletableFuture<Boolean> releaseReservedMetas() {
+        String serverName = this.store.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getServerName();
+        return releaseReservedMetas(serverName);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> releaseReservedMetas(String serverName) {
+        if(serverName.isEmpty()){
+            CompletableFuture<Boolean> response = new CompletableFuture<>();
+            response.completeExceptionally(new DatastoreException("Invalid server name provided for releasing reserved metas"));
+            return response;
+        }
+
+        return CompletableFuture.supplyAsync(() -> releaseReservedMetasInternal(serverName));
+    }
+
+    private boolean releaseReservedMetasInternal(String serverName){
+        String procedureQuery = "{CALL ReleaseReservedMeta(?)}";
+        try (final Connection connection = getPluginDatabase().getConnection();
+             final CallableStatement callableStatement = prepareReleaseReservationMetaStatement(connection, procedureQuery ,serverName);
+        ) {
+            callableStatement.execute();
+        }catch (Exception e){
+            throw new FailedDatabaseException("Failed to reserve mine metas from SQL. Check stacktrace for more...",e);
+        }
+
+        return true;
+    }
+
+    private Collection<IMineMeta> reserveMetasInternal(String serverName, int reservationCount){
+        Collection<IMineMeta> metaCollection = new ArrayList<>();
+        String procedureQuery = "{CALL ReserveMineMeta(?, ?)}";
+        try (final Connection connection = getPluginDatabase().getConnection();
+             final CallableStatement callableStatement = prepareReservationMetaStatement(connection, procedureQuery ,serverName, reservationCount);
+             final ResultSet resultSet = callableStatement.executeQuery();
+             ) {
+            while (resultSet.next()){
+                Optional<IMineMeta> metaOptional = read(resultSet);
+                metaOptional.ifPresent(metaCollection::add);
+            }
+        }catch (Exception e){
+            throw new FailedDatabaseException("Failed to reserve mine metas from SQL. Check stacktrace for more...",e);
+        }
+
+        return metaCollection;
+    }
+
+    private CallableStatement prepareReservationMetaStatement(Connection connection, String procedureQuery ,String serverName, int reservationCount) throws SQLException {
+        CallableStatement statement = connection.prepareCall(procedureQuery);
+        statement.setString(1, serverName);
+        statement.setInt(2, reservationCount);
+        return statement;
+    }
+
+    private CallableStatement prepareReleaseReservationMetaStatement(Connection connection, String procedureQuery, String serverName) throws SQLException {
+        CallableStatement statement = connection.prepareCall(procedureQuery);
+        statement.setString(1, serverName);
+        return statement;
     }
 }
