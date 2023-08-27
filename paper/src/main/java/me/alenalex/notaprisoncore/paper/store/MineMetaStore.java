@@ -21,7 +21,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-
 public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements IMineMetaStore {
 
     private final PrisonDataStore store;
@@ -126,7 +125,6 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
             future.completeExceptionally(new DatastoreException("Invalid server name provided"));
             return future;
         }
-
         return CompletableFuture.supplyAsync(() -> reserveMetasInternal(serverName, reservationCount));
     }
 
@@ -143,7 +141,6 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
             response.completeExceptionally(new DatastoreException("Invalid server name provided for releasing reserved metas"));
             return response;
         }
-
         return CompletableFuture.supplyAsync(() -> releaseReservedMetasInternal(serverName));
     }
 
@@ -156,7 +153,6 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
         }catch (Exception e){
             throw new FailedDatabaseException("Failed to reserve mine metas from SQL. Check stacktrace for more...",e);
         }
-
         return true;
     }
 
@@ -174,7 +170,6 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
         }catch (Exception e){
             throw new FailedDatabaseException("Failed to reserve mine metas from SQL. Check stacktrace for more...",e);
         }
-
         return metaCollection;
     }
 
