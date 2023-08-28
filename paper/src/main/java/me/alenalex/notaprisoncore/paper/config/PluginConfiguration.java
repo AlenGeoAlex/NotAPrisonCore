@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.paper.config;
 
 
 import me.alenalex.notaprisoncore.api.config.IPluginConfiguration;
+import me.alenalex.notaprisoncore.api.config.options.DefaultMineConfiguration;
 import me.alenalex.notaprisoncore.api.config.options.MineWorldConfiguration;
 import me.alenalex.notaprisoncore.api.config.options.SQLConfiguration;
 import me.alenalex.notaprisoncore.api.abstracts.AbstractConfiguration;
@@ -20,6 +21,7 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     private SQLConfiguration sqlConfiguration;
     private MineWorldConfiguration mineWorldConfiguration;
     private ServerConfiguration serverConfiguration;
+    private DefaultMineConfiguration defaultMineConfiguration;
     public PluginConfiguration(ConfigurationManager configurationManager) {
         super(configurationManager.getPrisonManagers().getPluginInstance().getLogger(),
                 new File(configurationManager.getPrisonManagers().getPluginInstance().getBukkitPlugin().getDataFolder(), "config.yml"),
@@ -42,6 +44,11 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     @Override
     public @NotNull ServerConfiguration serverConfiguration() {
         return serverConfiguration;
+    }
+
+    @Override
+    public @NotNull DefaultMineConfiguration defaultMineConfiguration() {
+        return defaultMineConfiguration;
     }
 
     @Override

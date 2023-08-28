@@ -93,6 +93,7 @@ public final class NotAPrisonCore {
             disableBukkitPlugin("Failed to load the data holder. Check the stack trace above for more error log");
             return;
         }
+        this.prisonManagers.enableCommandManager();
         getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
     }
 

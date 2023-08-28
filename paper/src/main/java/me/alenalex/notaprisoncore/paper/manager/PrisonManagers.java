@@ -14,6 +14,7 @@ public class PrisonManagers implements IPrisonManagers {
     private final LocaleManager localeManager;
     private final WorldManager worldManager;
     private final MineManager mineManager;
+    private final CommandManager commandManager;
     public PrisonManagers(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
         this.configurationManager = new ConfigurationManager(this);
@@ -21,6 +22,7 @@ public class PrisonManagers implements IPrisonManagers {
         this.localeManager = new LocaleManager(this);
         this.worldManager = new WorldManager(this);
         this.mineManager = new MineManager(this);
+        this.commandManager = new CommandManager(this);
     }
 
     public boolean onLoad(){
@@ -39,6 +41,10 @@ public class PrisonManagers implements IPrisonManagers {
         this.localeManager.load();
         this.worldManager.load();
         return true;
+    }
+
+    public void enableCommandManager(){
+        commandManager.registerCommand();
     }
 
     public void onShutdown(){

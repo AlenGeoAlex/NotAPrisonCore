@@ -6,17 +6,19 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface IMine {
     UUID getId();
+    UUID getMetaId();
     IMineMeta getMeta();
     IEntityDataHolder getSharedDataHolder();
     IEntityDataHolder getLocalDataHolder();
     MineAccess access();
-
+    UUID getOwnerId();
+    IBlockChoices getBlockChoices();
     //TODO: Remember to kick out other players inside the mine if
     MineAccess access(MineAccess access);
-    IMineSocialConnections getMineSocials();
     void teleport(Player player);
     default boolean isInsideMine(Location location){
         return getMeta().isInsideMine(location);

@@ -8,6 +8,7 @@ import java.io.InputStream;
 public enum ConfigType {
     LOCALE("Paper Locale File", "default.yml"),
     IDENTIFIER("Block Identifier Configuration", "identifiers.yml"),
+    BLOCK_CHOICES("Reset Block Choice", "block-choices.yml"),
     PLUGIN("Paper Plugin Configuration", "config.yml");
 
     private final String name;

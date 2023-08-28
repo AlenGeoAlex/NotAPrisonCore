@@ -3,6 +3,7 @@ config-version: 1
 server-configuration:
   name: "Prison-A"
   meta-reservation-count: 3
+  min-meta-reserved-count: 1
 
 sql-configuration:
   host: "server.alenalex.me"
@@ -41,3 +42,6 @@ mine-world-configuration:
 
 default-mine-configuration:
   mine-access: "CLOSED"
+  reset-block-choices:
+    - "EMERALD_ORE"
+    - "EMERALD_BLOCK"

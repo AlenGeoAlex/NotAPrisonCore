@@ -9,7 +9,7 @@ import me.alenalex.notaprisoncore.api.managers.IMineManager;
 import me.alenalex.notaprisoncore.api.provider.IMineMetaProvider;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.config.MineIdentifierConfiguration;
-import me.alenalex.notaprisoncore.paper.entity.MineMeta;
+import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.generator.MineGenerator;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 

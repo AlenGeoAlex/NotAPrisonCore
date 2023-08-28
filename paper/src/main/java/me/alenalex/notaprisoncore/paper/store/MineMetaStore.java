@@ -10,7 +10,7 @@ import me.alenalex.notaprisoncore.api.exceptions.database.FailedDatabaseExceptio
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
 import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
 import me.alenalex.notaprisoncore.paper.constants.DbConstants;
-import me.alenalex.notaprisoncore.paper.entity.MineMeta;
+import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

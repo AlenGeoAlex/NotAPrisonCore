@@ -18,7 +18,7 @@ import me.alenalex.notaprisoncore.api.exceptions.FailedMineGenerationException;
 import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.managers.ISchematicFileManager;
-import me.alenalex.notaprisoncore.paper.entity.MineMeta;
+import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.manager.mine.MineManager;
 import org.bukkit.Location;
 import org.bukkit.Material;

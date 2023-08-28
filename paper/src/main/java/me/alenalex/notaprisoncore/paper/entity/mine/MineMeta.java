@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.paper.entity;
+package me.alenalex.notaprisoncore.paper.entity.mine;
 
 import com.sk89q.worldedit.regions.Region;
 import lombok.EqualsAndHashCode;
