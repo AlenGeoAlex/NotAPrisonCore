@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.api.abstracts.store;
 
 import me.alenalex.notaprisoncore.api.database.SQLDatabase;
 import me.alenalex.notaprisoncore.api.exceptions.database.DatabaseNotAvailableException;
+import me.alenalex.notaprisoncore.api.exceptions.store.OverridesQueryException;
 import me.alenalex.notaprisoncore.api.store.IEntityStore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * with the 3rd parameter (boolean) set to true
      * @return String, The DML Query for insertion
      */
-    @NotNull
+    @Nullable
     protected abstract String insertQuery();
 
     /**
@@ -43,7 +44,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * with the 3rd parameter (boolean) set to false
      * @return String, The DML Query for Updation
      */
-    @NotNull
+    @Nullable
     protected abstract String updateQuery();
 
     /**
@@ -60,7 +61,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * </b>
      * @return String, The select query
      */
-    @NotNull
+    @Nullable
     protected String selectQuery(){
         return "SELECT * FROM "+tableName()+";";
     }
@@ -79,7 +80,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * </b>
      * @return String, The select query
      */
-    @NotNull
+    @Nullable
     protected String selectByIdQuery(){
         return "SELECT * FROM " + tableName() + " WHERE `id` = ?";
     }
@@ -88,7 +89,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      * Get the delete query to delete the entity
      * @return String, The delete query
      */
-    @NotNull
+    @Nullable
     protected String deleteQuery(){
         return "DELETE FROM " + tableName() + " WHERE `id` = ?";
     }
@@ -136,6 +137,13 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
     }
     @Override
     public CompletableFuture<Collection<E>> all() {
+        String selectQuery = selectQuery();
+        if(selectQuery == null || selectQuery.isEmpty()){
+            CompletableFuture<Collection<E>> future = new CompletableFuture<>();
+            future.completeExceptionally(new OverridesQueryException(tableName(), "SELECT ALL"));
+            return future;
+        }
+
         if (!getPluginDatabase().isConnected()) {
             CompletableFuture<Collection<E>> future = new CompletableFuture<>();
             future.completeExceptionally(new DatabaseNotAvailableException());
@@ -147,6 +155,13 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public CompletableFuture<Optional<E>> id(I id) {
+        String selectQuery = selectByIdQuery();
+        if(selectQuery == null || selectQuery.isEmpty()){
+            CompletableFuture<Optional<E>> future = new CompletableFuture<>();
+            future.completeExceptionally(new OverridesQueryException(tableName(), "SELECT BY ID"));
+            return future;
+        }
+
         if (!getPluginDatabase().isConnected()) {
             CompletableFuture<Optional<E>> future = new CompletableFuture<>();
             future.completeExceptionally(new DatabaseNotAvailableException());
@@ -158,6 +173,13 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public CompletableFuture<Boolean> deleteAsync(I entityId) {
+        String deleteQuery = deleteQuery();
+        if(deleteQuery == null || deleteQuery.isEmpty()){
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new OverridesQueryException(tableName(), "DELETE FROM"));
+            return future;
+        }
+
         if (!getPluginDatabase().isConnected()) {
             CompletableFuture<Boolean> future = new CompletableFuture<>();
             future.completeExceptionally(new DatabaseNotAvailableException());
@@ -169,6 +191,13 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public CompletableFuture<Optional<I>> createAsync(E entity) {
+        String insertQuery = insertQuery();
+        if(insertQuery == null || insertQuery.isEmpty()){
+            CompletableFuture<Optional<I>> future = new CompletableFuture<>();
+            future.completeExceptionally(new OverridesQueryException(tableName(), "INSERT INTO"));
+            return future;
+        }
+
         if (!getPluginDatabase().isConnected()) {
             CompletableFuture<Optional<I>> future = new CompletableFuture<>();
             future.completeExceptionally(new DatabaseNotAvailableException());
@@ -180,6 +209,13 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public CompletableFuture<Boolean> updateAsync(E entity) {
+        String updateQuery = insertQuery();
+        if(updateQuery == null || updateQuery.isEmpty()){
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new OverridesQueryException(tableName(), "UPDATE"));
+            return future;
+        }
+
         if (!getPluginDatabase().isConnected()) {
             CompletableFuture<Boolean> future = new CompletableFuture<>();
             future.completeExceptionally(new DatabaseNotAvailableException());
@@ -191,6 +227,11 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public boolean updateBatchSync(Collection<E> entities) {
+        String updateQuery = insertQuery();
+        if(updateQuery == null || updateQuery.isEmpty()){
+            throw new OverridesQueryException(tableName(), "UPDATE BATCH");
+        }
+
         if (!getPluginDatabase().isConnected()) {
             throw new DatabaseNotAvailableException();
         }

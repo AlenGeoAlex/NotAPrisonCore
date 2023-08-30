@@ -19,7 +19,7 @@ public enum MineAccess {
 
         //TODO: Check owner/co-owner or OP or bypass perms
 
-        //
+        /*
         if(access == ONLY_FRIENDS){
             UUID userId = accessor.getUserId();
             if(mine.getMineSocials().isBlocked(userId)){
@@ -34,7 +34,7 @@ public enum MineAccess {
                 return MineAccessResponse.APPROVED;
             }
         }
-
+           */
         return MineAccessResponse.DENIED;
     }
 

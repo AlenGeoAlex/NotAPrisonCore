@@ -53,7 +53,7 @@ public class BlockEntry {
 
     public ItemStack toStack(){
         ItemStack itemStack = new ItemStack(materialType);
-        if(data > 0)
+        if(data >= 0)
             itemStack.setData(new MaterialData(materialType, data));
 
         return itemStack;

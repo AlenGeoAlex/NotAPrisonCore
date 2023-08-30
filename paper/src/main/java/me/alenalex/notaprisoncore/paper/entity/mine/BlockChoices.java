@@ -20,7 +20,6 @@ public class BlockChoices implements IBlockChoices {
         this.playerChoices = playerChoices;
     }
 
-
     @Override
     public void addChoice(BlockEntry... entry) {
         for (BlockEntry blockEntry : entry) {
