@@ -1,11 +1,14 @@
 package me.alenalex.notaprisoncore.paper.entity.mine;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineVault;
 import me.alenalex.notaprisoncore.api.exceptions.vault.InsufficientVaultBalanceException;
 import me.alenalex.notaprisoncore.api.exceptions.vault.MinRequiredVaultException;
 
 import java.math.BigDecimal;
-
+@EqualsAndHashCode
+@ToString
 public class ThreadSafeMineVault implements IMineVault {
 
     private BigDecimal balance;

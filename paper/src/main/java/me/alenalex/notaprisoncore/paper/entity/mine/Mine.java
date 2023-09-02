@@ -1,5 +1,8 @@
 package me.alenalex.notaprisoncore.paper.entity.mine;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.IBlockChoices;
@@ -8,6 +11,7 @@ import me.alenalex.notaprisoncore.api.entity.mine.IMineVault;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +20,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@ToString
+@EqualsAndHashCode
 public class Mine implements IMine {
     private UUID mineId;
     private final UUID ownerId;
@@ -42,6 +48,15 @@ public class Mine implements IMine {
         this.mineId = mineId;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault();
+    }
+
+    public Mine(UUID ownerId, UUID mineId, MineMeta meta, BigDecimal amount) {
+        this.ownerId = ownerId;
+        this.metaId = meta.getMetaId();
+        this.meta = meta;
+        this.mineId = mineId;
+        this.blockChoices = new BlockChoices();
+        this.mineVault = new ThreadSafeMineVault(amount);
     }
 
     public Mine(UUID ownerId, UUID mineId, MineMeta meta, List<BlockEntry> blockEntryList, BigDecimal account) {
@@ -117,6 +132,16 @@ public class Mine implements IMine {
     public IMine refresh() {
         return null;
     }
+
+    @Override
+    public void sendPluginNotification(String message) {
+        Player player = Bukkit.getPlayer(ownerId);
+        if(player == null || !player.isOnline())
+            return;
+
+        player.sendMessage(message);
+    }
+
 
     public void setDefaults(PrisonManagers prisonManagers){
         this.mineAccess = prisonManagers.configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultMineAccess();

@@ -2,6 +2,8 @@ package me.alenalex.notaprisoncore.api.entity.mine;
 
 import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
+import me.alenalex.notaprisoncore.api.locale.LocaleKey;
+import me.alenalex.notaprisoncore.api.locale.placeholder.MessagePlaceholder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -40,4 +42,5 @@ public interface IMine {
     default void open(){
         access(MineAccess.OPEN);
     }
+    void sendPluginNotification(String message);
 }

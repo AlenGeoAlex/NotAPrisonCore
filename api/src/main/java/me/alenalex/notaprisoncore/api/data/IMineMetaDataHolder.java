@@ -15,5 +15,6 @@ public interface IMineMetaDataHolder {
     Optional<IMineMeta> getUnclaimedMeta();
 
     boolean claimMeta(IMineMeta meta);
+    void releaseLockedMeta(IMineMeta meta);
 
 }

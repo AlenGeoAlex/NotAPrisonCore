@@ -49,13 +49,12 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
         IMineMeta metaToBeClaimed = INTERNAL_LOCKED_METAS.stream().filter(x -> x.getMetaId().equals(meta.getMetaId())).findAny().orElse(null);
         if(metaToBeClaimed == null)
             return false;
-
         INTERNAL_LOCKED_METAS.remove(metaToBeClaimed);
-        //checkAsync();
         return true;
     }
 
-    public void failedMetaClaim(IMineMeta meta){
+    @Override
+    public void releaseLockedMeta(IMineMeta meta){
         INTERNAL_LOCKED_METAS.remove(meta);
         this.reservedMetaSet.add(meta);
     }
