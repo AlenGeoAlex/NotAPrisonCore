@@ -42,6 +42,7 @@ mine-world-configuration:
 
 default-mine-configuration:
   mine-access: "CLOSED"
+  mine-vault-balance: "100"
   reset-block-choices:
     - "EMERALD_ORE"
     - "EMERALD_BLOCK"

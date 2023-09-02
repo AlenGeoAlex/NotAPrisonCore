@@ -4,6 +4,7 @@ public class DbConstants {
 
     public static final class TableNames {
         public static final String MINE_META = "mine_metas";
+        public static final String MINES = "mines";
 
     }
     public static final class MineMeta{

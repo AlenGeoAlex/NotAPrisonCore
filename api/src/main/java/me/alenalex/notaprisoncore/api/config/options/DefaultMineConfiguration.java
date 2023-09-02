@@ -8,6 +8,7 @@ import me.alenalex.notaprisoncore.api.abstracts.AbstractConfigurationOption;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ public class DefaultMineConfiguration extends AbstractConfigurationOption {
 
     private MineAccess defaultMineAccess;
     private final HashSet<BlockEntry> defaultResetBlockList = new HashSet<>();
+    private BigDecimal defaultVaultBalance;
     public DefaultMineConfiguration(Section section) {
         super(section);
     }
@@ -31,6 +33,12 @@ public class DefaultMineConfiguration extends AbstractConfigurationOption {
         for (String defaultResetBlock : defaultResetBlockList) {
             Optional<BlockEntry> optionalBlockEntry = BlockEntry.fromString(defaultResetBlock);
             optionalBlockEntry.ifPresent(this.defaultResetBlockList::add);
+        }
+        String stringBalance = this.getSection().getString(" mine-vault-balance");
+        try {
+            defaultVaultBalance = new BigDecimal(stringBalance);
+        }catch (Exception e){
+            defaultVaultBalance = null;
         }
     }
 
@@ -44,6 +52,11 @@ public class DefaultMineConfiguration extends AbstractConfigurationOption {
 
         if(defaultResetBlockList.isEmpty()){
             builder.withErrors("reset-block-choices should not be empty, Please populate it.");
+        }
+
+        if(defaultVaultBalance == null || defaultVaultBalance.compareTo(BigDecimal.ZERO) < 0){
+            builder.withWarnings("Default value of mine vault is incorrectly set. Forcing it to");
+            defaultVaultBalance = new BigDecimal(0);
         }
 
         return builder.build();

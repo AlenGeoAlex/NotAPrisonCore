@@ -3,15 +3,23 @@ package me.alenalex.notaprisoncore.paper.data;
 import me.alenalex.notaprisoncore.api.data.IMineMetaDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.exceptions.dataholder.LockExistException;
+import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MineMetaDataHolder implements IMineMetaDataHolder {
+    private static final HashSet<IMineMeta> INTERNAL_LOCKED_METAS = new HashSet<>();
+
+    public static boolean isMetaInternalLocked(UUID metaId){
+        return INTERNAL_LOCKED_METAS.stream().anyMatch(s -> s.getMetaId().equals(metaId));
+    }
+
+    public static boolean isMetaInternalLocked(MineMeta meta){
+        return INTERNAL_LOCKED_METAS.contains(meta);
+    }
+
     private final DataHolder dataHolder;
     private final HashSet<IMineMeta> reservedMetaSet;
     private final AtomicBoolean lockingInProgress;
@@ -29,18 +37,27 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
         if(reservedMetaSet.isEmpty())
             return Optional.empty();
 
-        return reservedMetaSet.stream().findAny();
+        IMineMeta meta = reservedMetaSet.stream().findAny().orElse(null);
+        this.reservedMetaSet.remove(meta);
+        INTERNAL_LOCKED_METAS.add(meta);
+        checkAsync();
+        return Optional.of(meta);
     }
 
     @Override
     public boolean claimMeta(IMineMeta meta){
-        IMineMeta metaToBeClaimed = reservedMetaSet.stream().filter(x -> x.getMetaId().equals(meta.getMetaId())).findAny().orElse(null);
+        IMineMeta metaToBeClaimed = INTERNAL_LOCKED_METAS.stream().filter(x -> x.getMetaId().equals(meta.getMetaId())).findAny().orElse(null);
         if(metaToBeClaimed == null)
             return false;
 
-        this.reservedMetaSet.remove(metaToBeClaimed);
-        checkAsync();
+        INTERNAL_LOCKED_METAS.remove(metaToBeClaimed);
+        //checkAsync();
         return true;
+    }
+
+    public void failedMetaClaim(IMineMeta meta){
+        INTERNAL_LOCKED_METAS.remove(meta);
+        this.reservedMetaSet.add(meta);
     }
 
     @Override
