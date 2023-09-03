@@ -96,11 +96,11 @@ public class Mine implements IMine {
     }
     @Override
     public @NotNull IEntityMetaDataHolder getSharedMetaDataHolder() {
-        return null;
+        return this.sharedEntityMetaDataHolder;
     }
     @Override
     public @NotNull IEntityMetaDataHolder getLocalMetaDataHolder() {
-        return null;
+        return this.localEntityMetaDataHolder;
     }
     @Override
     public @NotNull MineAccess access() {
@@ -141,6 +141,10 @@ public class Mine implements IMine {
     @Override
     public void save() {
 
+    }
+
+    public void setMineId(UUID id){
+        this.mineId = id;
     }
 
     public boolean isValid(){

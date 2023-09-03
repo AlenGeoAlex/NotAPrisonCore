@@ -96,7 +96,7 @@ public class SQLConfiguration extends AbstractConfigurationOption {
         config.setJdbcUrl(asJdbcUrl(driver));
         config.setUsername(getUserName());
         config.setPassword(getPassword());
-
+        config.setDriverClassName("org.mariadb.jdbc.Driver");
         config.setPoolName(this.hikariProperties.getConnectionPoolName());
         this.hikariProperties.getCustomHikariProperties().forEach(config::addDataSourceProperty);
         return config;

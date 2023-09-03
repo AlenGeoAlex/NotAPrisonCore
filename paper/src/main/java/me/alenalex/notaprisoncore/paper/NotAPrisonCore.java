@@ -45,7 +45,7 @@ public final class NotAPrisonCore {
             return;
         }
 
-        HikariConfig mysql = prisonManagers.configurationManager().getPluginConfiguration().sqlConfiguration().asHikariConfig("mysql");
+        HikariConfig mysql = prisonManagers.configurationManager().getPluginConfiguration().sqlConfiguration().asHikariConfig("mariadb");
         this.prisonSqlDatabase = new PrisonSqlDatabase(mysql, getLogger());
 
         try {

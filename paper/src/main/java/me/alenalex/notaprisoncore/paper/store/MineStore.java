@@ -218,18 +218,19 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
 
     // Fetches and sets block choices for the given mine
     private void fetchAndSetBlockChoices(CallableStatement callableStatement, IMine mine) throws SQLException {
-        boolean hasBlockChoices = callableStatement.getMoreResults();
+        boolean hasBlockChoices = callableStatement.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
         if (!hasBlockChoices) {
             mine.getBlockChoices().clearAndSetDefault();
             return;
         }
 
-        try (ResultSet resultSet = callableStatement.getResultSet()) {
+        try (ResultSet blockChoiceSet = callableStatement.getResultSet()) {
+            blockChoiceSet.beforeFirst();
             List<BlockEntry> blockEntryList = new ArrayList<>();
 
-            while (resultSet.next()) {
-                byte data = (byte) resultSet.getInt("data");
-                String materialName = resultSet.getString("material_type");
+            while (blockChoiceSet.next()) {
+                byte data = (byte) blockChoiceSet.getInt("data");
+                String materialName = blockChoiceSet.getString("material_type");
                 Material material = Material.getMaterial(materialName);
 
                 BlockEntry entry = new BlockEntry(material, data);
@@ -282,7 +283,7 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
             UUID mineId = UUID.fromString(rawMineId);
             File file = getOrCreate(rawMineId);
             try (final FileWriter fileWriter = new FileWriter(file, false)) {
-                fileWriter.write(((LocalEntityMetaDataHolder) mine.getSharedMetaDataHolder()).encode());
+                fileWriter.write(((LocalEntityMetaDataHolder) mine.getLocalMetaDataHolder()).encode());
             }
             return Optional.of(mineId);
         }catch (Exception e){

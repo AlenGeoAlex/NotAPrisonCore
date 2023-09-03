@@ -86,6 +86,10 @@
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>me.alenalex.notaprisoncore.shaded.commons</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.mariadb.jdbc</pattern>
+                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.mariadb</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -159,6 +163,11 @@
             <artifactId>paperlib</artifactId>
             <version>1.0.7</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.2.0</version>
         </dependency>
 
     </dependencies>
