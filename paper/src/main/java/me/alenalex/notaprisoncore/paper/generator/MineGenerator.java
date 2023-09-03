@@ -80,11 +80,12 @@ public class MineGenerator implements IMineGenerator {
         Location lowerMiningPoint = null;
         Location upperMiningPoint = null;
         HashMap<String, Location> locationalKeyMap = new HashMap<>();
+        Region region = null;
         try {
             schematic.paste(editSession, centerVector, true, false, null);
             mineManager.getPlugin().getLogger().info("Successfully pasted mine at ["+centerVector.getX()+", "+centerVector.getY()+", "+centerVector.getZ()+"]");
 
-            Region region = clipboard.getRegion();
+            region = clipboard.getRegion();
             region.setWorld(worldEditWorldWrapper);
             try {
                 region.shift(centerVector.subtract(clipboard.getOrigin()));
@@ -157,7 +158,7 @@ public class MineGenerator implements IMineGenerator {
             throw new FailedMineGenerationException("Failed to find the required block identifier "+missingKey+" while pasting schematic "+schematicName);
         }
 
-        meta = new MineMeta(clipboard.getRegion(), lowerMiningPoint, upperMiningPoint, spawnPoint, locationalKeyMap);
+        meta = new MineMeta(region, lowerMiningPoint, upperMiningPoint, spawnPoint, locationalKeyMap);
         return Optional.of(meta);
     }
 

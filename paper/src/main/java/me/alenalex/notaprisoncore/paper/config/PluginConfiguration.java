@@ -2,11 +2,8 @@ package me.alenalex.notaprisoncore.paper.config;
 
 
 import me.alenalex.notaprisoncore.api.config.IPluginConfiguration;
-import me.alenalex.notaprisoncore.api.config.options.DefaultMineConfiguration;
-import me.alenalex.notaprisoncore.api.config.options.MineWorldConfiguration;
-import me.alenalex.notaprisoncore.api.config.options.SQLConfiguration;
+import me.alenalex.notaprisoncore.api.config.options.*;
 import me.alenalex.notaprisoncore.api.abstracts.AbstractConfiguration;
-import me.alenalex.notaprisoncore.api.config.options.ServerConfiguration;
 import me.alenalex.notaprisoncore.api.enums.ConfigType;
 import me.alenalex.notaprisoncore.paper.manager.ConfigurationManager;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +19,7 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     private MineWorldConfiguration mineWorldConfiguration;
     private ServerConfiguration serverConfiguration;
     private DefaultMineConfiguration defaultMineConfiguration;
+    private ResetterConfiguration resetterConfiguration;
     public PluginConfiguration(ConfigurationManager configurationManager) {
         super(configurationManager.getPrisonManagers().getPluginInstance().getLogger(),
                 new File(configurationManager.getPrisonManagers().getPluginInstance().getBukkitPlugin().getDataFolder(), "config.yml"),
@@ -49,6 +47,11 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     @Override
     public @NotNull DefaultMineConfiguration defaultMineConfiguration() {
         return defaultMineConfiguration;
+    }
+
+    @Override
+    public @NotNull ResetterConfiguration resetterConfiguration() {
+        return resetterConfiguration;
     }
 
     @Override

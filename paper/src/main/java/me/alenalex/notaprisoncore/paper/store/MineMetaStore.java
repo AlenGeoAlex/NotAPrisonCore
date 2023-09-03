@@ -1,16 +1,16 @@
 package me.alenalex.notaprisoncore.paper.store;
 
 import com.google.common.reflect.TypeToken;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
-import me.alenalex.notaprisoncore.api.common.json.IJsonWrapper;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.exceptions.database.FailedDatabaseException;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
 import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
 import me.alenalex.notaprisoncore.paper.constants.DbConstants;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
+import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,17 +67,17 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
             String idRaw = resultSet.getString("id");
 
             UUID id = UUID.fromString(idRaw);
-            Location spawnPoint =  IJsonWrapper.DEFAULT_INSTANCE.fromString(spawnPointJson, Location.class);
-            Location lowerMinePoint =  IJsonWrapper.DEFAULT_INSTANCE.fromString(lowerMinePointJson, Location.class);
-            Location upperMinePoint =  IJsonWrapper.DEFAULT_INSTANCE.fromString(upperMinePointJson, Location.class);
-            Vector lowerMineRegion =  IJsonWrapper.DEFAULT_INSTANCE.fromString(lowerMineRegionJson, Vector.class);
-            Vector upperMineRegion =  IJsonWrapper.DEFAULT_INSTANCE.fromString(upperMineRegionJson, Vector.class);
+            Location spawnPoint =  GsonWrapper.singleton().fromString(spawnPointJson, Location.class);
+            Location lowerMinePoint =  GsonWrapper.singleton().fromString(lowerMinePointJson, Location.class);
+            Location upperMinePoint =  GsonWrapper.singleton().fromString(upperMinePointJson, Location.class);
+            org.bukkit.util.Vector lowerMineRegion =  GsonWrapper.singleton().fromString(lowerMineRegionJson, org.bukkit.util.Vector.class);
+            org.bukkit.util.Vector upperMineRegion =  GsonWrapper.singleton().fromString(upperMineRegionJson, org.bukkit.util.Vector.class);
 
             Type additionalMapType = new TypeToken<HashMap<String, Location>>() {
             }.getType();
-            HashMap<String, Location> additionalPositionalMapJson = IJsonWrapper.DEFAULT_INSTANCE.fromString(additionalPositionMapJson, additionalMapType);
+            HashMap<String, Location> additionalPositionalMapJson = GsonWrapper.singleton().fromString(additionalPositionMapJson, additionalMapType);
 
-            meta = new MineMeta(id, new CuboidRegion(lowerMineRegion, upperMineRegion), lowerMinePoint, upperMinePoint, spawnPoint, additionalPositionalMapJson);
+            meta = new MineMeta(id, new CuboidRegion(BukkitUtil.toVector(lowerMineRegion), BukkitUtil.toVector(upperMineRegion)), lowerMinePoint, upperMinePoint, spawnPoint, additionalPositionalMapJson);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -87,12 +87,12 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
     @Override
     protected void write(@NotNull PreparedStatement preparedStatement, @NotNull IMineMeta entity, boolean createStatement, @Nullable Object predefinedId) {
         try {
-            preparedStatement.setString(1, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getSpawnPoint()));
-            preparedStatement.setString(2, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getLowerMiningPoint()));
-            preparedStatement.setString(3, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getUpperMiningPoint()));
-            preparedStatement.setString(4, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getMineSchematicLowerPoint()));
-            preparedStatement.setString(5, IJsonWrapper.DEFAULT_INSTANCE.stringify(entity.getMineSchematicUpperPoint()));
-            preparedStatement.setString(6, IJsonWrapper.DEFAULT_INSTANCE.stringify(((MineMeta) entity).getLocationIdentifier()));
+            preparedStatement.setString(1, GsonWrapper.singleton().stringify(entity.getSpawnPoint()));
+            preparedStatement.setString(2, GsonWrapper.singleton().stringify(entity.getLowerMiningPoint()));
+            preparedStatement.setString(3, GsonWrapper.singleton().stringify(entity.getUpperMiningPoint()));
+            preparedStatement.setString(4, GsonWrapper.singleton().stringify(entity.getMineSchematicLowerPoint()));
+            preparedStatement.setString(5, GsonWrapper.singleton().stringify(entity.getMineSchematicUpperPoint()));
+            preparedStatement.setString(6, GsonWrapper.singleton().stringify(((MineMeta) entity).getLocationIdentifier()));
             if(createStatement){
                 if(predefinedId == null)
                     throw new RuntimeException("Please provide a valid ID for mine meta");

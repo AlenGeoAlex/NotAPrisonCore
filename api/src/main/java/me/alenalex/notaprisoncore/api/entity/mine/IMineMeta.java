@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,4 +26,5 @@ public interface IMineMeta {
     boolean hasIdentifier(String key);
     Optional<Location> getLocationOfIdentifier(String key);
 
+    HashMap<String, Location> getLocationIdentifier();
 }

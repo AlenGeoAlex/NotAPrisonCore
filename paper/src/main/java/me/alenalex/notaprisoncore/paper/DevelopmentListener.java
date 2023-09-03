@@ -2,6 +2,8 @@ package me.alenalex.notaprisoncore.paper;
 
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.api.entity.mine.IMineResetWorker;
+import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.entity.mine.BlockChoices;
 import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
@@ -67,12 +69,31 @@ public class DevelopmentListener implements Listener {
                             IMine mine1 = mine.orElse(null);
                             if(mine1 == null){
                                 System.out.println("Is null");
+                                return;
                             }else{
+                                Location spawnPoint = mine1.getMeta().getSpawnPoint();
+                                event.getPlayer().teleport(spawnPoint);
                                 System.out.println(mine1.toString());
                             }
+
+                            Bukkit.getScheduler().runTaskLater(Bootstrap.getJavaPlugin(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    System.out.println("Starting reset");
+                                    IMineResetWorker worker = mine1.getMineResetter().createWorker();
+                                    worker.reset().whenComplete((re, er) -> {
+                                        if(er != null){
+                                            er.printStackTrace();
+                                            return;
+                                        }
+
+                                        System.out.println(re);
+                                    });
+                                }
+                            }, 120);
                         });
             }
-        }, 60);
+        }, 120);
     }
 
 

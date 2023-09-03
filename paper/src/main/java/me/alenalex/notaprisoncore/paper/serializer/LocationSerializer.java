@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.api.common.serializer;
+package me.alenalex.notaprisoncore.paper.serializer;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

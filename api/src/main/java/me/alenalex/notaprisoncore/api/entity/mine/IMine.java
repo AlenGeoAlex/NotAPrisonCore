@@ -1,9 +1,7 @@
 package me.alenalex.notaprisoncore.api.entity.mine;
 
-import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
+import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
-import me.alenalex.notaprisoncore.api.locale.LocaleKey;
-import me.alenalex.notaprisoncore.api.locale.placeholder.MessagePlaceholder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -13,12 +11,13 @@ public interface IMine {
     UUID getId();
     UUID getMetaId();
     IMineMeta getMeta();
-    IEntityDataHolder getSharedDataHolder();
-    IEntityDataHolder getLocalDataHolder();
+    IEntityMetaDataHolder getSharedMetaDataHolder();
+    IEntityMetaDataHolder getLocalMetaDataHolder();
     MineAccess access();
     UUID getOwnerId();
     IBlockChoices getBlockChoices();
     IMineVault getVault();
+    IMineResetter getMineResetter();
     //TODO: Remember to kick out other players inside the mine if
     MineAccess access(MineAccess access);
     void teleport(Player player);

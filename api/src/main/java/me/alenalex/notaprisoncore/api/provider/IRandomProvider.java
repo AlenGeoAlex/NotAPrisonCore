@@ -1,6 +1,7 @@
 package me.alenalex.notaprisoncore.api.provider;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public interface IRandomProvider {
@@ -10,6 +11,10 @@ public interface IRandomProvider {
         return collection.stream()
                 .skip((int) (collection.size() * Math.random()))
                 .findFirst().get();
+    }
+
+    static <E> E getRandomFromList(List<E> list){
+        return list.get(RANDOM.nextInt(list.size()));
     }
 
 }

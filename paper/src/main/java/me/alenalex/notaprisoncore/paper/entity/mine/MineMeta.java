@@ -113,7 +113,8 @@ public class MineMeta implements IMineMeta {
         return Optional.ofNullable(locationIdentifier.get(key));
     }
 
+    @Override
     public HashMap<String, Location> getLocationIdentifier() {
-        return locationIdentifier;
+        return new HashMap<>(locationIdentifier);
     }
 }

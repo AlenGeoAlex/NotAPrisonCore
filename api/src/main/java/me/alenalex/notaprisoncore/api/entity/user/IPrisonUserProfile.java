@@ -1,6 +1,6 @@
 package me.alenalex.notaprisoncore.api.entity.user;
 
-import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
+import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.api.locale.LocaleKey;
 import me.alenalex.notaprisoncore.api.locale.placeholder.MessagePlaceholder;
 
@@ -24,7 +24,7 @@ public interface IPrisonUserProfile {
     void sendMessage(String message, MessagePlaceholder... placeholders);
 
     void chat(IPrisonUserProfile from, String message);
-    IEntityDataHolder getSharedDataHolder();
-    IEntityDataHolder getLocalDataHolder();
+    IEntityMetaDataHolder getSharedDataHolder();
+    IEntityMetaDataHolder getLocalDataHolder();
 
 }

@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.ILocaleProfile;
-import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
+import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.locale.IPluginMessage;
 import me.alenalex.notaprisoncore.api.locale.LocaleKey;
@@ -105,12 +105,12 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     }
 
     @Override
-    public IEntityDataHolder getSharedDataHolder() {
+    public IEntityMetaDataHolder getSharedDataHolder() {
         return null;
     }
 
     @Override
-    public IEntityDataHolder getLocalDataHolder() {
+    public IEntityMetaDataHolder getLocalDataHolder() {
         return null;
     }
 

@@ -3,7 +3,7 @@ package me.alenalex.notaprisoncore.api.entity;
 import java.util.Iterator;
 import java.util.Optional;
 
-public interface IEntityDataHolder {
+public interface IEntityMetaDataHolder {
     <E> void set(String key, E value);
     Optional<Object> get(String key);
     Optional<Object> getWithDefault(String key, Object defaultValue);

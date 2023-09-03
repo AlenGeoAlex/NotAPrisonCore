@@ -2,11 +2,11 @@ package me.alenalex.notaprisoncore.paper.entity.mine;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import me.alenalex.notaprisoncore.api.common.json.IJsonWrapper;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IBlockChoices;
 import me.alenalex.notaprisoncore.api.provider.IRandomProvider;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
+import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -72,17 +72,24 @@ public class BlockChoices implements IBlockChoices {
     }
 
     @Override
+    public List<BlockEntry> getChoices() {
+        return new ArrayList<>(playerChoices);
+    }
+
+    @Override
     public @NotNull Iterator<BlockEntry> iterator() {
         return new ArrayList<>(playerChoices).iterator();
     }
 
+
     @Override
     public @NotNull BlockEntry atRandom() {
-        return IRandomProvider.getRandomElementFrom(playerChoices);
+        return IRandomProvider.getRandomFromList(playerChoices);
     }
 
-    public @NotNull String toJson(){
-        return IJsonWrapper.DEFAULT_INSTANCE.stringify(this.playerChoices);
+    @Override
+    public @NotNull String toJson() {
+        return GsonWrapper.singleton().stringify(this.playerChoices);
     }
 
     private void checkInternal(){

@@ -27,6 +27,11 @@ sql-configuration:
       "elideSetAutoCommits": "true"
       "maintainTimeStats": "true"
 
+resetter-configuration:
+  resetter-to-use: Internal
+  before-reset-identifier: "spawn-point"
+  after-reset-identifier: "upper-mine-corner"
+  use-after-reset-hook: true
 
 mine-world-configuration:
   world-name: Minas

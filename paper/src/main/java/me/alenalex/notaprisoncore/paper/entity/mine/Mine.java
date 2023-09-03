@@ -1,15 +1,13 @@
 package me.alenalex.notaprisoncore.paper.entity.mine;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
-import me.alenalex.notaprisoncore.api.entity.IEntityDataHolder;
-import me.alenalex.notaprisoncore.api.entity.mine.IBlockChoices;
-import me.alenalex.notaprisoncore.api.entity.mine.IMine;
-import me.alenalex.notaprisoncore.api.entity.mine.IMineVault;
-import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
+import me.alenalex.notaprisoncore.api.entity.mine.*;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
+import me.alenalex.notaprisoncore.paper.entity.dataholder.LocalEntityMetaDataHolder;
+import me.alenalex.notaprisoncore.paper.entity.dataholder.SharedEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,8 +26,11 @@ public class Mine implements IMine {
     private final UUID metaId;
     private final MineMeta meta;
     private MineAccess mineAccess;
-    private final IMineVault mineVault;
+    private final ThreadSafeMineVault mineVault;
     private final BlockChoices blockChoices;
+    private final MineResetter mineResetter;
+    private final LocalEntityMetaDataHolder localEntityMetaDataHolder;
+    private final SharedEntityMetaDataHolder sharedEntityMetaDataHolder;
 
     //TODO Call defaults after initializing this constructor
     public Mine(UUID ownerId, MineMeta meta){
@@ -39,6 +40,9 @@ public class Mine implements IMine {
         this.mineAccess = MineAccess.CLOSED;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault();
+        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
+        this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
 
     public Mine(UUID ownerId, UUID mineId, MineMeta meta) {
@@ -48,15 +52,21 @@ public class Mine implements IMine {
         this.mineId = mineId;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault();
+        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
+        this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
 
-    public Mine(UUID ownerId, UUID mineId, MineMeta meta, BigDecimal amount) {
+    public Mine(UUID ownerId, UUID mineId, MineMeta meta, BigDecimal amount, LocalEntityMetaDataHolder localMeta, SharedEntityMetaDataHolder sharedMeta) {
         this.ownerId = ownerId;
         this.metaId = meta.getMetaId();
         this.meta = meta;
         this.mineId = mineId;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault(amount);
+        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.localEntityMetaDataHolder = localMeta;
+        this.sharedEntityMetaDataHolder = sharedMeta;
     }
 
     public Mine(UUID ownerId, UUID mineId, MineMeta meta, List<BlockEntry> blockEntryList, BigDecimal account) {
@@ -67,6 +77,9 @@ public class Mine implements IMine {
         this.blockChoices = new BlockChoices();
         this.blockChoices.addChoices(blockEntryList);
         this.mineVault = new ThreadSafeMineVault(account);
+        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
+        this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
 
     @Override
@@ -82,11 +95,11 @@ public class Mine implements IMine {
         return meta;
     }
     @Override
-    public @NotNull IEntityDataHolder getSharedDataHolder() {
+    public @NotNull IEntityMetaDataHolder getSharedMetaDataHolder() {
         return null;
     }
     @Override
-    public @NotNull IEntityDataHolder getLocalDataHolder() {
+    public @NotNull IEntityMetaDataHolder getLocalMetaDataHolder() {
         return null;
     }
     @Override
@@ -106,6 +119,12 @@ public class Mine implements IMine {
     public @NotNull IMineVault getVault() {
         return this.mineVault;
     }
+
+    @Override
+    public IMineResetter getMineResetter() {
+        return this.mineResetter;
+    }
+
 
     @Override
     @NotNull

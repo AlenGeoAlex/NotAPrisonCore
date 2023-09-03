@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import me.alenalex.notaprisoncore.api.common.json.IJsonWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -53,10 +52,6 @@ public class LocationEntry {
         objectHashMap.put("pitch", pitch);
         objectHashMap.put("yaw", yaw);
         return objectHashMap;
-    }
-
-    public String toJson(){
-        return IJsonWrapper.DEFAULT_INSTANCE.stringify(this);
     }
 
     public Optional<Location> to(){

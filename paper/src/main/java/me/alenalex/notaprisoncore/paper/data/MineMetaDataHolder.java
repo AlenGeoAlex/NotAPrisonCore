@@ -4,6 +4,7 @@ import me.alenalex.notaprisoncore.api.data.IMineMetaDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.exceptions.dataholder.LockExistException;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
+import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -116,6 +117,7 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
             IMineMeta meta = (IMineMeta) object;
             reservedMetaSet.add(meta);
         }
+
         getDataHolder().getPlugin().getLogger().info("Locked "+reservedMetaSet.size()+" metas for this server instance");
     }
 

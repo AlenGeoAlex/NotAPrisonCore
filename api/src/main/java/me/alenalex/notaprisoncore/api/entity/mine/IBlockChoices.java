@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public interface IBlockChoices {
 
@@ -13,6 +14,8 @@ public interface IBlockChoices {
     void setChoices(Collection<BlockEntry> entryCollections);
     void clearAndSetDefault();
     void removeChoice(BlockEntry entry);
+    List<BlockEntry> getChoices();
     @NotNull Iterator<BlockEntry> iterator();
     @NotNull BlockEntry atRandom();
+    @NotNull String toJson();
 }

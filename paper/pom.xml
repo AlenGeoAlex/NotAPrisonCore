@@ -82,6 +82,10 @@
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>me.alenalex.notaprisoncore.shaded.gson</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.commons</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>

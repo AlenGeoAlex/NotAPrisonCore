@@ -1,5 +1,10 @@
 locale-version: 1
 
+mine:
+  reset:
+    start: "&cThe mine has been started to reset"
+    completed: "&cThe mine completed its reset"
+
 command:
   unknown-command: "&cUnknown command"
   no-permission: "&cNo permission"
