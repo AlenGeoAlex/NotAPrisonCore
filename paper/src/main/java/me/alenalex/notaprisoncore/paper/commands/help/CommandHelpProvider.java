@@ -20,7 +20,7 @@ public class CommandHelpProvider {
                     ChatColor.BOLD +ChatColor.RED + "--" +
                     ChatColor.BOLD +ChatColor.GOLD + "--"+
                     ChatColor.BOLD +ChatColor.RED + "-- " +
-                    ChatColor.YELLOW + "["+ChatColor.BOLD +ChatColor.WHITE+" Gladiator "+ChatColor.YELLOW +"]"+
+                    ChatColor.YELLOW + "["+ChatColor.BOLD +ChatColor.WHITE+" NPCore "+ChatColor.YELLOW +"]"+
                     ChatColor.BOLD +ChatColor.GOLD + " --"+
                     ChatColor.BOLD +ChatColor.RED + "--" +
                     ChatColor.BOLD +ChatColor.GOLD + "--"+

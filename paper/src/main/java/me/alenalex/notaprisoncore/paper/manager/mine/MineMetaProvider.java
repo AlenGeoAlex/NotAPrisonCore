@@ -9,23 +9,36 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MineMetaProvider implements IMineMetaProvider {
 
     private final MineManager mineManager;
+    private final AtomicBoolean pasting;
 
     public MineMetaProvider(MineManager mineManager) {
         this.mineManager = mineManager;
+        this.pasting = new AtomicBoolean(false);
+    }
+
+    @Override
+    public boolean isPastingInProgress() {
+        return pasting.get();
     }
 
     @Override
     public void pasteMines(CommandSender sender, String schematicName, int count, long coolDownInterval) {
+        if(pasting.get()){
+            sender.sendMessage(DefaultAdminMessages.GENERATION_IN_PROGRESS);
+            return;
+        }
+        pasting.set(true);
         if(count <= 0)
         {
             sender.sendMessage(DefaultAdminMessages.INVALID_MINE_GENERATION_COUNT);
             return;
         }
-        if(coolDownInterval <= 200){
+        if(coolDownInterval <= 300){
             sender.sendMessage(DefaultAdminMessages.INVALID_COOL_DOWN_INTERVAL);
             return;
         }
@@ -33,6 +46,7 @@ public class MineMetaProvider implements IMineMetaProvider {
         Collection<IMineMeta> metas = null;
         this.mineManager.generator().generateMines(sender, schematicName, count, coolDownInterval)
                 .whenComplete((metaCollection, err) -> {
+                    pasting.set(false);
                     if(err != null){
                         mineManager.getPlugin().getLogger().severe("An unknown error occurred while generating mines, Please check stacktrace below if present");
                         if(err instanceof NoSchematicFound){
@@ -75,36 +89,45 @@ public class MineMetaProvider implements IMineMetaProvider {
 
     @Override
     public void pasteMines(CommandSender sender, String schematicName) {
-        IMineMeta meta = null;
-        try {
-            Optional<IMineMeta> metaOptional = this.mineManager.generator().generateMine(sender, schematicName);
-            if(!metaOptional.isPresent()){
-                sender.sendMessage(DefaultAdminMessages.FAILED_TO_GENERATE_MINE_META);
-                return;
-            }
-            meta = metaOptional.get();
-        } catch (NoSchematicFound e) {
-            e.printStackTrace();
-            sender.sendMessage(DefaultAdminMessages.NO_SCHEMATIC_FOUND);
-        }
-
-        if(meta == null){
-            sender.sendMessage(DefaultAdminMessages.FAILED_TO_GENERATE_MINE_META);
+        if(pasting.get()){
+            sender.sendMessage(DefaultAdminMessages.GENERATION_IN_PROGRESS);
             return;
         }
-
-        IMineMeta finalMeta = meta;
-        this.mineManager.registerMineMeta(meta).whenComplete((mineMeta, err) -> {
-            if(err != null){
-
-                return;
+        pasting.set(true);
+        try {
+            IMineMeta meta = null;
+            try {
+                Optional<IMineMeta> metaOptional = this.mineManager.generator().generateMine(sender, schematicName);
+                if(!metaOptional.isPresent()){
+                    sender.sendMessage(DefaultAdminMessages.FAILED_TO_GENERATE_MINE_META);
+                    return;
+                }
+                meta = metaOptional.get();
+            } catch (NoSchematicFound e) {
+                e.printStackTrace();
+                sender.sendMessage(DefaultAdminMessages.NO_SCHEMATIC_FOUND);
             }
 
-            if(!mineMeta){
+            if(meta == null){
                 sender.sendMessage(DefaultAdminMessages.FAILED_TO_GENERATE_MINE_META);
                 return;
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eSuccessfully generated mine meta with id "+ finalMeta.getMetaId()));
-        });
+
+            IMineMeta finalMeta = meta;
+            this.mineManager.registerMineMeta(meta).whenComplete((mineMeta, err) -> {
+                if(err != null){
+
+                    return;
+                }
+
+                if(!mineMeta){
+                    sender.sendMessage(DefaultAdminMessages.FAILED_TO_GENERATE_MINE_META);
+                    return;
+                }
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eSuccessfully generated mine meta with id "+ finalMeta.getMetaId()));
+            });
+        }finally {
+            pasting.set(false);
+        }
     }
 }

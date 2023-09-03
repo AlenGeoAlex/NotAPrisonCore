@@ -18,6 +18,7 @@ import me.alenalex.notaprisoncore.api.exceptions.FailedMineGenerationException;
 import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.managers.ISchematicFileManager;
+import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.manager.mine.MineManager;
 import org.bukkit.Location;
@@ -106,6 +107,7 @@ public class MineGenerator implements IMineGenerator {
                     continue;
 
                 Location positionalLocation = readFromVector(positionalKey, next, mineWorld);
+                Bootstrap.getJavaPlugin().getLogger().info("Located "+positionalKey.getKey()+" at ["+positionalLocation.getBlockX()+", "+positionalLocation.getBlockY()+", "+positionalLocation.getBlockZ()+"]");
                 switch (positionalKey.getKey()) {
                     case "spawn-point":
                         spawnPoint = positionalLocation;
