@@ -5,6 +5,12 @@ server-configuration:
   meta-reservation-count: 3
   min-meta-reserved-count: 1
 
+redis-configuration:
+  host: ""
+  port: 6379
+  username: ""
+  password: ""
+
 sql-configuration:
   host: "server.alenalex.me"
   port: 3306

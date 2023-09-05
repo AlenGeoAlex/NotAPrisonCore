@@ -1,8 +1,16 @@
 package me.alenalex.notaprisoncore.paper.commands;
 
+import com.boydti.fawe.FaweAPI;
+import com.boydti.fawe.util.EditSessionBuilder;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import dev.triumphteam.cmd.bukkit.annotation.Permission;
 import dev.triumphteam.cmd.core.annotations.Command;
-import dev.triumphteam.cmd.core.annotations.Optional;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
@@ -14,9 +22,12 @@ import me.alenalex.notaprisoncore.paper.commands.help.SubcommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.manager.CommandManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Command(value = "npcadmin", alias = {"npca", "npcadm"})
@@ -46,14 +57,46 @@ public class NPCoreAdmin extends AbstractCommand {
                 .build();
     }
 
-//    @Command
-//    public void claim(CommandSender sender){
-//        Optional<IMineMeta> unclaimedMeta = commandManager.getPrisonManagers().getPluginInstance().getDataHolder().mineMetaDataHolder().getUnclaimedMeta();
-//        IMineMeta meta = unclaimedMeta.orElse(null);
-//        if(meta == null){
-//            System.out.println("Meta is null");
-//            return;
-//        }
+    @Command("expand")
+    public void claim(CommandSender sender) {
+        Optional<IMineMeta> unclaimedMeta = getCommandManager().getPrisonManagers().getPluginInstance().getDataHolder().mineMetaDataHolder().getUnclaimedMeta();
+        IMineMeta meta = unclaimedMeta.orElse(null);
+        if (meta == null) {
+            System.out.println("Meta is null");
+            return;
+        }
+
+        Player player = (Player) sender;
+        player.teleport(meta.getSpawnPoint());
+        System.out.println(meta.getSpawnPoint());
+        CuboidRegion region = new CuboidRegion(BukkitUtil.toVector(meta.getMineSchematicLowerPoint()), BukkitUtil.toVector( meta.getMineSchematicUpperPoint()));
+        System.out.println(region);
+        region.expand(new Vector(4, 0, 4), new Vector(-1, -1, -1));
+        System.out.println(region);
+        CuboidRegion bedrock = region.clone();
+        System.out.println(region);
+        bedrock.expand(new Vector(1, 1, 1), new Vector(-1, -2, -1));
+        Bukkit.getScheduler().runTaskLaterAsynchronously(pluginInstance().getBukkitPlugin(), new Runnable() {
+            @Override
+            public void run() {
+
+                EditSession editSession = (new EditSessionBuilder(FaweAPI.getWorld(meta.getSpawnPoint().getWorld().getName()))).limitUnlimited().fastmode(Boolean.valueOf(true)).build();
+                try {
+                    editSession.makeWalls(bedrock, new Pattern() {
+                        @Override
+                        public BaseBlock apply(Vector position) {
+                            System.out.println(position);
+                            return new BaseBlock(0);
+                        }
+                    });
+                } catch (WorldEditException e) {
+                    e.printStackTrace();
+                }finally {
+                    editSession.flushQueue();
+                }
+            }
+        }, 100);
+    }
 //
 //        Mine mine = new Mine(UUID.randomUUID(), (MineMeta) meta);
 //        mine.setDefaults(commandManager.getPrisonManagers());

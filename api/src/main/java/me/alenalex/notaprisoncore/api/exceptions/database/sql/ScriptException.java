@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.api.exceptions.database;
+package me.alenalex.notaprisoncore.api.exceptions.database.sql;
 
 public class ScriptException extends RuntimeException{
 

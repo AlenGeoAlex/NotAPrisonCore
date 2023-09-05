@@ -20,6 +20,7 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     private ServerConfiguration serverConfiguration;
     private DefaultMineConfiguration defaultMineConfiguration;
     private ResetterConfiguration resetterConfiguration;
+    private RedisConfiguration redisConfiguration;
     public PluginConfiguration(ConfigurationManager configurationManager) {
         super(configurationManager.getPrisonManagers().getPluginInstance().getLogger(),
                 new File(configurationManager.getPrisonManagers().getPluginInstance().getBukkitPlugin().getDataFolder(), "config.yml"),
@@ -47,6 +48,11 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     @Override
     public @NotNull DefaultMineConfiguration defaultMineConfiguration() {
         return defaultMineConfiguration;
+    }
+
+    @Override
+    public @NotNull RedisConfiguration redisConfiguration() {
+        return redisConfiguration;
     }
 
     @Override

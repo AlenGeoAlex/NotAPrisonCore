@@ -83,6 +83,7 @@ public class MineMetaProvider implements IMineMetaProvider {
                         }
                         completed++;
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eSuccessfully generated mine of ["+completed+"/"+metaCollection.size()+"] meta with id "+ meta.getMetaId()));
+                        sender.sendMessage(DefaultAdminMessages.PASTE_COMPLETE);
                     }
                 });
     }
@@ -116,7 +117,8 @@ public class MineMetaProvider implements IMineMetaProvider {
             IMineMeta finalMeta = meta;
             this.mineManager.registerMineMeta(meta).whenComplete((mineMeta, err) -> {
                 if(err != null){
-
+                    err.printStackTrace();
+                    sender.sendMessage(DefaultAdminMessages.FAILED_TO_GENERATE_MINE_META);
                     return;
                 }
 
@@ -125,6 +127,7 @@ public class MineMetaProvider implements IMineMetaProvider {
                     return;
                 }
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eSuccessfully generated mine meta with id "+ finalMeta.getMetaId()));
+                sender.sendMessage(DefaultAdminMessages.PASTE_COMPLETE);
             });
         }finally {
             pasting.set(false);

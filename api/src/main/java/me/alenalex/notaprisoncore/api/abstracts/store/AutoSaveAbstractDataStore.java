@@ -1,6 +1,6 @@
 package me.alenalex.notaprisoncore.api.abstracts.store;
 
-import me.alenalex.notaprisoncore.api.database.SQLDatabase;
+import me.alenalex.notaprisoncore.api.database.sql.AbstractSQLDatabase;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreInitializationException;
 
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 
 public abstract class AutoSaveAbstractDataStore<E, I> extends AbstractDataStore<E, I> implements Runnable {
     private final ScheduledFuture<?> taskHandle;
-    public AutoSaveAbstractDataStore(SQLDatabase pluginDatabase, long saveInterval, TimeUnit unit) {
+    public AutoSaveAbstractDataStore(AbstractSQLDatabase pluginDatabase, long saveInterval, TimeUnit unit) {
         super(pluginDatabase);
         this.taskHandle = AutoSaveAbstractDataStore.TaskScheduler.getDefaultScheduler().add(this, saveInterval, unit);
     }

@@ -9,6 +9,6 @@ public interface IPluginConfiguration {
     @NotNull MineWorldConfiguration mineWorldConfiguration();
     @NotNull ServerConfiguration serverConfiguration();
     @NotNull DefaultMineConfiguration defaultMineConfiguration();
-
+    @NotNull RedisConfiguration redisConfiguration();
     @NotNull ResetterConfiguration resetterConfiguration();
 }

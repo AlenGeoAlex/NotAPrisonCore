@@ -1,7 +1,8 @@
 package me.alenalex.notaprisoncore.api.abstracts.store;
 
-import me.alenalex.notaprisoncore.api.database.SQLDatabase;
-import me.alenalex.notaprisoncore.api.exceptions.database.DatabaseNotAvailableException;
+import me.alenalex.notaprisoncore.api.database.sql.AbstractSQLDatabase;
+import me.alenalex.notaprisoncore.api.database.sql.ISQLDatabase;
+import me.alenalex.notaprisoncore.api.exceptions.database.sql.DatabaseNotAvailableException;
 import me.alenalex.notaprisoncore.api.exceptions.store.OverridesQueryException;
 import me.alenalex.notaprisoncore.api.store.IEntityStore;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 
 
 public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
-    private final SQLDatabase pluginDatabase;
-    public AbstractDataStore(SQLDatabase pluginDatabase) {
+    private final ISQLDatabase pluginDatabase;
+    public AbstractDataStore(ISQLDatabase pluginDatabase) {
         this.pluginDatabase = pluginDatabase;
     }
 
@@ -132,7 +133,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
      */
     protected abstract void write(@NotNull PreparedStatement preparedStatement, @NotNull E entity ,boolean createStatement, @Nullable Object predefinedId);
     @NotNull
-    protected SQLDatabase getPluginDatabase() {
+    protected ISQLDatabase getPluginDatabase() {
         return pluginDatabase;
     }
     @Override

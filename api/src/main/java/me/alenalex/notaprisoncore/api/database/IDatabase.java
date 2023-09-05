@@ -1,17 +1,14 @@
 package me.alenalex.notaprisoncore.api.database;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.jetbrains.annotations.Nullable;
+import redis.clients.jedis.Jedis;
 
-import java.sql.Connection;
+import java.sql.SQLException;
 
-public interface IDatabase {
+public interface IDatabase<T> {
+
     void createConnection();
+    T getConnection() throws SQLException;
     boolean isConnected();
     void disconnect();
-    @Nullable
-    HikariDataSource getDataSource();
-    int getActiveConnection();
-    int getPoolSize();
-    Connection getConnection();
+
 }

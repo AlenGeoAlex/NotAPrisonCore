@@ -8,7 +8,7 @@ import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
-import me.alenalex.notaprisoncore.api.exceptions.database.DatabaseNotAvailableException;
+import me.alenalex.notaprisoncore.api.exceptions.database.sql.DatabaseNotAvailableException;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
 import me.alenalex.notaprisoncore.api.store.IMineStore;
 import me.alenalex.notaprisoncore.paper.constants.DbConstants;
@@ -43,7 +43,7 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
     private final PrisonDataStore prisonDataStore;
     private final File mineMetaDataDirectory;
     public MineStore(PrisonDataStore prisonDataStore) {
-        super(prisonDataStore.getPluginInstance().getPrisonSqlDatabase());
+        super(prisonDataStore.getPluginInstance().getDatabaseProvider().getSqlDatabase());
         this.prisonDataStore = prisonDataStore;
         this.mineMetaDataDirectory = new File(prisonDataStore.getStoreParentDirectory(), "meta"+File.separator+"mine");
         if(!this.mineMetaDataDirectory.exists())

@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.api.database;
+package me.alenalex.notaprisoncore.api.database.sql;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -7,25 +7,22 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import me.alenalex.notaprisoncore.api.exceptions.IllegalConnectionException;
-import me.alenalex.notaprisoncore.api.exceptions.database.ScriptException;
+import me.alenalex.notaprisoncore.api.exceptions.database.IllegalConnectionException;
+import me.alenalex.notaprisoncore.api.exceptions.database.sql.ScriptException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 @Getter
 @EqualsAndHashCode
 @ToString
-public abstract class SQLDatabase implements IDatabase{
+public abstract class AbstractSQLDatabase implements ISQLDatabase {
 
     private final HikariConfig hikariConfig;
 
@@ -33,7 +30,7 @@ public abstract class SQLDatabase implements IDatabase{
 
     private final Logger logger;
 
-    public SQLDatabase(HikariConfig hikariConfig, Logger logger) {
+    public AbstractSQLDatabase(HikariConfig hikariConfig, Logger logger) {
         this.hikariConfig = hikariConfig;
         this.logger = logger;
     }
@@ -45,11 +42,17 @@ public abstract class SQLDatabase implements IDatabase{
         }
 
         if(this.dataSource != null){
-            this.dataSource.close();
+            if(!this.dataSource.isClosed())
+                this.dataSource.close();
             this.dataSource = null;
         }
 
-        this.dataSource = new HikariDataSource(this.hikariConfig);
+        try {
+            this.dataSource = new HikariDataSource(this.hikariConfig);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new IllegalConnectionException("Error occurred while connecting to mysql database", e);
+        }
         if(!isConnected()){
             throw new IllegalConnectionException("Failed to connect to database.");
         }
@@ -92,16 +95,11 @@ public abstract class SQLDatabase implements IDatabase{
     }
 
     @Override
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
         if(this.dataSource == null)
-            throw new IllegalConnectionException("The plugin isn't yet connected to database!");
+            throw new IllegalConnectionException("The plugin isn't yet connected to mysql database!");
 
-        try {
-            return this.dataSource.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new IllegalConnectionException(e);
-        }
+        return this.dataSource.getConnection();
     }
 
     public boolean prepareFromScript(@NotNull InputStream scriptStream){

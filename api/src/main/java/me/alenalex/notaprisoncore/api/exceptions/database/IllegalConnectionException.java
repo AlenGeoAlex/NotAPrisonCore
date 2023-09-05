@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.api.exceptions;
+package me.alenalex.notaprisoncore.api.exceptions.database;
 
 public class IllegalConnectionException extends RuntimeException{
 

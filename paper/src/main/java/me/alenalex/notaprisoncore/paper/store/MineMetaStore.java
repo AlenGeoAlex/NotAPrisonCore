@@ -5,7 +5,7 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
-import me.alenalex.notaprisoncore.api.exceptions.database.FailedDatabaseException;
+import me.alenalex.notaprisoncore.api.exceptions.database.sql.FailedDatabaseException;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
 import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
 import me.alenalex.notaprisoncore.paper.constants.DbConstants;
@@ -25,7 +25,7 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
 
     private final PrisonDataStore store;
     public MineMetaStore(PrisonDataStore store) {
-        super(store.getPluginInstance().getPrisonSqlDatabase());
+        super(store.getPluginInstance().getDatabaseProvider().getSqlDatabase());
         this.store = store;
     }
 

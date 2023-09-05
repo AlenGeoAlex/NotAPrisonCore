@@ -3,6 +3,7 @@ package me.alenalex.notaprisoncore.paper;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
 import me.alenalex.notaprisoncore.paper.data.DataHolder;
+import me.alenalex.notaprisoncore.paper.database.PrisonDatabaseProvider;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
 
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
@@ -17,7 +18,7 @@ public final class NotAPrisonCore {
     @Getter
     private final JavaPlugin bukkitPlugin;
     private final PrisonManagers prisonManagers;
-    private PrisonSqlDatabase prisonSqlDatabase;
+    private PrisonDatabaseProvider databaseProvider;
     private PrisonDataStore prisonDataStore;
     private final DataHolder dataHolder;
     private boolean shouldRunEnable;
@@ -45,28 +46,26 @@ public final class NotAPrisonCore {
             return;
         }
 
-        HikariConfig mysql = prisonManagers.configurationManager().getPluginConfiguration().sqlConfiguration().asHikariConfig("mariadb");
-        this.prisonSqlDatabase = new PrisonSqlDatabase(mysql, getLogger());
+        this.databaseProvider = new PrisonDatabaseProvider(this);
 
         try {
-            this.prisonSqlDatabase.createConnection();
+            PrisonDatabaseProvider.ConnectionResponse connectionResponse = this.databaseProvider.connect();
+            if(connectionResponse == null) {
+                disableBukkitPlugin("An unknown error happened while trying to connect to database, which returned null response");
+                return;
+            }
+
+            if(!connectionResponse.isConnectionSuccess()){
+                disableBukkitPlugin(connectionResponse.getResponse());
+                return;
+            }
         }catch (Exception e){
             e.printStackTrace();
             disableBukkitPlugin("Failed to connect to the database");
             return;
         }
-        getLogger().info("Connected to SQL database.");
-        getLogger().info("- Pool size is "+this.prisonSqlDatabase.getPoolSize());
 
-        try {
-            final InputStream scriptStream = getBukkitPlugin().getResource("sql/script.sql");
-            //this.prisonSqlDatabase.prepareFromScript(scriptStream);
-        }catch (Exception e){
-            e.printStackTrace();
-            disableBukkitPlugin("Failed to complete the execution of script");
-            return;
-        }
-            this.prisonDataStore = new PrisonDataStore(this);
+        this.prisonDataStore = new PrisonDataStore(this);
         try {
             this.prisonDataStore.init();
         }catch (Exception e){
@@ -101,10 +100,9 @@ public final class NotAPrisonCore {
         prisonManagers.onShutdown();
         this.dataHolder.onDisable();
         this.prisonDataStore.disable();
-        if(this.prisonSqlDatabase != null){
+        if(this.databaseProvider != null){
             try {
-                this.prisonSqlDatabase.disconnect();
-                getLogger().info("Disconnected SQL database");
+                this.databaseProvider.disconnect();
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -115,9 +113,10 @@ public final class NotAPrisonCore {
         return this.bukkitPlugin.getLogger();
     }
 
-    public PrisonSqlDatabase getPrisonSqlDatabase() {
-        return prisonSqlDatabase;
+    public PrisonDatabaseProvider getDatabaseProvider() {
+        return databaseProvider;
     }
+
     public PrisonManagers getPrisonManagers() {
         return prisonManagers;
     }
