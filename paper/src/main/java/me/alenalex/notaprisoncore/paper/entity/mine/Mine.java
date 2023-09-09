@@ -6,15 +6,20 @@ import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.*;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
+import me.alenalex.notaprisoncore.api.events.mine.MineExpandEvent;
+import me.alenalex.notaprisoncore.api.events.mine.PreMineExpandEvent;
 import me.alenalex.notaprisoncore.api.exceptions.mine.InvalidMineException;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
+import me.alenalex.notaprisoncore.paper.constants.MineConstants;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.LocalEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.SharedEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.store.MineStore;
+import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -281,6 +286,35 @@ public class Mine implements IMine {
             return;
 
         player.sendMessage(message);
+    }
+
+    @Override
+    public CompletableFuture<Void> expandMiningRegion(Vector min, Vector max) {
+        PreMineExpandEvent mineExpandEvent = new PreMineExpandEvent(false, this);
+        if(mineExpandEvent.isCancelled()){
+            return CompletableFuture.completedFuture(null);
+        }
+
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        Location lowerMiningPoint = this.meta.getLowerMiningPoint();
+        Vector lowerVector = new Vector(lowerMiningPoint.getBlockX(), lowerMiningPoint.getBlockY(), lowerMiningPoint.getBlockZ());
+        this.localEntityMetaDataHolder.set(MineConstants.KEY_LOCAL_LOWER_MINING_VECTOR, GsonWrapper.singleton().gson().toJson(lowerVector));
+        Location upperMiningPoint = this.meta.getLowerMiningPoint();
+        Vector upperVector = new Vector(upperMiningPoint.getBlockX(), upperMiningPoint.getBlockY(), upperMiningPoint.getBlockZ());
+        this.localEntityMetaDataHolder.set(MineConstants.KEY_LOCAL_UPPER_MINING_VECTOR, GsonWrapper.singleton().gson().toJson(upperVector));
+        CompletableFuture<Boolean> saveFuture = saveLocalMetaDataAsync();
+        //TODO Send message to others
+
+        IMine me = this;
+        CompletableFuture.allOf(saveFuture).thenRun(new Runnable() {
+            @Override
+            public void run() {
+                MineExpandEvent mineExpandEvent = new MineExpandEvent(true, me);
+                Bukkit.getServer().getPluginManager().callEvent(mineExpandEvent);
+            }
+        });
+
+        return future;
     }
 
 

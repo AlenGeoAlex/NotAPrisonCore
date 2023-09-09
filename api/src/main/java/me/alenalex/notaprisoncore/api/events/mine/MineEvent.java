@@ -4,13 +4,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
+import me.alenalex.notaprisoncore.api.events.NotAPrisonCoreEvents;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Getter
-public abstract class MineEvent extends Event {
+public abstract class MineEvent extends NotAPrisonCoreEvents {
 
     private final IMine mine;
 
@@ -22,11 +23,5 @@ public abstract class MineEvent extends Event {
         super(isAsync);
         this.mine = mine;
     }
-
-    @Override
-    public HandlerList getHandlers() {
-        return null;
-    }
-
 
 }

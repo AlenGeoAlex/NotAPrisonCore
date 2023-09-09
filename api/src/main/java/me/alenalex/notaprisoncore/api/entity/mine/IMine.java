@@ -4,6 +4,7 @@ import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -49,4 +50,5 @@ public interface IMine {
         access(MineAccess.OPEN);
     }
     void sendPluginNotification(String message);
+    CompletableFuture<Void> expandMiningRegion(Vector min, Vector max);
 }
