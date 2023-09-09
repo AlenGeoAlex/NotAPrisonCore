@@ -4,9 +4,6 @@ import me.alenalex.notaprisoncore.api.config.options.RedisConfiguration;
 import me.alenalex.notaprisoncore.api.exceptions.database.IllegalConnectionException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPooled;
-
-import java.sql.SQLException;
 import java.util.logging.Logger;
 
 public abstract class AbstractRedisDatabase implements IRedisDatabase{

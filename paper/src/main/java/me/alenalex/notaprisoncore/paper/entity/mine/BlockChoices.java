@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.paper.entity.mine;
 
+import com.google.gson.stream.JsonWriter;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
@@ -90,6 +91,10 @@ public class BlockChoices implements IBlockChoices {
     @Override
     public @NotNull String toJson() {
         return GsonWrapper.singleton().stringify(this.playerChoices);
+    }
+
+    public void toJsonWriter(JsonWriter writer){
+        GsonWrapper.singleton().gson().toJson(this, ArrayList.class, writer);
     }
 
     private void checkInternal(){

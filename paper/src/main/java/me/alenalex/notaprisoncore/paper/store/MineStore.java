@@ -310,7 +310,7 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
         return statement;
     }
 
-    private File getOrCreate(String mine) throws IOException {
+    public File getOrCreate(String mine) throws IOException {
         if(!this.mineMetaDataDirectory.exists())
             this.mineMetaDataDirectory.mkdirs();
 

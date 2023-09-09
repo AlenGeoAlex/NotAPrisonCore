@@ -6,21 +6,34 @@ import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.*;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
+import me.alenalex.notaprisoncore.api.exceptions.mine.InvalidMineException;
+import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.LocalEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.SharedEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
+import me.alenalex.notaprisoncore.paper.store.MineStore;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ToString
 @EqualsAndHashCode
 public class Mine implements IMine {
+
     private UUID mineId;
     private final UUID ownerId;
     private final UUID metaId;
@@ -69,7 +82,8 @@ public class Mine implements IMine {
         this.sharedEntityMetaDataHolder = sharedMeta;
     }
 
-    public Mine(UUID ownerId, UUID mineId, MineMeta meta, List<BlockEntry> blockEntryList, BigDecimal account) {
+    //From Gson Deserializer
+    public Mine(UUID ownerId, UUID mineId, MineMeta meta, List<BlockEntry> blockEntryList, BigDecimal account, SharedEntityMetaDataHolder sharedMeta) {
         this.ownerId = ownerId;
         this.metaId = meta.getMetaId();
         this.meta = meta;
@@ -79,7 +93,7 @@ public class Mine implements IMine {
         this.mineVault = new ThreadSafeMineVault(account);
         this.mineResetter = new MineResetter(this.blockChoices, this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
-        this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
+        this.sharedEntityMetaDataHolder = sharedMeta;
     }
 
     @Override
@@ -125,7 +139,6 @@ public class Mine implements IMine {
         return this.mineResetter;
     }
 
-
     @Override
     @NotNull
     public MineAccess access(MineAccess access) {
@@ -135,8 +148,51 @@ public class Mine implements IMine {
 
     @Override
     public void teleport(Player player) {
+        this.teleport(player, false);
+    }
+
+    @Override
+    public void teleport(Player player, boolean overrideAccess) {
+        if(!overrideAccess){
+
+        }
         player.teleport(this.meta.getSpawnPoint());
     }
+
+    @Override
+    public boolean teleport(Player player, String identifierKey){
+        return teleport(player, identifierKey, false);
+    }
+
+    @Override
+    public boolean teleport(Player player, String identifierKey, boolean overrideAccess){
+        if(!overrideAccess){
+
+        }
+        Location location = null;
+
+        switch (identifierKey){
+            case "spawn-point":
+                location = this.meta.getSpawnPoint();
+                break;
+            case "lower-mine-corner":
+                location = this.meta.getLowerMiningPoint();
+                break;
+            case "upper-mine-corner":
+                location = this.meta.getUpperMiningPoint();
+                break;
+            default:
+                location = this.meta.getLocationOfIdentifier(identifierKey).orElse(null);
+        }
+
+        if(location == null)
+            return false;
+
+        player.teleport(location);
+        return true;
+    }
+
+
 
     @Override
     public void save() {
@@ -147,13 +203,75 @@ public class Mine implements IMine {
         this.mineId = id;
     }
 
+    @Override
     public boolean isValid(){
         return mineId != null;
     }
 
     @Override
-    public IMine refresh() {
-        return null;
+    public boolean isInvalid(){
+        return mineId == null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> loadLocalMetaDataAsync() {
+        if(this.isInvalid())
+            throw new InvalidMineException("Tried to access local data holder for an invalid mine. Meta Id "+metaId.toString()+" owner id "+ownerId.toString() );
+        return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                Bootstrap plugin = (Bootstrap) Bootstrap.getJavaPlugin();
+                MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().mineStore();
+                File file = null;
+                try {
+                    file = mineStore.getOrCreate(mineId.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+
+                if(file == null)
+                    return false;
+                String base64String = null;
+                try (Stream<String> lines = Files.lines(file.toPath())) {
+                    base64String = lines.collect(Collectors.joining(System.lineSeparator()));
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return false;
+                }
+
+                ((LocalEntityMetaDataHolder) localEntityMetaDataHolder).setHolderData(base64String);
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> saveLocalMetaDataAsync() {
+        if(this.isInvalid())
+            throw new InvalidMineException("Tried to access local data holder for an invalid mine. Meta Id "+metaId.toString()+" owner id "+ownerId.toString() );
+
+        return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                Bootstrap plugin = (Bootstrap) Bootstrap.getJavaPlugin();
+                MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().mineStore();
+                File file = null;
+                try {
+                    file = mineStore.getOrCreate(mineId.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+                try (final FileWriter fileWriter = new FileWriter(file, false)) {
+                    fileWriter.write(((LocalEntityMetaDataHolder) getLocalMetaDataHolder()).encode());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -172,7 +290,4 @@ public class Mine implements IMine {
         this.mineVault.setBalance(new BigDecimal(prisonManagers.configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultVaultBalance().toString()));
     }
 
-    private void saveLocalDataHolder(){
-
-    }
 }

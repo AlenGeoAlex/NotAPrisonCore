@@ -25,7 +25,6 @@ public abstract class AbstractMetaDataHolder implements IEntityMetaDataHolder {
         this.dataHolder = new ConcurrentHashMap<>();
     }
 
-
     @Override
     public <E> void set(String key, E value) {
         this.dataHolder.put(key, value);
