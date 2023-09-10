@@ -334,7 +334,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
              final PreparedStatement preparedStatement = prepareStatementWithId(connection, deleteQuery(), id);
              ) {
             return preparedStatement.executeUpdate() == 1;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error delete data by ID - "+id.toString(), e);
         }
     }
@@ -349,7 +349,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
             }
 
             return Optional.empty();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error fetching data by ID - "+id.toString(), e);
         }
     }

@@ -31,6 +31,5 @@ public class LocalEntityMetaDataHolder extends AbstractMetaDataHolder {
 
         this.dataHolder.clear();
         this.dataHolder.putAll(decodedMap);
-
     }
 }

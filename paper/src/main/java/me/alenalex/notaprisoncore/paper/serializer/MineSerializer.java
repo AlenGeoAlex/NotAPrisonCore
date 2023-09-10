@@ -53,7 +53,7 @@ public class MineSerializer extends TypeAdapter<IMine> {
         UUID mineId = null;
         MineMeta meta = null;
         UUID ownerId = null;
-        MineAccess access;
+        MineAccess access = null;
         List<BlockEntry> blockEntries = new ArrayList<>();
         BigDecimal amount = null;
         SharedEntityMetaDataHolder sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
@@ -104,7 +104,6 @@ public class MineSerializer extends TypeAdapter<IMine> {
         in.endObject();
         if(meta == null)
             throw new IOException("Failed to deserialize the mine meta for mine of owner "+ownerId);
-
-        return new Mine(ownerId, mineId, meta, blockEntries, amount, sharedEntityMetaDataHolder);
+        return new Mine(ownerId, mineId, meta, blockEntries, amount, sharedEntityMetaDataHolder, access);
     }
 }

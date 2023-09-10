@@ -4,8 +4,10 @@ import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
 import me.alenalex.notaprisoncore.api.store.IMineStore;
 import me.alenalex.notaprisoncore.api.store.IPrisonDataStore;
 import me.alenalex.notaprisoncore.api.store.IWorldStore;
+import me.alenalex.notaprisoncore.api.store.redis.IRedisMineStore;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
+import me.alenalex.notaprisoncore.paper.store.redis.RedisMineStore;
 
 import java.io.File;
 
@@ -14,6 +16,7 @@ public class PrisonDataStore implements IPrisonDataStore {
     private final WorldStore worldStore;
     private final MineMetaStore mineMetaStore;
     private final MineStore mineStore;
+    private final RedisMineStore redisMineStore;
     private final File storeParentDirectory;
     public PrisonDataStore(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
@@ -21,6 +24,8 @@ public class PrisonDataStore implements IPrisonDataStore {
         this.worldStore = new WorldStore(this);
         this.mineMetaStore = new MineMetaStore(this);
         this.mineStore = new MineStore(this);
+        this.redisMineStore = new RedisMineStore(this);
+
     }
 
     public void init(){
@@ -51,6 +56,11 @@ public class PrisonDataStore implements IPrisonDataStore {
     @Override
     public IMineStore mineStore() {
         return mineStore;
+    }
+
+    @Override
+    public IRedisMineStore redisMineStore() {
+        return redisMineStore;
     }
 
     public NotAPrisonCore getPluginInstance() {

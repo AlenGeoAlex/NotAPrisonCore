@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import me.alenalex.notaprisoncore.api.common.json.IJsonWrapper;
+import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.serializer.BlockEntrySerializer;
 import me.alenalex.notaprisoncore.paper.serializer.LocationSerializer;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.paper.serializer.MineMetaSerializer;
+import me.alenalex.notaprisoncore.paper.serializer.MineSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -34,6 +37,8 @@ public class GsonWrapper implements IJsonWrapper {
                 .registerTypeAdapter(BlockEntry.class, new BlockEntrySerializer())
                 .registerTypeAdapter(MineMeta.class, new MineMetaSerializer())
                 .registerTypeAdapter(IMineMeta.class, new MineMetaSerializer())
+                .registerTypeAdapter(IMine.class, new MineSerializer())
+                .registerTypeAdapter(Mine.class, new MineSerializer())
                 .serializeNulls()
                 .create();
     }

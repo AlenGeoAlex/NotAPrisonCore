@@ -22,6 +22,7 @@ import me.alenalex.notaprisoncore.paper.commands.help.SubcommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.manager.CommandManager;
+import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -117,21 +118,37 @@ public class NPCoreAdmin extends AbstractCommand {
 //                }));
 //    }
 //
-//    @Command("test2")
-//    public void onCommand2(CommandSender sender, String id){
-//        UUID mineId = UUID.fromString(id);
-//        commandManager.getPrisonManagers().getPluginInstance().getPrisonDataStore().mineStore().id(mineId)
-//                .whenComplete(((iMine, throwable) -> {
-//                    if(throwable != null){
-//                        throwable.printStackTrace();
-//                        return;
-//                    }
-//                    IMine mine = iMine.orElse(null);
-//                    System.out.println(mine.getId());
-//                    System.out.println(mine.getLocalMetaDataHolder().get("WORLD_GUARD_REGION"));
-//                    System.out.println(mine.getBlockChoices().getChoices());
-//                }));
-//    }
+    @Command("test2")
+    public void onCommand2(CommandSender sender, String id){
+        getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().mineStore().id(UUID.fromString("002e1d18-4ffa-11ee-9938-020017006c0c")).whenComplete((m, er) -> {
+            if(er != null){
+                er.printStackTrace();
+                return;
+            }
+
+            IMine mine = m.orElse(null);
+            if(mine == null)
+            {
+                System.out.println("No Mine");
+                return;
+            }
+            getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().redisMineStore().set(mine);
+            getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().redisMineStore().get(mine.getId())
+                    .whenComplete((iMine, err) -> {
+                        System.out.println("123");
+                        try {
+                            if(err != null){
+                                err.printStackTrace();
+                                return;
+                            }
+                            System.out.println(iMine.toString());
+                            System.out.println(GsonWrapper.singleton().stringify(iMine));
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    });
+        });
+    }
 
     @Command
     public void defaultCommand(CommandSender sender){

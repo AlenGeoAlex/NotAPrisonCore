@@ -88,7 +88,7 @@ public class Mine implements IMine {
     }
 
     //From Gson Deserializer
-    public Mine(UUID ownerId, UUID mineId, MineMeta meta, List<BlockEntry> blockEntryList, BigDecimal account, SharedEntityMetaDataHolder sharedMeta) {
+    public Mine(UUID ownerId, UUID mineId, MineMeta meta, List<BlockEntry> blockEntryList, BigDecimal account, SharedEntityMetaDataHolder sharedMeta, MineAccess mineAccess) {
         this.ownerId = ownerId;
         this.metaId = meta.getMetaId();
         this.meta = meta;
@@ -99,6 +99,7 @@ public class Mine implements IMine {
         this.mineResetter = new MineResetter(this.blockChoices, this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = sharedMeta;
+        this.mineAccess = mineAccess;
     }
 
     @Override
@@ -147,6 +148,8 @@ public class Mine implements IMine {
     @Override
     @NotNull
     public MineAccess access(MineAccess access) {
+        if(access == null)
+            throw new IllegalStateException("Can't set the access of a mine to null");
         this.mineAccess = access;
         return access;
     }

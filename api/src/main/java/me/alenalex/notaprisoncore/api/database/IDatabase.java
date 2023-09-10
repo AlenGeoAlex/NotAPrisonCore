@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public interface IDatabase<T> {
 
     void createConnection();
-    T getConnection() throws SQLException;
+    T getConnection() throws Exception;
     boolean isConnected();
     void disconnect();
 

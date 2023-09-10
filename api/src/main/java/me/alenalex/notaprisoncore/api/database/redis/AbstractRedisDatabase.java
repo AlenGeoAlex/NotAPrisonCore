@@ -2,15 +2,15 @@ package me.alenalex.notaprisoncore.api.database.redis;
 
 import me.alenalex.notaprisoncore.api.config.options.RedisConfiguration;
 import me.alenalex.notaprisoncore.api.exceptions.database.IllegalConnectionException;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPooled;
+
 import java.util.logging.Logger;
 
 public abstract class AbstractRedisDatabase implements IRedisDatabase{
 
     private final Logger logger;
     private final RedisConfiguration redisConfiguration;
-    private JedisPool pool;
+    private JedisPooled jedisPooled;
 
     public AbstractRedisDatabase(Logger logger, RedisConfiguration redisConfiguration) {
         this.logger = logger;
@@ -23,47 +23,60 @@ public abstract class AbstractRedisDatabase implements IRedisDatabase{
             throw new IllegalConnectionException("Failed to connect to redis-database, No valid configuration provided");
         }
 
-        if(this.pool != null){
-            if(!this.pool.isClosed())
-                this.pool.close();
-            this.pool = null;
+        if(this.jedisPooled != null){
+            if(!this.jedisPooled.getPool().isClosed())
+                this.jedisPooled.getPool().close();
+            this.jedisPooled = null;
         }
 
         try {
-            this.pool = new JedisPool(this.redisConfiguration.getHost(), this.redisConfiguration.getPort(), this.redisConfiguration.getUser(), this.redisConfiguration.getPassword());
+            this.jedisPooled = new JedisPooled(this.redisConfiguration.getHost(), this.redisConfiguration.getPort(), this.redisConfiguration.getUser(), this.redisConfiguration.getPassword());
         }catch (Exception e){
             e.printStackTrace();
             throw new IllegalConnectionException("Error occurred while connecting to redis database", e);
         }
 
-
+        if(!isConnected())
+            throw new IllegalConnectionException("Failed to connect to redis database");
     }
 
     @Override
-    public Jedis getConnection() {
-        if(this.pool == null)
+    public JedisPooled getConnection() {
+        if(this.jedisPooled == null || this.jedisPooled.getPool().isClosed())
             throw new IllegalConnectionException("The plugin isn't connected to redis database");
 
-        return this.pool.getResource();
+        return this.jedisPooled;
     }
 
     @Override
     public boolean isConnected() {
-        if(this.pool == null)
+        if(this.jedisPooled == null)
             return false;
-        return !this.pool.isClosed();
+
+        try {
+            this.jedisPooled.ping();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public void disconnect() {
-        if(this.pool == null || this.pool.isClosed())
+        if(this.jedisPooled == null)
             return;
 
-        this.pool.close();
+        this.jedisPooled.getPool().close();
     }
 
     @Override
     public int getActiveConnection() {
-        return this.pool.getNumActive();
+        return this.jedisPooled.getPool().getNumActive();
+    }
+
+    @Override
+    public String getStats() {
+        return null;
     }
 }

@@ -94,7 +94,7 @@ public class BlockChoices implements IBlockChoices {
     }
 
     public void toJsonWriter(JsonWriter writer){
-        GsonWrapper.singleton().gson().toJson(this, ArrayList.class, writer);
+        GsonWrapper.singleton().gson().toJson(this.playerChoices, ArrayList.class, writer);
     }
 
     private void checkInternal(){

@@ -11,6 +11,9 @@ redis-configuration:
   username: ""
   password: ""
 
+redis-sync-configuration:
+  network-wait-millisecond: 500
+
 sql-configuration:
   host: "server.alenalex.me"
   port: 3306

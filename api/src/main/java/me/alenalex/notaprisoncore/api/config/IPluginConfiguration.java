@@ -11,4 +11,5 @@ public interface IPluginConfiguration {
     @NotNull DefaultMineConfiguration defaultMineConfiguration();
     @NotNull RedisConfiguration redisConfiguration();
     @NotNull ResetterConfiguration resetterConfiguration();
+    @NotNull RedisSyncConfiguration redisSyncConfiguration();
 }
