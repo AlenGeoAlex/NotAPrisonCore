@@ -6,6 +6,8 @@ public class DbConstants {
         public static final String MINE_META = "mine_metas";
         public static final String MINES = "mines";
 
+        public static final String USER_SOCIALS = "user_socials";
+
     }
     public static final class MineMeta{
         public static final String INSERT_QUERY = "INSERT INTO `mine_metas` " +

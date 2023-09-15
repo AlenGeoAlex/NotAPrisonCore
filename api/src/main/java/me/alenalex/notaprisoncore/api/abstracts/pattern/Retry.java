@@ -28,7 +28,7 @@ public abstract class Retry<T> {
 
     protected abstract Optional<T> work();
 
-    public T attempt(){
+    public T doSync(){
         while (shouldRetry()){
             attempts.incrementAndGet();
             try {
@@ -36,11 +36,11 @@ public abstract class Retry<T> {
                 Optional<T> work = work();
                 if(work.isPresent())
                     return work.get();
+
+                waitForNextTry();
             }catch (Exception ignored){
                 if(terminateOnException)
                     return null;
-            }finally {
-                waitForNextTry();
             }
         }
 

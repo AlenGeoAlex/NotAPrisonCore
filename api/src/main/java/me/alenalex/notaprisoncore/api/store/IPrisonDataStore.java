@@ -7,6 +7,7 @@ public interface IPrisonDataStore {
     IMineMetaStore mineMetaStore();
     IMineStore mineStore();
     IRedisMineStore redisMineStore();
+    IUserSocialStore userSocialStore();
 }
 
 

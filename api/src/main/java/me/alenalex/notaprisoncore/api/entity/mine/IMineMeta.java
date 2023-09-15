@@ -7,6 +7,7 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface IMineMeta {
     UUID getMetaId();
@@ -25,6 +26,6 @@ public interface IMineMeta {
     Vector getMineSchematicLowerPoint();
     boolean hasIdentifier(String key);
     Optional<Location> getLocationOfIdentifier(String key);
-
     HashMap<String, Location> getLocationIdentifier();
+    CompletableFuture<Boolean> setSpawnPoint(Location location);
 }

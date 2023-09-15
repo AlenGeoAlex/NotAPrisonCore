@@ -203,8 +203,24 @@ public class Mine implements IMine {
 
 
     @Override
-    public void save() {
+    public CompletableFuture<Boolean> save() {
+        return saveAsyncInternal();
+    }
 
+    private CompletableFuture<Boolean> saveAsyncInternal(){
+        IMine me = this;
+        Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
+
+        CompletableFuture<Boolean> updateFuture = bootstrap.getPluginInstance().getPrisonDataStore().mineStore()
+                .updateAsync(me)
+                .thenApply(result -> true);
+
+        CompletableFuture<Boolean> saveMetaDataFuture = saveLocalMetaDataAsync()
+                .thenApply(result -> true);
+
+        return CompletableFuture.allOf(updateFuture, saveMetaDataFuture)
+                .thenApply(voidResult -> true)
+                .exceptionally(ex -> false);
     }
 
     public void setMineId(UUID id){

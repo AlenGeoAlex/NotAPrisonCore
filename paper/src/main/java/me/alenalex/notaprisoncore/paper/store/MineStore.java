@@ -1,6 +1,5 @@
 package me.alenalex.notaprisoncore.paper.store;
 
-
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -117,7 +116,37 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
         return CompletableFuture.supplyAsync(() -> updateInternal((Mine) entity));
     }
 
+    @Override
+    public boolean updateBatchSync(Collection<IMine> entities) {
+        if (!getPluginDatabase().isConnected()) {
+            throw new DatabaseNotAvailableException();
+        }
+        String query = "{CALL UpdateMine(?, ?, ?, ?, ?)}";
+        try (final Connection connection = getPluginDatabase().getConnection();
+            final CallableStatement statement = connection.prepareCall(query);
+        ) {
+            for (IMine entity : entities) {
+                prepareUpdateMineCallable(statement, (Mine) entity);
+                statement.addBatch();
+            }
+            statement.executeUpdate();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private boolean updateInternal(Mine mine){
+        String query = "{CALL UpdateMine(?, ?, ?, ?, ?)}";
+        try (final Connection connection = getPluginDatabase().getConnection();
+             final CallableStatement callableStatement = prepareUpdateMineCallable(connection, query, mine)
+        ) {
+            callableStatement.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
@@ -308,6 +337,24 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
         CallableStatement statement = connection.prepareCall(query);
         statement.setString(1, id.toString());
         return statement;
+    }
+
+    private CallableStatement prepareUpdateMineCallable(Connection connection, String query, Mine mine) throws SQLException{
+        CallableStatement statement = connection.prepareCall(query);
+        statement.setInt(1, mine.access().ordinal());
+        statement.setBigDecimal(2, mine.getVault().getBalance());
+        statement.setString(3, ((SharedEntityMetaDataHolder) mine.getSharedMetaDataHolder()).encode());
+        statement.setString(4, ((BlockChoices) mine.getBlockChoices()).toJson());
+        statement.setString(5, mine.getId().toString());
+        return statement;
+    }
+
+    private void prepareUpdateMineCallable(CallableStatement statement, Mine mine) throws SQLException {
+        statement.setInt(1, mine.access().ordinal());
+        statement.setBigDecimal(2, mine.getVault().getBalance());
+        statement.setString(3, ((SharedEntityMetaDataHolder) mine.getSharedMetaDataHolder()).encode());
+        statement.setString(4, ((BlockChoices) mine.getBlockChoices()).toJson());
+        statement.setString(5, mine.getId().toString());
     }
 
     public File getOrCreate(String mine) throws IOException {

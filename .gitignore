@@ -7,3 +7,6 @@
 /paper/src/main/resources/sql/procedures/
 /target/*
 /target/NotAPrisonCore-1.0-shaded.pom
+/sql/
+/sql/script.sql
+/sql/procedures

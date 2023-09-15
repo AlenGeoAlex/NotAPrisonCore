@@ -56,7 +56,7 @@ public class RedisMineStore extends AbstractRedisStore<Mine> implements IRedisMi
                                         return iMine;
                                     }).join());
                         }
-                    }.attempt();
+                    }.doSync();
 
                     System.out.println("Has data from redis ? "+(redis != null));
                     return redis;

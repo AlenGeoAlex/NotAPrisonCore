@@ -26,7 +26,7 @@ public interface IMine {
     void teleport(Player player, boolean overrideAccess);
     boolean teleport(Player player, String identifierKey);
     boolean teleport(Player player, String identifierKey, boolean overrideAccess);
-    void save();
+    CompletableFuture<Boolean> save();
     boolean isValid();
     boolean isInvalid();
     CompletableFuture<Boolean> loadLocalMetaDataAsync();

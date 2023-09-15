@@ -4,21 +4,24 @@ import com.sk89q.worldedit.regions.Region;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 @EqualsAndHashCode
 @ToString
 public class MineMeta implements IMineMeta {
     private UUID metaId;
     private Region mineSchematicRegion;
-    private Location lowerMiningPoint;
-    private Location upperMiningPoint;
-    private final Location spawnPoint;
+    private final Location lowerMiningPoint;
+    private final Location upperMiningPoint;
+    private Location spawnPoint;
     private final HashMap<String, Location> locationIdentifier;
 
     public MineMeta(UUID uuid, Region mineSchematicRegion, Location lowerMiningPoint, Location upperMiningPoint, Location spawnPoint, HashMap<String, Location> locationIdentifier) {
@@ -116,5 +119,18 @@ public class MineMeta implements IMineMeta {
     @Override
     public HashMap<String, Location> getLocationIdentifier() {
         return new HashMap<>(locationIdentifier);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setSpawnPoint(Location location) {
+        this.spawnPoint = location;
+
+        return saveAsync();
+    }
+
+    private CompletableFuture<Boolean> saveAsync(){
+        IMineMeta me = this;
+        Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
+        return bootstrap.getPluginInstance().getPrisonDataStore().mineMetaStore().updateAsync(me);
     }
 }

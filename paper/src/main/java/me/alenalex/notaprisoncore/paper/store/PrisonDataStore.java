@@ -1,9 +1,6 @@
 package me.alenalex.notaprisoncore.paper.store;
 
-import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
-import me.alenalex.notaprisoncore.api.store.IMineStore;
-import me.alenalex.notaprisoncore.api.store.IPrisonDataStore;
-import me.alenalex.notaprisoncore.api.store.IWorldStore;
+import me.alenalex.notaprisoncore.api.store.*;
 import me.alenalex.notaprisoncore.api.store.redis.IRedisMineStore;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
@@ -17,6 +14,7 @@ public class PrisonDataStore implements IPrisonDataStore {
     private final MineMetaStore mineMetaStore;
     private final MineStore mineStore;
     private final RedisMineStore redisMineStore;
+    private final UserSocialStore userSocialStore;
     private final File storeParentDirectory;
     public PrisonDataStore(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
@@ -25,7 +23,7 @@ public class PrisonDataStore implements IPrisonDataStore {
         this.mineMetaStore = new MineMetaStore(this);
         this.mineStore = new MineStore(this);
         this.redisMineStore = new RedisMineStore(this);
-
+        this.userSocialStore = new UserSocialStore(this);
     }
 
     public void init(){
@@ -61,6 +59,11 @@ public class PrisonDataStore implements IPrisonDataStore {
     @Override
     public IRedisMineStore redisMineStore() {
         return redisMineStore;
+    }
+
+    @Override
+    public IUserSocialStore userSocialStore() {
+        return userSocialStore;
     }
 
     public NotAPrisonCore getPluginInstance() {

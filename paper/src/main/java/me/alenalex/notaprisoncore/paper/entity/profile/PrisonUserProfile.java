@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.paper.entity;
+package me.alenalex.notaprisoncore.paper.entity.profile;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,6 +13,8 @@ import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.config.LocaleProfile;
 import me.alenalex.notaprisoncore.paper.constants.Defaults;
+import me.alenalex.notaprisoncore.paper.entity.dataholder.LocalEntityMetaDataHolder;
+import me.alenalex.notaprisoncore.paper.entity.dataholder.SharedEntityMetaDataHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,10 +35,14 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     private String localeType;
 
     private LocaleProfile cachedLocaleProfile;
+    private final LocalEntityMetaDataHolder localEntityMetaDataHolder;
+    private final SharedEntityMetaDataHolder sharedEntityMetaDataHolder;
 
     public PrisonUserProfile(UUID playerUniqueId) {
         this.playerUniqueId = playerUniqueId;
         this.cacheLocaleProfile();
+        this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
+        this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
 
     @Override
