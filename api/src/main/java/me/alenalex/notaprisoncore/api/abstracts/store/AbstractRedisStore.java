@@ -33,7 +33,28 @@ public abstract class AbstractRedisStore<T> {
             public Boolean get() {
                 try {
                     JedisPooled connection = redisDatabase.getConnection();
-                    connection.set(key, jsonWrapper.gson().toJson(entity));
+                    connection.set(key, jsonWrapper.stringify(entity));
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+
+    protected CompletableFuture<Boolean> pushString(String key, String value){
+        if(!redisDatabase.isConnected()){
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new RedisDatabaseNotAvailableException());
+            return future;
+        }
+        return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                try {
+                    JedisPooled connection = redisDatabase.getConnection();
+                    connection.set(key, value);
                 }catch (Exception e){
                     e.printStackTrace();
                     return false;
@@ -54,7 +75,28 @@ public abstract class AbstractRedisStore<T> {
             public Boolean get() {
                 try {
                     JedisPooled connection = redisDatabase.getConnection();
-                    connection.setex(key, expiry ,jsonWrapper.gson().toJson(entity));
+                    connection.setex(key, expiry ,jsonWrapper.stringify(entity));
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+
+    protected CompletableFuture<Boolean> pushString(String key, String value, long expiry){
+        if(!redisDatabase.isConnected()){
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new RedisDatabaseNotAvailableException());
+            return future;
+        }
+        return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                try {
+                    JedisPooled connection = redisDatabase.getConnection();
+                    connection.setex(key, expiry ,value);
                 }catch (Exception e){
                     e.printStackTrace();
                     return false;
@@ -78,8 +120,34 @@ public abstract class AbstractRedisStore<T> {
                     JedisPooled pooled = redisDatabase.getConnection();
                     String res = pooled.get(id);
                     pooled.del(id);
-                    return jsonWrapper.gson().fromJson(res, entityType());
+                    if(res == null || res.isEmpty())
+                        return null;
+
+                    return jsonWrapper.fromString(res, entityType());
                 } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new IllegalRedisDataException("Failed to deserializing the data from redis");
+                }
+            }
+        });
+    }
+
+    protected CompletableFuture<String> getOnceString(String id){
+        if(!redisDatabase.isConnected()){
+            CompletableFuture<String> future = new CompletableFuture<>();
+            future.completeExceptionally(new RedisDatabaseNotAvailableException());
+            return future;
+        }
+
+        return CompletableFuture.supplyAsync(new Supplier<String>() {
+            @Override
+            public String get() {
+                try {
+                    JedisPooled pooled = redisDatabase.getConnection();
+                    String res = pooled.get(id);
+                    pooled.del(id);
+                    return res;
+                }catch (Exception e){
                     e.printStackTrace();
                     throw new IllegalRedisDataException("Failed to deserializing the data from redis");
                 }
@@ -100,7 +168,31 @@ public abstract class AbstractRedisStore<T> {
                 try {
                     JedisPooled pooled = redisDatabase.getConnection();
                     String res = pooled.get(id);
-                    return jsonWrapper.gson().fromJson(res, entityType());
+                    if(res == null || res.isEmpty())
+                        return null;
+
+                    return jsonWrapper.fromString(res, entityType());
+                }catch (Exception e){
+                    e.printStackTrace();
+                    throw new IllegalRedisDataException("Failed to deserializing the data from redis");
+                }
+            }
+        });
+    }
+
+    protected CompletableFuture<String> getString(String id){
+        if(!redisDatabase.isConnected()){
+            CompletableFuture<String> future = new CompletableFuture<>();
+            future.completeExceptionally(new RedisDatabaseNotAvailableException());
+            return future;
+        }
+
+        return CompletableFuture.supplyAsync(new Supplier<String>() {
+            @Override
+            public String get() {
+                try {
+                    JedisPooled pooled = redisDatabase.getConnection();
+                    return pooled.get(id);
                 }catch (Exception e){
                     e.printStackTrace();
                     throw new IllegalRedisDataException("Failed to deserializing the data from redis");

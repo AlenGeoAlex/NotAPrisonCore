@@ -14,6 +14,7 @@ public class ServerConfiguration extends AbstractConfigurationOption {
     private String serverName;
     private int metaReservationCount;
     private int minMetaReservedCount;
+    private CompressionConfiguration compressionConfiguration;
     public ServerConfiguration(Section section) {
         super(section);
     }
@@ -23,6 +24,7 @@ public class ServerConfiguration extends AbstractConfigurationOption {
         this.serverName = getSection().getString("name");
         this.metaReservationCount = getSection().getInt("meta-reservation-count");
         this.minMetaReservedCount = getSection().getInt("min-meta-reserved-count");
+        this.compressionConfiguration = new CompressionConfiguration(getSection().getSection("compression-configuration"));
     }
 
     @Override
@@ -42,6 +44,12 @@ public class ServerConfiguration extends AbstractConfigurationOption {
         if(minMetaReservedCount <= 0){
             builder.withWarnings("The min-meta-reserved-count is set to 0, that means the no one would be able to claim new mines.");
         }
+
+        if(compressionConfiguration == null){
+            builder.withWarnings("Failed to load compression configuration, defaulting to true on all settings");
+            this.compressionConfiguration = new CompressionConfiguration();
+        }
+
         return builder.build();
     }
 }

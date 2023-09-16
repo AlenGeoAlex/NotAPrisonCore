@@ -4,6 +4,9 @@ server-configuration:
   name: "Prison-A"
   meta-reservation-count: 3
   min-meta-reserved-count: 1
+  compression-configuration:
+    mine-local-meta: true
+    user-profile-local-meta: true
 
 redis-configuration:
   host: ""

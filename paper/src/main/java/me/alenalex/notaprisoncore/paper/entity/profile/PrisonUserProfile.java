@@ -20,6 +20,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,23 +34,29 @@ import java.util.stream.Collectors;
 public final class PrisonUserProfile implements IPrisonUserProfile {
 
     private final UUID playerUniqueId;
-
     private String localeType;
-
     private LocaleProfile cachedLocaleProfile;
     private final LocalEntityMetaDataHolder localEntityMetaDataHolder;
     private final SharedEntityMetaDataHolder sharedEntityMetaDataHolder;
-
-    public PrisonUserProfile(UUID playerUniqueId) {
+    private final Timestamp createdAt;
+    private final Timestamp lastLoggedInAt;
+    private long level;
+    private BigInteger points;
+    public PrisonUserProfile(UUID playerUniqueId, String localeType, LocalEntityMetaDataHolder localEntityMetaDataHolder, SharedEntityMetaDataHolder sharedEntityMetaDataHolder, Timestamp createdAt, Timestamp lastLoggedInAt, long level, BigInteger points) {
         this.playerUniqueId = playerUniqueId;
+        this.localeType = localeType;
+        this.localEntityMetaDataHolder = localEntityMetaDataHolder;
+        this.sharedEntityMetaDataHolder = sharedEntityMetaDataHolder;
+        this.createdAt = createdAt;
+        this.lastLoggedInAt = lastLoggedInAt;
+        this.level = level;
+        this.points = points;
         this.cacheLocaleProfile();
-        this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
-        this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
 
     @Override
     public UUID getUserId() {
-        return null;
+        return this.playerUniqueId;
     }
 
     @Override
@@ -112,12 +121,32 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
 
     @Override
     public IEntityMetaDataHolder getSharedDataHolder() {
-        return null;
+        return this.sharedEntityMetaDataHolder;
     }
 
     @Override
     public IEntityMetaDataHolder getLocalDataHolder() {
-        return null;
+        return this.localEntityMetaDataHolder;
+    }
+
+    @Override
+    public Timestamp getCreatedAt() {
+        return this.createdAt;
+    }
+
+    @Override
+    public Timestamp getLastLoggedIn() {
+        return this.lastLoggedInAt;
+    }
+
+    @Override
+    public long getPlayerLevel() {
+        return this.level;
+    }
+
+    @Override
+    public BigInteger getPoints() {
+        return this.points;
     }
 
     @NotNull

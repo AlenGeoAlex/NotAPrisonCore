@@ -161,10 +161,7 @@ public class Mine implements IMine {
 
     @Override
     public void teleport(Player player, boolean overrideAccess) {
-        if(!overrideAccess){
-
-        }
-        player.teleport(this.meta.getSpawnPoint());
+        this.teleport(player, "spawn-point", overrideAccess);
     }
 
     @Override
@@ -199,8 +196,6 @@ public class Mine implements IMine {
         player.teleport(location);
         return true;
     }
-
-
 
     @Override
     public CompletableFuture<Boolean> save() {
@@ -246,23 +241,17 @@ public class Mine implements IMine {
             public Boolean get() {
                 Bootstrap plugin = (Bootstrap) Bootstrap.getJavaPlugin();
                 MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().mineStore();
-                File file = null;
+
+                String base64String = null;
                 try {
-                    file = mineStore.getOrCreate(mineId.toString());
+                    base64String = mineStore.readLocal(mineId.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw new RuntimeException(e);
                 }
 
-                if(file == null)
+                if(base64String == null)
                     return false;
-                String base64String = null;
-                try (Stream<String> lines = Files.lines(file.toPath())) {
-                    base64String = lines.collect(Collectors.joining(System.lineSeparator()));
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return false;
-                }
 
                 ((LocalEntityMetaDataHolder) localEntityMetaDataHolder).setHolderData(base64String);
                 return true;
@@ -280,15 +269,8 @@ public class Mine implements IMine {
             public Boolean get() {
                 Bootstrap plugin = (Bootstrap) Bootstrap.getJavaPlugin();
                 MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().mineStore();
-                File file = null;
                 try {
-                    file = mineStore.getOrCreate(mineId.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
-                }
-                try (final FileWriter fileWriter = new FileWriter(file, false)) {
-                    fileWriter.write(((LocalEntityMetaDataHolder) getLocalMetaDataHolder()).encode());
+                    mineStore.writeLocal(mineId.toString(), ((LocalEntityMetaDataHolder) getLocalMetaDataHolder()).encode());
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw new RuntimeException(e);

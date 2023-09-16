@@ -2,9 +2,11 @@ package me.alenalex.notaprisoncore.paper.store;
 
 import me.alenalex.notaprisoncore.api.store.*;
 import me.alenalex.notaprisoncore.api.store.redis.IRedisMineStore;
+import me.alenalex.notaprisoncore.api.store.redis.IRedisUserProfileStore;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.store.redis.RedisMineStore;
+import me.alenalex.notaprisoncore.paper.store.redis.RedisUserProfileStore;
 
 import java.io.File;
 
@@ -15,6 +17,8 @@ public class PrisonDataStore implements IPrisonDataStore {
     private final MineStore mineStore;
     private final RedisMineStore redisMineStore;
     private final UserSocialStore userSocialStore;
+    private final RedisUserProfileStore redisUserProfileStore;
+    private final UserProfileStore userProfileStore;
     private final File storeParentDirectory;
     public PrisonDataStore(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
@@ -24,6 +28,8 @@ public class PrisonDataStore implements IPrisonDataStore {
         this.mineStore = new MineStore(this);
         this.redisMineStore = new RedisMineStore(this);
         this.userSocialStore = new UserSocialStore(this);
+        this.redisUserProfileStore = new RedisUserProfileStore(this);
+        this.userProfileStore = new UserProfileStore(this);
     }
 
     public void init(){
@@ -64,6 +70,16 @@ public class PrisonDataStore implements IPrisonDataStore {
     @Override
     public IUserSocialStore userSocialStore() {
         return userSocialStore;
+    }
+
+    @Override
+    public IUserProfileStore userProfileStore() {
+        return userProfileStore;
+    }
+
+    @Override
+    public IRedisUserProfileStore redisUserProfileStore() {
+        return redisUserProfileStore;
     }
 
     public NotAPrisonCore getPluginInstance() {

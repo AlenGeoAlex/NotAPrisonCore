@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.paper.store.redis;
 
 import me.alenalex.notaprisoncore.api.abstracts.pattern.Retry;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractRedisStore;
+import me.alenalex.notaprisoncore.api.common.RedisKey;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.exceptions.database.redis.IllegalRedisDataException;
 import me.alenalex.notaprisoncore.api.store.redis.IRedisMineStore;
@@ -25,13 +26,13 @@ public class RedisMineStore extends AbstractRedisStore<Mine> implements IRedisMi
     @Override
     public CompletableFuture<Boolean> set(IMine iMine){
         Mine mine = (Mine) iMine;
-        if(mine.isInvalid()){
+        if(mine == null || mine.isInvalid()){
             Bootstrap.getJavaPlugin().getLogger().warning("Failed to set the mine with meta id "+mine.getMetaId().toString()+" of owner "+mine.getOwnerId().toString()+" since the unique id of the mine is missing");
             return CompletableFuture.completedFuture(false);
         }
 
         UUID mineId = mine.getId();
-        return pushJson(mineId.toString(), mine);
+        return pushJson(RedisKey.MINE_DATA.keyOf(mineId.toString()), mine, RedisKey.MINE_DATA.getExpiry());
     }
 
 
@@ -46,7 +47,7 @@ public class RedisMineStore extends AbstractRedisStore<Mine> implements IRedisMi
                     IMine redis = new Retry<IMine>(500, 5) {
                         @Override
                         public Optional<IMine> work() {
-                            return Optional.ofNullable(getJson(mineId.toString())
+                            return Optional.ofNullable(getJson(RedisKey.MINE_DATA.keyOf(mineId.toString()))
                                     .handle((iMine, err) -> {
                                         if (err != null) {
                                             err.printStackTrace();

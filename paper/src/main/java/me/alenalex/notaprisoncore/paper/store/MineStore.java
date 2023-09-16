@@ -3,7 +3,7 @@ package me.alenalex.notaprisoncore.paper.store;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
+import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStoreWithFile;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
@@ -26,27 +26,21 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineStore {
+public class MineStore extends AbstractDataStoreWithFile<IMine, UUID> implements IMineStore {
     private final PrisonDataStore prisonDataStore;
-    private final File mineMetaDataDirectory;
     public MineStore(PrisonDataStore prisonDataStore) {
-        super(prisonDataStore.getPluginInstance().getDatabaseProvider().getSqlDatabase());
+        super(prisonDataStore.getPluginInstance().getDatabaseProvider().getSqlDatabase(),
+                new File(prisonDataStore.getStoreParentDirectory(), "meta"+File.separator+"mine"),
+                prisonDataStore.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getCompressionConfiguration().isCompressMineLocalData()
+        );
         this.prisonDataStore = prisonDataStore;
-        this.mineMetaDataDirectory = new File(prisonDataStore.getStoreParentDirectory(), "meta"+File.separator+"mine");
-        if(!this.mineMetaDataDirectory.exists())
-            this.mineMetaDataDirectory.mkdirs();
     }
 
     @Override
@@ -211,12 +205,7 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
                 BigDecimal vaultBalance = resultSet.getBigDecimal("vault_balance");
                 File localFile = getOrCreate(rawId);
                 Path path = localFile.toPath();
-                String base64String = null;
-                try (Stream<String> lines = Files.lines(path)) {
-                    base64String = lines.collect(Collectors.joining(System.lineSeparator()));
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+
 
                 UUID mineId = UUID.fromString(rawId);
                 UUID ownerId = UUID.fromString(ownerIdRaw);
@@ -227,11 +216,14 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
                 }else{
                     sharedDataHolder = SharedEntityMetaDataHolder.decode(binarySharedData, SharedEntityMetaDataHolder.class);
                 }
-                LocalEntityMetaDataHolder localDataHolder;
-                if(base64String == null){
-                    localDataHolder = new LocalEntityMetaDataHolder();
-                }else{
-                    localDataHolder = LocalEntityMetaDataHolder.decode(base64String, LocalEntityMetaDataHolder.class);
+                LocalEntityMetaDataHolder localDataHolder = null;
+                try {
+                    localDataHolder = LocalEntityMetaDataHolder.decode(readLocal(mineId.toString()), LocalEntityMetaDataHolder.class);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    if(localDataHolder == null)
+                        localDataHolder = new LocalEntityMetaDataHolder();
                 }
 
                 Mine mine = new Mine(ownerId, mineId, meta, vaultBalance, localDataHolder, sharedDataHolder);
@@ -310,9 +302,11 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
             if(rawMineId == null || rawMineId.isEmpty())
                 return Optional.empty();
             UUID mineId = UUID.fromString(rawMineId);
-            File file = getOrCreate(rawMineId);
-            try (final FileWriter fileWriter = new FileWriter(file, false)) {
-                fileWriter.write(((LocalEntityMetaDataHolder) mine.getLocalMetaDataHolder()).encode());
+            try{
+                writeLocal(mineId.toString(), ((LocalEntityMetaDataHolder) mine.getLocalMetaDataHolder()).encode());
+            }catch (Exception e){
+                e.printStackTrace();
+                mine.sendPluginNotification("Failed to save the local meta-data to the store. Please notify the admins");
             }
             return Optional.of(mineId);
         }catch (Exception e){
@@ -357,27 +351,5 @@ public class MineStore extends AbstractDataStore<IMine, UUID> implements IMineSt
         statement.setString(5, mine.getId().toString());
     }
 
-    public File getOrCreate(String mine) throws IOException {
-        if(!this.mineMetaDataDirectory.exists())
-            this.mineMetaDataDirectory.mkdirs();
 
-        String fileName = mine +".dat";
-        File metaDataFile = null;
-        File[] possibleFiles = this.mineMetaDataDirectory.listFiles(x -> x.getName().equals(fileName));
-        if(possibleFiles == null){
-            metaDataFile = create(this.mineMetaDataDirectory, fileName);
-        }else if(possibleFiles.length == 0){
-            metaDataFile = create(mineMetaDataDirectory, fileName);
-        }else{
-            metaDataFile = possibleFiles[0];
-        }
-
-        return metaDataFile;
-    }
-
-    private File create(File parentDirectory, String fileName) throws IOException {
-        File file = new File(this.mineMetaDataDirectory, fileName);
-        file.createNewFile();
-        return file;
-    }
 }

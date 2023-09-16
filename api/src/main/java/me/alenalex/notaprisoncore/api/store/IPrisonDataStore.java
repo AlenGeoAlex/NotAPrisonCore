@@ -1,6 +1,7 @@
 package me.alenalex.notaprisoncore.api.store;
 
 import me.alenalex.notaprisoncore.api.store.redis.IRedisMineStore;
+import me.alenalex.notaprisoncore.api.store.redis.IRedisUserProfileStore;
 
 public interface IPrisonDataStore {
     IWorldStore worldStore();
@@ -8,6 +9,8 @@ public interface IPrisonDataStore {
     IMineStore mineStore();
     IRedisMineStore redisMineStore();
     IUserSocialStore userSocialStore();
+    IUserProfileStore userProfileStore();
+    IRedisUserProfileStore redisUserProfileStore();
 }
 
 

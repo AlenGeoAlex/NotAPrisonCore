@@ -90,6 +90,10 @@
                                     <pattern>org.mariadb.jdbc</pattern>
                                     <shadedPattern>me.alenalex.notaprisoncore.shaded.mariadb</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.xerial.snappy</pattern>
+                                    <shadedPattern>me.alenalex.notaprisoncore.shaded.snappy</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -169,7 +173,6 @@
             <artifactId>mariadb-java-client</artifactId>
             <version>3.2.0</version>
         </dependency>
-
     </dependencies>
 
 </project>
