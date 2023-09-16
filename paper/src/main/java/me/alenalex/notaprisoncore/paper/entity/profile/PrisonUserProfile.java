@@ -69,11 +69,6 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     }
 
     @Override
-    public @Nullable IMine getMine() {
-        return null;
-    }
-
-    @Override
     public void resetLocale(){
         this.setLocaleType(Defaults.DEFAULT_LOCALE);
     }
