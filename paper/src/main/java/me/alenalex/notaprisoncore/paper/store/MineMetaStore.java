@@ -4,7 +4,9 @@ import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
+import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
+import me.alenalex.notaprisoncore.api.exceptions.database.sql.DatabaseNotAvailableException;
 import me.alenalex.notaprisoncore.api.exceptions.database.sql.FailedDatabaseException;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
 import me.alenalex.notaprisoncore.api.store.IMineMetaStore;
@@ -136,6 +138,12 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
 
     @Override
     public CompletableFuture<Boolean> releaseReservedMetas(String serverName) {
+        if (!getPluginDatabase().isConnected()) {
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new DatabaseNotAvailableException());
+            return future;
+        }
+
         if(serverName.isEmpty()){
             CompletableFuture<Boolean> response = new CompletableFuture<>();
             response.completeExceptionally(new DatastoreException("Invalid server name provided for releasing reserved metas"));

@@ -203,9 +203,6 @@ public class MineStore extends AbstractDataStoreWithFile<IMine, UUID> implements
                 int mineAccess = resultSet.getInt("mine_access");
                 String binarySharedData = resultSet.getString("shared_data");
                 BigDecimal vaultBalance = resultSet.getBigDecimal("vault_balance");
-                File localFile = getOrCreate(rawId);
-                Path path = localFile.toPath();
-
 
                 UUID mineId = UUID.fromString(rawId);
                 UUID ownerId = UUID.fromString(ownerIdRaw);

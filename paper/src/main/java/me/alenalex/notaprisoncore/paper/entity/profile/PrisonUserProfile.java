@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.ILocaleProfile;
 import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
+import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.locale.IPluginMessage;
 import me.alenalex.notaprisoncore.api.locale.LocaleKey;
@@ -15,17 +16,19 @@ import me.alenalex.notaprisoncore.paper.config.LocaleProfile;
 import me.alenalex.notaprisoncore.paper.constants.Defaults;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.LocalEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.SharedEntityMetaDataHolder;
+import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode
@@ -41,8 +44,9 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     private final Timestamp createdAt;
     private final Timestamp lastLoggedInAt;
     private long level;
-    private BigInteger points;
-    public PrisonUserProfile(UUID playerUniqueId, String localeType, LocalEntityMetaDataHolder localEntityMetaDataHolder, SharedEntityMetaDataHolder sharedEntityMetaDataHolder, Timestamp createdAt, Timestamp lastLoggedInAt, long level, BigInteger points) {
+    private final BigInteger points;
+    private UUID mineId;
+    public PrisonUserProfile(UUID playerUniqueId, String localeType, LocalEntityMetaDataHolder localEntityMetaDataHolder, SharedEntityMetaDataHolder sharedEntityMetaDataHolder, Timestamp createdAt, Timestamp lastLoggedInAt, long level, BigInteger points, UUID mineId) {
         this.playerUniqueId = playerUniqueId;
         this.localeType = localeType;
         this.localEntityMetaDataHolder = localEntityMetaDataHolder;
@@ -55,8 +59,18 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     }
 
     @Override
-    public UUID getUserId() {
+    public @NotNull UUID getUserId() {
         return this.playerUniqueId;
+    }
+
+    @Override
+    public @Nullable UUID getMineId() {
+        return null;
+    }
+
+    @Override
+    public @Nullable IMine getMine() {
+        return null;
     }
 
     @Override
@@ -120,22 +134,22 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     }
 
     @Override
-    public IEntityMetaDataHolder getSharedDataHolder() {
+    public @NotNull IEntityMetaDataHolder getSharedDataHolder() {
         return this.sharedEntityMetaDataHolder;
     }
 
     @Override
-    public IEntityMetaDataHolder getLocalDataHolder() {
+    public @NotNull IEntityMetaDataHolder getLocalDataHolder() {
         return this.localEntityMetaDataHolder;
     }
 
     @Override
-    public Timestamp getCreatedAt() {
+    public @NotNull Timestamp getCreatedAt() {
         return this.createdAt;
     }
 
     @Override
-    public Timestamp getLastLoggedIn() {
+    public @NotNull Timestamp getLastLoggedIn() {
         return this.lastLoggedInAt;
     }
 
@@ -147,6 +161,21 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     @Override
     public BigInteger getPoints() {
         return this.points;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> save() {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> loadLocalMetaDataAsync() {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Boolean> saveLocalMetaDataAsync() {
+        return null;
     }
 
     @NotNull
