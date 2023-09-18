@@ -11,10 +11,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class AbstractDataStoreWithFile<E, I> extends AbstractDataStore<E, I> {
+public abstract class AbstractDataStoreWithDirectory<E, I> extends AbstractDataStore<E, I> {
     private final File localDirectory;
     private final boolean compressionEnabled;
-    public AbstractDataStoreWithFile(ISQLDatabase pluginDatabase, File localDirectory, boolean compressionEnabled) {
+    public AbstractDataStoreWithDirectory(ISQLDatabase pluginDatabase, File localDirectory, boolean compressionEnabled) {
         super(pluginDatabase);
         this.localDirectory = localDirectory;
         this.compressionEnabled = compressionEnabled;

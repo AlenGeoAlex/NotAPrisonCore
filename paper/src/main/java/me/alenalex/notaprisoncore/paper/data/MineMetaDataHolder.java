@@ -90,6 +90,7 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
         return future;
     }
 
+    @Override
     public void onEnable(){
         Collection<?> joined = this.dataHolder.getPlugin().getPrisonDataStore().mineMetaStore()
                 .reserveMetas()
@@ -119,8 +120,10 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
         }
 
         getDataHolder().getPlugin().getLogger().info("Locked "+reservedMetaSet.size()+" metas for this server instance");
+
     }
 
+    @Override
     public void onDisable(){
         Boolean finalResponse = this.dataHolder.getPlugin().getPrisonDataStore()
                 .mineMetaStore()

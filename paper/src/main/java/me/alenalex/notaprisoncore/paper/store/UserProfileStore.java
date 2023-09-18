@@ -3,7 +3,8 @@ package me.alenalex.notaprisoncore.paper.store;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStoreWithFile;
+import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStoreWithDirectory;
+import me.alenalex.notaprisoncore.api.common.Octet;
 import me.alenalex.notaprisoncore.api.common.Triplet;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
@@ -37,12 +38,11 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class UserProfileStore extends AbstractDataStoreWithFile<IPrisonUserProfile, UUID> implements IUserProfileStore {
+public class UserProfileStore extends AbstractDataStoreWithDirectory<IPrisonUserProfile, UUID> implements IUserProfileStore {
     private final PrisonDataStore prisonDataStore;
     private final File userDataDirectory;
     public UserProfileStore(PrisonDataStore prisonDataStore) {
@@ -68,7 +68,7 @@ public class UserProfileStore extends AbstractDataStoreWithFile<IPrisonUserProfi
 
     @Override
     protected @Nullable String updateQuery() {
-        throw new NotImplementedException("Update Query on user-profile is not implemented, It is handled internally by its own corresponding methods!");
+        return DbConstants.UserProfile.UPDATE_QUERY;
     }
 
     @Override
@@ -98,19 +98,29 @@ public class UserProfileStore extends AbstractDataStoreWithFile<IPrisonUserProfi
 
     @Override
     protected @NotNull Optional<IPrisonUserProfile> read(@NotNull ResultSet resultSet) {
-
-        return Optional.empty();
+        throw new NotImplementedException("Read on user-profile is not implemented, It is handled internally by its own corresponding methods!");
     }
+
+
 
     @Override
     protected void write(@NotNull PreparedStatement preparedStatement, @NotNull IPrisonUserProfile entity, boolean createStatement, @Nullable Object predefinedId) {
-
+        //No need to check createStatement or not, only update is possible in this
+        try {
+            preparedStatement.setString(1, ((SharedEntityMetaDataHolder) entity.getSharedDataHolder()).encode());
+            preparedStatement.setLong(2, entity.getPlayerLevel());
+            preparedStatement.setString(3, entity.getPoints().toString());
+            preparedStatement.setString(4, entity.getLocaleType());
+            preparedStatement.setString(5, entity.getUserId().toString());
+        } catch (SQLException e) {
+            throw new DatastoreException(e);
+        }
     }
 
     @Override
-    public CompletableFuture<Optional<Triplet<IPrisonUserProfile, List<IUserSocial>, IMine>>> getOrCreateUserProfile(UUID id){
+    public CompletableFuture<Optional<Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean>>> getOrCreateUserProfile(UUID id){
         if (!getPluginDatabase().isConnected()) {
-            CompletableFuture<Optional<Triplet<IPrisonUserProfile, List<IUserSocial>, IMine>>> future = new CompletableFuture<>();
+            CompletableFuture<Optional<Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean>>> future = new CompletableFuture<>();
             future.completeExceptionally(new DatabaseNotAvailableException());
             return future;
         }
@@ -118,7 +128,7 @@ public class UserProfileStore extends AbstractDataStoreWithFile<IPrisonUserProfi
         return CompletableFuture.supplyAsync(() -> getOrCreateInternal(id));
     }
 
-    private Optional<Triplet<IPrisonUserProfile, List<IUserSocial>, IMine>> getOrCreateInternal(UUID userId){
+    private Optional<Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean>> getOrCreateInternal(UUID userId){
         try(final Connection connection = getPluginDatabase().getConnection();
             final CallableStatement statement = prepareCallableStatementForId(connection, selectByIdQuery(), userId.toString())
         ) {
@@ -153,7 +163,7 @@ public class UserProfileStore extends AbstractDataStoreWithFile<IPrisonUserProfi
                 }
             }
 
-            return Optional.of(new Triplet<>(userProfile, userSocials, mine));
+            return Optional.of(new Octet<>(userProfile, userSocials, mine, newProfile));
         }catch (Exception e){
             e.printStackTrace();
             throw new FailedDatabaseException("Failed to get the user from database. ",e);
@@ -274,7 +284,14 @@ public class UserProfileStore extends AbstractDataStoreWithFile<IPrisonUserProfi
         }
         return returnList;
     }
+
+    /**
+     * Get the user profile. This will create a new profile if the existing profile doesn't exists
+     * @param id of the entity
+     * @return
+     */
     @Override
+    @Deprecated
     public CompletableFuture<Optional<IPrisonUserProfile>> id(UUID id) {
         if (!getPluginDatabase().isConnected()) {
             CompletableFuture<Optional<IPrisonUserProfile>> future = new CompletableFuture<>();

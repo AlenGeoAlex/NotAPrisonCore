@@ -6,7 +6,7 @@ import me.alenalex.notaprisoncore.api.enums.SocialStatus;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface IUserSocialProvider {
+public interface IUserSocialDataHolder {
     CompletableFuture<IUserSocial> createSocialWith(IPrisonUserProfile sourceProfile, IPrisonUserProfile targetProfile, SocialStatus status);
 
     CompletableFuture<IUserSocial> createSocialWith(IPrisonUserProfile sourceProfile, IPrisonUserProfile targetProfile, SocialStatus status, boolean alertPlayers);

@@ -3,7 +3,7 @@ package me.alenalex.notaprisoncore.paper.store;
 import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStoreWithFile;
+import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStoreWithDirectory;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.enums.MineAccess;
@@ -28,12 +28,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class MineStore extends AbstractDataStoreWithFile<IMine, UUID> implements IMineStore {
+public class MineStore extends AbstractDataStoreWithDirectory<IMine, UUID> implements IMineStore {
     private final PrisonDataStore prisonDataStore;
     public MineStore(PrisonDataStore prisonDataStore) {
         super(prisonDataStore.getPluginInstance().getDatabaseProvider().getSqlDatabase(),

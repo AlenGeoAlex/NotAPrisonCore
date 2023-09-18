@@ -104,7 +104,7 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
                 preparedStatement.setString(7, entity.getMetaId().toString());
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatastoreException(e);
         }
     }
 

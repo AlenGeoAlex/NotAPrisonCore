@@ -15,6 +15,8 @@ public class ServerConfiguration extends AbstractConfigurationOption {
     private int metaReservationCount;
     private int minMetaReservedCount;
     private CompressionConfiguration compressionConfiguration;
+    private boolean kickOnLoadFailureEnabled;
+    private boolean freezePlayerOnLoadEnabled;
     public ServerConfiguration(Section section) {
         super(section);
     }
@@ -25,6 +27,8 @@ public class ServerConfiguration extends AbstractConfigurationOption {
         this.metaReservationCount = getSection().getInt("meta-reservation-count");
         this.minMetaReservedCount = getSection().getInt("min-meta-reserved-count");
         this.compressionConfiguration = new CompressionConfiguration(getSection().getSection("compression-configuration"));
+        this.kickOnLoadFailureEnabled = getSection().getBoolean("kick-on-load-failure");
+        this.freezePlayerOnLoadEnabled = getSection().getBoolean("freeze-player-on-load");
     }
 
     @Override

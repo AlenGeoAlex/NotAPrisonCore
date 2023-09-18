@@ -47,7 +47,7 @@ public class PrisonDatabaseProvider implements IDatabaseProvider {
 
     public void disconnect(){
         if(this.redisDatabase != null){
-            getPluginInstance().getLogger().info("Found redis database instance, Attempting to disconnection");
+            getPluginInstance().getLogger().info("Found redis database instance, Attempting disconnection");
             try {
                 this.redisDatabase.disconnect();
                 getPluginInstance().getLogger().info("Successfully disconnected from redis database");
@@ -57,7 +57,7 @@ public class PrisonDatabaseProvider implements IDatabaseProvider {
             }
         }
         if(this.sqlDatabase != null){
-            getPluginInstance().getLogger().info("Found sql database instance, Attempting to disconnection");
+            getPluginInstance().getLogger().info("Found sql database instance, Attempting disconnection");
             try {
                 this.sqlDatabase.disconnect();
                 getPluginInstance().getLogger().info("Successfully disconnected from mysql database");

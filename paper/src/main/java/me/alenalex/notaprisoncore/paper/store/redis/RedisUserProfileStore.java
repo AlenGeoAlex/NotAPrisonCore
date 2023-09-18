@@ -1,7 +1,9 @@
 package me.alenalex.notaprisoncore.paper.store.redis;
 
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractRedisStore;
+import me.alenalex.notaprisoncore.api.common.Pair;
 import me.alenalex.notaprisoncore.api.common.RedisKey;
+import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.exceptions.database.redis.RedisDatabaseNotAvailableException;
 import me.alenalex.notaprisoncore.api.store.redis.IRedisUserProfileStore;
@@ -53,6 +55,16 @@ public class RedisUserProfileStore extends AbstractRedisStore<IPrisonUserProfile
 
         return getOnceString(RedisKey.SERVER_SWITCH.keyOf(uuid.toString()))
                 .thenApply(Objects::nonNull);
+    }
+
+    @Override
+    public CompletableFuture<Void> setUserData(IPrisonUserProfile userProfile, IMine iMine) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Pair<IPrisonUserProfile, IMine>> getUserData(UUID playerId) {
+        return null;
     }
 
     private void setUserOnSwitchInternal(IPrisonUserProfile userProfile){

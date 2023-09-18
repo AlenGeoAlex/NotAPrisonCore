@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.paper.entity.mine;
 
+import com.google.common.base.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
@@ -325,4 +326,16 @@ public class Mine implements IMine {
         this.mineVault.setBalance(new BigDecimal(prisonManagers.configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultVaultBalance().toString()));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Mine)) return false;
+        Mine mine = (Mine) o;
+        return Objects.equal(mineId, mine.mineId) && Objects.equal(getOwnerId(), mine.getOwnerId()) && Objects.equal(getMetaId(), mine.getMetaId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(mineId, getOwnerId(), getMetaId());
+    }
 }

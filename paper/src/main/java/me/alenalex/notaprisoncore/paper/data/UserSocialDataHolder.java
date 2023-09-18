@@ -1,22 +1,24 @@
-package me.alenalex.notaprisoncore.paper.entity.profile;
+package me.alenalex.notaprisoncore.paper.data;
 
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.entity.user.IUserSocial;
 import me.alenalex.notaprisoncore.api.enums.SocialStatus;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
-import me.alenalex.notaprisoncore.api.provider.IUserSocialProvider;
+import me.alenalex.notaprisoncore.api.provider.IUserSocialDataHolder;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
+import me.alenalex.notaprisoncore.paper.entity.profile.UserSocial;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
-public class UserSocialProvider implements IUserSocialProvider {
+public class UserSocialDataHolder implements IUserSocialDataHolder {
+    private final DataHolder dataHolder;
     private final HashSet<UserSocial> socials;
-    public UserSocialProvider(UUID sourceId) {
+    public UserSocialDataHolder(DataHolder dataHolder) {
+        this.dataHolder = dataHolder;
         this.socials = new HashSet<>();
     }
 
@@ -74,5 +76,10 @@ public class UserSocialProvider implements IUserSocialProvider {
                 });
 
         return future;
+    }
+
+    public void load(List<IUserSocial> userSocials){
+        Set<UserSocial> collected = userSocials.stream().map(s -> (UserSocial) s).collect(Collectors.toSet());
+        this.socials.addAll(collected);
     }
 }

@@ -11,9 +11,19 @@ public class DbConstants {
     }
 
     public static final class UserProfile {
-        public static final String GET_OR_CREATE_PROCEDURE = "{CALL GetOrCreateUserProfile(?)}";
-        public static final String UPDATE_PROCEDURE = "";
+        public static final String GET_OR_CREATE_PROCEDURE = "{CALL GetOrCreateUserProfile(?, ?)}";
+        public static final String UPDATE_QUERY = "UPDATE `user_profile` " +
+                "SET `shared_data` = ?, " +
+                "`level` = ?, " +
+                "`points` = ?," +
+                "`locale_key` = ? " +
+                "WHERE `id` = ?";
     }
+
+    public static final class UserSocial {
+
+    }
+
     public static final class MineMeta{
         public static final String INSERT_QUERY = "INSERT INTO `mine_metas` " +
                 "(" +

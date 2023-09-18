@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.paper.entity.mine;
 
+import com.google.common.base.Objects;
 import com.sk89q.worldedit.regions.Region;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,7 +15,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-@EqualsAndHashCode
 @ToString
 public class MineMeta implements IMineMeta {
     private UUID metaId;
@@ -57,7 +57,6 @@ public class MineMeta implements IMineMeta {
         this.spawnPoint = spawnPoint;
         this.locationIdentifier = new HashMap<>();
     }
-
 
     @Override
     public UUID getMetaId() {
@@ -132,5 +131,18 @@ public class MineMeta implements IMineMeta {
         IMineMeta me = this;
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
         return bootstrap.getPluginInstance().getPrisonDataStore().mineMetaStore().updateAsync(me);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MineMeta)) return false;
+        MineMeta meta = (MineMeta) o;
+        return Objects.equal(getMetaId(), meta.getMetaId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getMetaId());
     }
 }

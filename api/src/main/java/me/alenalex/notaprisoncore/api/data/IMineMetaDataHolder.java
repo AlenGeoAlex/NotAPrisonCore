@@ -6,7 +6,7 @@ import me.alenalex.notaprisoncore.api.exceptions.dataholder.LockExistException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface IMineMetaDataHolder {
+public interface IMineMetaDataHolder extends ICommonDataHolder {
 
     CompletableFuture<Boolean> acquireLocksAndCacheMetas() throws LockExistException;
 

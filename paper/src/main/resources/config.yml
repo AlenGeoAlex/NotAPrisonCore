@@ -4,6 +4,8 @@ server-configuration:
   name: "Prison-A"
   meta-reservation-count: 3
   min-meta-reserved-count: 1
+  kick-on-load-failure: true
+  freeze-player-on-load: true
   compression-configuration:
     mine-local-meta: true
     user-profile-local-meta: true

@@ -79,6 +79,12 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
         this.cacheLocaleProfile();
     }
 
+
+    @Override
+    public String getLocaleType(){
+        return this.localeType;
+    }
+
     @Override
     public void sendLocalizedMessage(LocaleKey key, MessagePlaceholder... placeholders) {
         IPluginMessage<Player> message = this.cachedLocaleProfile.getMessageOfKey(key);

@@ -6,6 +6,8 @@ import me.alenalex.notaprisoncore.paper.data.DataHolder;
 import me.alenalex.notaprisoncore.paper.database.PrisonDatabaseProvider;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
 
+import me.alenalex.notaprisoncore.paper.listener.ConnectionListener;
+import me.alenalex.notaprisoncore.paper.listener.PlayerListener;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -94,6 +96,8 @@ public final class NotAPrisonCore {
         }
         this.prisonManagers.enableCommandManager();
         getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
+        new ConnectionListener(this);
+        new PlayerListener(this);
     }
 
     public void onDisable() {

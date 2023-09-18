@@ -18,6 +18,7 @@ public interface IPrisonUserProfile {
     @Nullable UUID getMineId();
     void resetLocale();
     void setLocaleType(String localeType);
+    String getLocaleType();
     void sendLocalizedMessage(LocaleKey key, MessagePlaceholder... placeholders);
     void sendLocalizedTitle(LocaleKey key, MessagePlaceholder... placeholders);
     void sendLocalizedActionbar(LocaleKey key, MessagePlaceholder... placeholders);

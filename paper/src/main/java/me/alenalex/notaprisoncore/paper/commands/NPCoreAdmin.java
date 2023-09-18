@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Command(value = "npcadmin", alias = {"npca", "npcadm"})
-@Permission("npc.command.admin")
+@Permission(me.alenalex.notaprisoncore.paper.constants.Permission.PermissionKeys.ADMIN_COMMAND)
 public class NPCoreAdmin extends AbstractCommand {
 
     public NPCoreAdmin(CommandManager commandManager) {
