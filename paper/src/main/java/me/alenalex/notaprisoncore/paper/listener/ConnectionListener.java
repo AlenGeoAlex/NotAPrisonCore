@@ -17,6 +17,7 @@ import me.alenalex.notaprisoncore.paper.misc.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,12 @@ import java.util.concurrent.CompletableFuture;
 public class ConnectionListener extends AbstractEventListener {
     public ConnectionListener(NotAPrisonCore plugin) {
         super(plugin);
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event){
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
     }
 
     @EventHandler
