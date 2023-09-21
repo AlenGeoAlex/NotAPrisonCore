@@ -1,5 +1,17 @@
 locale-version: 1
 
+profile:
+  first-time-join:
+    - "[TITLE-HEAD]&cWelcome &eto"
+    - "[TITLE-SUB]&fNotAPrison&eCore"
+    - "[SOUND]ENTITY_VILLAGER_TRADING"
+    - "[ACTION-BAR]&bWelcome %player_name%"
+    - "[PLACEHOLDER-API]"
+    - "&c-------------------------------"
+    - "&rWelcome to my server"
+    - "&d-------------------------------"
+    - "[TITLE-SETTING]40;100;40"
+
 mine:
   reset:
     start: "&cThe mine has been started to reset"

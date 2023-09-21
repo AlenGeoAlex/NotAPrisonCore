@@ -9,4 +9,6 @@ public final class LocaleConstants {
 
     public static final LocaleKey MINE_RESET_STARTED = LocaleKey.of("mine.reset.start");
     public static final LocaleKey MINE_RESET_COMPLETED = LocaleKey.of("mine.reset.completed");
+
+    public static final LocaleKey FIRST_JOIN_LOCALE = LocaleKey.of("profile.first-time-join");
 }

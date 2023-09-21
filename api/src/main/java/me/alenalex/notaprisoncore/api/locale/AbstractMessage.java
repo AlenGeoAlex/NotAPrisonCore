@@ -5,14 +5,17 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.locale.placeholder.MessagePlaceholder;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
+@ToString
 public abstract class AbstractMessage implements IPluginMessage<Player>{
 
     private final AbstractMessage.WrappedMessageType wrappedMessageType;
@@ -29,65 +32,70 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
     }
     protected abstract String colorize(String message);
     @NotNull
-    protected WrappedMessageType parse(MessagePlaceholder... placeholders){
+    protected WrappedMessageType parse(@Nullable Player player, MessagePlaceholder... placeholders){
         WrappedMessageType clone = wrappedMessageType.clone();
         if(placeholders.length == 0){
             return clone;
         }
 
         for (int eachMessageIndex = 0; eachMessageIndex < clone.message.length; eachMessageIndex++) {
-            clone.message[eachMessageIndex] = parsePlaceholder(clone.message[eachMessageIndex], placeholders);
+            clone.message[eachMessageIndex] = parsePlaceholder(clone.message[eachMessageIndex], player, placeholders);
         }
 
         for (int eachTitleIndex = 0; eachTitleIndex < clone.title.length; eachTitleIndex++) {
-            clone.message[eachTitleIndex] = parsePlaceholder(clone.title[eachTitleIndex], placeholders);
+            clone.title[eachTitleIndex] = parsePlaceholder(clone.title[eachTitleIndex], player, placeholders);
         }
 
-        clone.actionBar = parsePlaceholder(clone.actionBar, placeholders);
+        clone.actionBar = parsePlaceholder(clone.actionBar, player, placeholders);
         return clone;
     }
 
+
     @NotNull
-    protected WrappedMessageType parse(@Nullable Collection<MessagePlaceholder> placeholders){
+    protected WrappedMessageType parse(@Nullable Collection<MessagePlaceholder> placeholders, @Nullable Player player){
         WrappedMessageType clone = wrappedMessageType.clone();
-        if(placeholders == null || placeholders.isEmpty()){
+        if((placeholders == null || placeholders.isEmpty()) & !clone.parsePlaceholderApi){
             return clone;
         }
 
         for (int eachMessageIndex = 0; eachMessageIndex < clone.message.length; eachMessageIndex++) {
-            clone.message[eachMessageIndex] = parsePlaceholder(clone.message[eachMessageIndex], placeholders);
+            clone.message[eachMessageIndex] = parsePlaceholder(clone.message[eachMessageIndex], player, placeholders);
         }
 
         for (int eachTitleIndex = 0; eachTitleIndex < clone.title.length; eachTitleIndex++) {
-            clone.message[eachTitleIndex] = parsePlaceholder(clone.title[eachTitleIndex], placeholders);
+            clone.title[eachTitleIndex] = parsePlaceholder(clone.title[eachTitleIndex], player, placeholders);
         }
 
-        clone.actionBar = parsePlaceholder(clone.actionBar, placeholders);
+        clone.actionBar = parsePlaceholder(clone.actionBar, player, placeholders);
         return clone;
     }
 
     @NotNull
-    protected String[] parseTitle(@Nullable Collection<MessagePlaceholder> placeholders){
+    protected String[] parseTitle(@Nullable Collection<MessagePlaceholder> placeholders, @Nullable Player player){
         String[] title = wrappedMessageType.title.clone();
         for (int eachTitleIndex = 0; eachTitleIndex < title.length; eachTitleIndex++) {
-            title[eachTitleIndex] = parsePlaceholder(title[eachTitleIndex], placeholders);
+            title[eachTitleIndex] = parsePlaceholder(title[eachTitleIndex], player, placeholders);
         }
         return title;
     }
 
     @Nullable
-    protected String parseActionBar(@Nullable Collection<MessagePlaceholder> placeholders){
+    protected String parseActionBar(@Nullable Collection<MessagePlaceholder> placeholders, @Nullable Player player){
         String actionBar = wrappedMessageType.actionBar;
         if(actionBar == null)
             return null;
 
-        return parsePlaceholder(actionBar, placeholders);
+        return parsePlaceholder(actionBar, player , placeholders);
     }
 
 
-    private String parsePlaceholder(String message, MessagePlaceholder... placeholders){
+    private String parsePlaceholder(String message, @Nullable Player player, MessagePlaceholder... placeholders){
         if(message == null || message.isEmpty())
             return null;
+
+        if(this.wrappedMessageType.parsePlaceholderApi && player != null){
+            message = PlaceholderAPI.setPlaceholders(player, message);
+        }
 
         for (MessagePlaceholder placeholder : placeholders) {
             message = placeholder.replace(message);
@@ -95,9 +103,13 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
         return message;
     }
 
-    private String parsePlaceholder(String message, Collection<MessagePlaceholder> placeholders){
+    private String parsePlaceholder(String message,@Nullable Player player, Collection<MessagePlaceholder> placeholders){
         if(message == null || message.isEmpty())
             return null;
+
+        if(this.wrappedMessageType.parsePlaceholderApi && player != null){
+            message = PlaceholderAPI.setPlaceholders(player, message);
+        }
 
         for (MessagePlaceholder placeholder : placeholders) {
             message = placeholder.replace(message);
@@ -124,6 +136,7 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
         public static final String SOUND_KEY = "[SOUND]";
         public static final String ACTION_BAR_KEY = "[ACTION-BAR]";
         public static final String PLACEHOLDER_API_FLAG = "[PLACEHOLDER-API]";
+        public static final String TITLE_SETTINGS_KEY = "[TITLE-SETTING]";
         @NotNull
         public static WrappedMessageType process(List<String> message){
             if(message == null || message.isEmpty())
@@ -134,6 +147,9 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
             String sound = null;
             String actionBar  = null;
             boolean parsePlaceholderApi = false;
+            int fadeIn = 40;
+            int fadeOut = 40;
+            int stay = 80;
             for (String eachLine : message) {
                 if(eachLine.startsWith(TITLE_HEAD_KEY)){
                     String titleHead = eachLine.substring(TITLE_HEAD_KEY.length()).trim();
@@ -147,6 +163,15 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
                     actionBar = eachLine.substring(ACTION_BAR_KEY.length()).trim();
                 }else if(eachLine.equals(PLACEHOLDER_API_FLAG)){
                     parsePlaceholderApi = true;
+                }else if(eachLine.startsWith(TITLE_SETTINGS_KEY)){
+                    String settingRaw = eachLine.substring(TITLE_SETTINGS_KEY.length()).trim();
+                    String[] split = settingRaw.split(";");
+                    if(split.length != 3)
+                        continue;
+
+                    fadeIn = Integer.parseInt(split[0]);
+                    fadeOut = Integer.parseInt(split[1]);
+                    stay = Integer.parseInt(split[2]);
                 }else{
                     if(eachLine.isEmpty())
                         continue;
@@ -155,7 +180,7 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
                 }
             }
 
-            return new WrappedMessageType(messages.toArray(new String[0]), title.toArray(new String[0]), actionBar, sound, parsePlaceholderApi);
+            return new WrappedMessageType(messages.toArray(new String[0]), title.toArray(new String[0]), actionBar, sound, parsePlaceholderApi, fadeIn, fadeOut, stay);
         }
 
     }
@@ -166,13 +191,16 @@ public abstract class AbstractMessage implements IPluginMessage<Player>{
     @AllArgsConstructor
     public static class WrappedMessageType implements Cloneable{
 
-        public static final WrappedMessageType EMPTY = new WrappedMessageType(new String[0], new String[0], null, null, false);
+        public static final WrappedMessageType EMPTY = new WrappedMessageType(new String[0], new String[0], null, null, false, 30, 40, 80);
 
         private String[] message = null;
         private String[] title = null;
         private String actionBar = null;
         private String sound = null;
         private boolean parsePlaceholderApi = false;
+        private int fadeIn = 30;
+        private int fadeOut = 40;
+        private int stay = 80;
         public boolean hasActionBar(){
             return actionBar != null && !actionBar.isEmpty();
         }

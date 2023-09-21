@@ -10,6 +10,7 @@ import me.alenalex.notaprisoncore.api.exceptions.LoadPlayerException;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.abstracts.AbstractEventListener;
 import me.alenalex.notaprisoncore.paper.constants.DefaultAdminMessages;
+import me.alenalex.notaprisoncore.paper.constants.LocaleConstants;
 import me.alenalex.notaprisoncore.paper.data.DataHolder;
 import me.alenalex.notaprisoncore.paper.data.MineDataHolder;
 import me.alenalex.notaprisoncore.paper.data.UserProfileDataHolder;
@@ -185,7 +186,7 @@ public class ConnectionListener extends AbstractEventListener {
                                     Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean> dataOctet = optionalData.get();
                                     UserProfileDataHolder profileDataHolder = (UserProfileDataHolder) getDataHolder().profileDataHolder();
                                     profileDataHolder.load(dataOctet.getFirstItem());
-
+                                    dataOctet.getFirstItem().sendLocalizedMessage(LocaleConstants.FIRST_JOIN_LOCALE);
                                     if(dataOctet.hasThird()){
                                         MineDataHolder mineDataHolder = (MineDataHolder) getDataHolder().mineDataHolder();
                                         mineDataHolder.load(dataOctet.getThirdItem());
@@ -233,7 +234,6 @@ public class ConnectionListener extends AbstractEventListener {
                                 if(getConfiguration().getPluginConfiguration().serverConfiguration().isFreezePlayerOnLoadEnabled()){
                                     Utils.Freeze.removeFreeze(playerId);
                                 }
-                                player.sendMessage("Load complete");
                             });
                 }
             }
