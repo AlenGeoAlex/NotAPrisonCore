@@ -16,6 +16,7 @@ public abstract class AbstractMessageBuilder {
     public AbstractMessageBuilder(){
     }
     public abstract String sourceName();
+    public abstract String sourceAddress();
 
     public void build(){
         INSTANCE = this;
@@ -23,12 +24,12 @@ public abstract class AbstractMessageBuilder {
 
     public <T> MessageRequestModel<T> buildRequest(T requestContext){
         String sourceId = generateSourceId();
-        return new MessageRequestModel<T>(sourceId, sourceName(), requestContext);
+        return new MessageRequestModel<T>(sourceId, sourceName(), sourceAddress() ,requestContext);
     }
 
     public <T> MessageResponseModel<T> buildRequest(T responseContext, MessageRequestModel<?> requestModel){
         String sourceId = generateSourceId();
-        return new MessageResponseModel<T>(sourceId, sourceName(), requestModel, responseContext);
+        return new MessageResponseModel<T>(sourceId, sourceName(),this.sourceAddress() ,requestModel, responseContext);
     }
 
     public String generateSourceId(){

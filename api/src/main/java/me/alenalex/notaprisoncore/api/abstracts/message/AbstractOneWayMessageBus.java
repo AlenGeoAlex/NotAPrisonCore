@@ -11,11 +11,13 @@ import me.alenalex.notaprisoncore.message.service.IUniDirectionalMessageServiceB
 public abstract class AbstractOneWayMessageBus<R> extends AbstractMessageBus<R> implements IUniDirectionalMessageServiceBus<R> {
 
     private final String sourceName;
+    private final String serverSourceAddress;
     private final RequestValidator<R> validator;
 
-    public AbstractOneWayMessageBus(IRedisDatabase redisDatabase, IJsonWrapper jsonWrapper, ServerConfiguration configuration) {
+    public AbstractOneWayMessageBus(IRedisDatabase redisDatabase, IJsonWrapper jsonWrapper, ServerConfiguration configuration, String serverSourceAddress) {
         super(redisDatabase, jsonWrapper);
         this.sourceName = configuration.getServerName();
+        this.serverSourceAddress = serverSourceAddress;
         this.validator = validateRequest();
     }
 
@@ -27,7 +29,7 @@ public abstract class AbstractOneWayMessageBus<R> extends AbstractMessageBus<R> 
 
         MessageRequestModel<R> request = (MessageRequestModel<R>) rawRequest;
 
-        if(request.getSource().equals(this.sourceName))
+        if(request.getSourceAddress().equals(this.serverSourceAddress))
             return;
 
         if(validator != null && !validator.validate(request))

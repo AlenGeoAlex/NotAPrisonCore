@@ -23,7 +23,8 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
     private final RequestValidator<R> requestValidator;
     private final ResponseValidator<R, T> responseValidator;
     private final Cache<String, MessageRequestModel<R>> requestCache;
-    public AbstractTwoWayMessageBus(IRedisDatabase redisDatabase, IJsonWrapper jsonWrapper, ServerConfiguration configuration) {
+    private final String serverSourceAddress;
+    public AbstractTwoWayMessageBus(IRedisDatabase redisDatabase, IJsonWrapper jsonWrapper, ServerConfiguration configuration, String serverSourceAddress) {
         super(redisDatabase, jsonWrapper);
         this.sourceName = configuration.getServerName();
         this.requestValidator = validateRequest();
@@ -31,14 +32,15 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
         this.requestCache = Caffeine.newBuilder()
                 .expireAfterWrite(requestTimeoutAfterSec(), TimeUnit.MINUTES)
                 .build();
+        this.serverSourceAddress = serverSourceAddress;
     }
 
     protected abstract int requestTimeoutAfterSec();
     public abstract TypeToken<MessageRequestModel<R>> requestModelClazz();
     public abstract TypeToken<MessageResponseModel<T>> responseModelClazz();
     @Override
-    public MessageCommunicationStatus<R> sendMessageSync(R message) throws Exception {
-        MessageCommunicationStatus<R> messageCommunicationStatus = super.sendMessageSync(message);
+    public MessageCommunicationStatus<R> sendMessage(R message) throws Exception {
+        MessageCommunicationStatus<R> messageCommunicationStatus = super.sendMessage(message);
         if(messageCommunicationStatus == null)
             return null;
         if(messageCommunicationStatus.isSuccess())
@@ -53,7 +55,7 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
 
         MessageRequestModel<R> request = (MessageRequestModel<R>) rawRequest;
 
-        if(request.getSource().equals(this.sourceName))
+        if(request.getSourceAddress().equals(this.serverSourceAddress))
             return;
 
         if(requestValidator != null && !requestValidator.validate(request))
@@ -64,6 +66,11 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
                         err.printStackTrace();
                         return;
                     }
+
+                    if(!res.isPresent()){
+                        return;
+                    }
+
                     if(!getRedisDatabase().isConnected()){
                         return;
                     }
@@ -71,7 +78,7 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
                     AbstractMessageBuilder abstractMessageBuilder = AbstractMessageBuilder.get();
                     try {
                         JedisPooled connection = getRedisDatabase().getConnection();
-                        MessageResponseModel<T> tMessageResponseModel = abstractMessageBuilder.buildRequest(res, request);
+                        MessageResponseModel<T> tMessageResponseModel = abstractMessageBuilder.buildRequest(res.get(), request);
                         connection.publish(responseChannelName(), getJsonWrapper().stringify(tMessageResponseModel));
                     }catch (Exception e){
                         e.printStackTrace();
@@ -85,7 +92,7 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
 
         MessageResponseModel<T> response = (MessageResponseModel<T>) rawResponse;
 
-        if(response.getSource().equals(this.sourceName) || !response.getTarget().equals(this.sourceName))
+        if(response.getSourceAddress().equals(this.serverSourceAddress) || !response.getTargetAddress().equals(this.serverSourceAddress))
             return;
 
         String requestId = response.getTargetId();
@@ -101,5 +108,11 @@ public abstract class AbstractTwoWayMessageBus<R, T> extends AbstractMessageBus<
         onResponse().process(request, response);
     }
 
+    public String getSourceName() {
+        return sourceName;
+    }
 
+    public String getServerSourceAddress() {
+        return serverSourceAddress;
+    }
 }

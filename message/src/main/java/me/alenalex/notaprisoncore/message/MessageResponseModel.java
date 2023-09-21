@@ -19,23 +19,21 @@ public class MessageResponseModel<T> {
     @NotNull
     private final String target;
     private final T context;
+    @NotNull
+    private final String sourceAddress;
+    @NotNull
+    private final String targetAddress;
 
-    public MessageResponseModel(@NotNull String sourceId, @NotNull String source, @NotNull String targetId, @NotNull String target, T context) {
-        this.sourceId = sourceId;
-        this.source = source;
-        this.generatedTimeStamp = System.currentTimeMillis();
-        this.targetId = targetId;
-        this.target = target;
-        this.context = context;
-    }
-
-    public MessageResponseModel(@NotNull String sourceId, @NotNull String source, @NotNull MessageRequestModel<?> requestModel, T context) {
+    public MessageResponseModel(@NotNull String sourceId, @NotNull String source, @NotNull String sourceAddress , @NotNull MessageRequestModel<?> requestModel, T context) {
         this.sourceId = sourceId;
         this.source = source;
         this.generatedTimeStamp = System.currentTimeMillis();
         this.target = requestModel.getSource();
         this.targetId = requestModel.getSourceId();
         this.context = context;
+        this.sourceAddress = sourceAddress;
+        this.targetAddress = requestModel.getSourceAddress();
+
     }
 
     @NotNull
@@ -65,5 +63,13 @@ public class MessageResponseModel<T> {
     @NotNull
     public T getContext() {
         return context;
+    }
+
+    public @NotNull String getSourceAddress() {
+        return sourceAddress;
+    }
+
+    public String getTargetAddress() {
+        return targetAddress;
     }
 }

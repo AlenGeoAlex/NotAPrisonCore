@@ -20,7 +20,7 @@ import java.util.Set;
 
 public abstract class AbstractMessageService implements IMessageService {
 
-    private final HashMap<String, AbstractMessageBus<?>> messageBusHashMap;
+    protected final HashMap<String, AbstractMessageBus<?>> messageBusHashMap;
     private final IDatabaseProvider provider;
     private final IJsonWrapper jsonWrapper;
     private Thread jedisThread;

@@ -1,6 +1,7 @@
 package me.alenalex.notaprisoncore.api.abstracts.message;
 
 import me.alenalex.notaprisoncore.api.exceptions.message.MessageBusExistsException;
+import me.alenalex.notaprisoncore.message.models.OnlineAnnouncementMessage;
 import me.alenalex.notaprisoncore.message.service.IMessageServiceBus;
 
 public interface IMessageService {
@@ -15,6 +16,7 @@ public interface IMessageService {
     void registerMessageBus(AbstractOneWayMessageBus<?> oneWayMessageBus) throws MessageBusExistsException;
     void registerMessageBus(AbstractTwoWayMessageBus<?, ?> twoWayMessageBus) throws MessageBusExistsException;
     void unregisterMessageBus(String channelName);
-
     boolean isListening();
+    IMessageServiceBus<?> getService(String messageChannel);
+    IMessageServiceBus<OnlineAnnouncementMessage.OnlineAnnouncementRequest> getHeartbeatService();
 }

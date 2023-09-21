@@ -11,6 +11,7 @@ import me.alenalex.notaprisoncore.paper.listener.ConnectionListener;
 import me.alenalex.notaprisoncore.paper.listener.PlayerListener;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.message.PrisonMessageService;
+import me.alenalex.notaprisoncore.paper.scheduler.PrisonScheduler;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
 import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,11 +29,13 @@ public final class NotAPrisonCore {
     private final DataHolder dataHolder;
     private boolean shouldRunEnable;
     private PrisonMessageService messageService;
+    private final PrisonScheduler prisonScheduler;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
         this.dataHolder = new DataHolder(this);
         this.shouldRunEnable = true;
+        this.prisonScheduler = new PrisonScheduler(this);
     }
 
     public void onLoad(){
@@ -83,7 +86,12 @@ public final class NotAPrisonCore {
             e.printStackTrace();
             disableBukkitPlugin("Failed to register the message service. Check above stack trace to know more");
         }
-
+        try {
+            this.prisonScheduler.onEnable();
+        }catch (Exception e){
+            e.printStackTrace();
+            disableBukkitPlugin("Failed to enable scheduler task. Check above stack trace to know more");
+        }
         this.prisonDataStore = new PrisonDataStore(this);
         try {
             this.prisonDataStore.init();
@@ -112,6 +120,7 @@ public final class NotAPrisonCore {
             return;
         }
         this.prisonManagers.enableCommandManager();
+
         getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
         new ConnectionListener(this);
         new PlayerListener(this);
@@ -135,6 +144,10 @@ public final class NotAPrisonCore {
 
         if(this.messageService != null){
             this.messageService.close();
+        }
+
+        if(this.prisonScheduler != null){
+            this.prisonScheduler.onDisable();
         }
     }
 

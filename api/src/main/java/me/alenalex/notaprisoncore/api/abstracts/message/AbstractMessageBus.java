@@ -9,8 +9,10 @@ import me.alenalex.notaprisoncore.message.service.IMessageServiceBus;
 import redis.clients.jedis.JedisPooled;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public abstract class AbstractMessageBus<R> implements IMessageServiceBus<R> {
+    private static final Logger LOGGER = Logger.getLogger("NPC-MessageServiceBus");
 
     private final IRedisDatabase redisDatabase;
     private final IJsonWrapper jsonWrapper;
@@ -21,7 +23,7 @@ public abstract class AbstractMessageBus<R> implements IMessageServiceBus<R> {
     }
 
     @Override
-    public MessageCommunicationStatus<R> sendMessageSync(R message) throws Exception {
+    public MessageCommunicationStatus<R> sendMessage(R message) throws Exception {
         if(!redisDatabase.isConnected()){
             return MessageCommunicationStatus.fail("Redis connection is unavailable");
         }
@@ -40,5 +42,17 @@ public abstract class AbstractMessageBus<R> implements IMessageServiceBus<R> {
 
     protected IJsonWrapper getJsonWrapper() {
         return jsonWrapper;
+    }
+
+    protected void logInfo(String message){
+        LOGGER.info(message);
+    }
+
+    protected void logWarning(String message){
+        LOGGER.warning(message);
+    }
+
+    protected void logSevere(String message){
+        LOGGER.severe(message);
     }
 }

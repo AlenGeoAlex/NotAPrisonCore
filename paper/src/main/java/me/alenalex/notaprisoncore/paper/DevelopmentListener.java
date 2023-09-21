@@ -18,12 +18,7 @@ public class DevelopmentListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        try {
-            this.core.getMessageService().getSampleBus().sendMessageAsync(new Sample.SampleRequest("Alen"));
-            this.core.getMessageService().getOneWayMessageBus().sendMessageAsync(new SampleOneWay(event.getPlayer().getDisplayName()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 }
 
