@@ -210,7 +210,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public CompletableFuture<Boolean> updateAsync(E entity) {
-        String updateQuery = insertQuery();
+        String updateQuery = updateQuery();
         if(updateQuery == null || updateQuery.isEmpty()){
             CompletableFuture<Boolean> future = new CompletableFuture<>();
             future.completeExceptionally(new OverridesQueryException(tableName(), "UPDATE"));
@@ -228,7 +228,7 @@ public abstract class AbstractDataStore<E, I> implements IEntityStore<E, I> {
 
     @Override
     public boolean updateBatchSync(Collection<E> entities) {
-        String updateQuery = insertQuery();
+        String updateQuery = updateQuery();
         if(updateQuery == null || updateQuery.isEmpty()){
             throw new OverridesQueryException(tableName(), "UPDATE BATCH");
         }

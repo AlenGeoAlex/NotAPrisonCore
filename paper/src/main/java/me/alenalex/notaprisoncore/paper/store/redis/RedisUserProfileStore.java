@@ -2,7 +2,7 @@ package me.alenalex.notaprisoncore.paper.store.redis;
 
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractRedisStore;
 import me.alenalex.notaprisoncore.api.common.Pair;
-import me.alenalex.notaprisoncore.api.common.RedisKey;
+import me.alenalex.notaprisoncore.api.enums.RedisKey;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.exceptions.database.redis.RedisDatabaseNotAvailableException;
@@ -11,7 +11,6 @@ import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
 import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -46,15 +45,20 @@ public class RedisUserProfileStore extends AbstractRedisStore<IPrisonUserProfile
     }
 
     @Override
-    public CompletableFuture<Boolean> isUserOnSwitch(UUID uuid) {
+    public CompletableFuture<Pair<Boolean, String>> isUserOnSwitch(UUID uuid) {
         if(!redisDatabase.isConnected()){
-            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            CompletableFuture<Pair<Boolean, String>> future = new CompletableFuture<>();
             future.completeExceptionally(new RedisDatabaseNotAvailableException());
             return future;
         }
 
         return getOnceString(RedisKey.SERVER_SWITCH.keyOf(uuid.toString()))
-                .thenApply(Objects::nonNull);
+                .thenApply(s ->{
+                    if(s == null)
+                        return new Pair<Boolean, String>(false, null);
+
+                    return new Pair<Boolean, String>(true, s);
+                });
     }
 
     @Override
@@ -69,7 +73,7 @@ public class RedisUserProfileStore extends AbstractRedisStore<IPrisonUserProfile
 
     private void setUserOnSwitchInternal(IPrisonUserProfile userProfile){
         String key = RedisKey.SERVER_SWITCH.keyOf(userProfile.getUserId().toString());
-        pushString(key, String.valueOf(System.currentTimeMillis()), RedisKey.SERVER_SWITCH.getExpiry())
+        pushString(key, this.prisonDataStore.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getServerName(), RedisKey.SERVER_SWITCH.getExpiryInSeconds())
                 .exceptionally((err) -> {
                     if(err != null){
                         err.printStackTrace();

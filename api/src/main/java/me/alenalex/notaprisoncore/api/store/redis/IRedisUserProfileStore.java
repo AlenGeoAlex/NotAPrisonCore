@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IRedisUserProfileStore {
     CompletableFuture<Void> setUserOnSwitch(IPrisonUserProfile userProfile);
-    CompletableFuture<Boolean> isUserOnSwitch(UUID uuid);
+    CompletableFuture<Pair<Boolean, String>> isUserOnSwitch(UUID uuid);
     CompletableFuture<Void> setUserData(IPrisonUserProfile userProfile, IMine iMine);
     CompletableFuture<Pair<IPrisonUserProfile, IMine>> getUserData(UUID playerId);
 }

@@ -2,7 +2,7 @@ package me.alenalex.notaprisoncore.paper.store.redis;
 
 import me.alenalex.notaprisoncore.api.abstracts.pattern.Retry;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractRedisStore;
-import me.alenalex.notaprisoncore.api.common.RedisKey;
+import me.alenalex.notaprisoncore.api.enums.RedisKey;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.exceptions.database.redis.IllegalRedisDataException;
 import me.alenalex.notaprisoncore.api.store.redis.IRedisMineStore;
@@ -32,7 +32,7 @@ public class RedisMineStore extends AbstractRedisStore<Mine> implements IRedisMi
         }
 
         UUID mineId = mine.getId();
-        return pushJson(RedisKey.MINE_DATA.keyOf(mineId.toString()), mine, RedisKey.MINE_DATA.getExpiry());
+        return pushJson(RedisKey.MINE_DATA.keyOf(mineId.toString()), mine, RedisKey.MINE_DATA.getExpiryInSeconds());
     }
 
 

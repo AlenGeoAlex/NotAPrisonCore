@@ -32,7 +32,6 @@ public abstract class Retry<T> {
         while (shouldRetry()){
             attempts.incrementAndGet();
             try {
-                System.out.println("Attempt "+attempts.get());
                 Optional<T> work = work();
                 if(work.isPresent())
                     return work.get();

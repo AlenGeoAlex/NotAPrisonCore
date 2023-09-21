@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.paper;
 
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
+import me.alenalex.notaprisoncore.api.abstracts.AbstractMessageService;
 import me.alenalex.notaprisoncore.paper.data.DataHolder;
 import me.alenalex.notaprisoncore.paper.database.PrisonDatabaseProvider;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
@@ -9,7 +10,9 @@ import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
 import me.alenalex.notaprisoncore.paper.listener.ConnectionListener;
 import me.alenalex.notaprisoncore.paper.listener.PlayerListener;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
+import me.alenalex.notaprisoncore.paper.message.PrisonMessageService;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
+import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.InputStream;
@@ -24,6 +27,7 @@ public final class NotAPrisonCore {
     private PrisonDataStore prisonDataStore;
     private final DataHolder dataHolder;
     private boolean shouldRunEnable;
+    private PrisonMessageService messageService;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
@@ -67,6 +71,19 @@ public final class NotAPrisonCore {
             return;
         }
 
+        this.messageService = new PrisonMessageService(this);
+
+        try {
+            this.messageService.onEnable();
+            int messageQueueSize = this.messageService.getChannels().size();
+            getLogger().info("Message queue has been initialized with "+messageQueueSize);
+            this.messageService.listen();
+            getLogger().info("Message bus has started listening for messages...");
+        }catch (Exception e){
+            e.printStackTrace();
+            disableBukkitPlugin("Failed to register the message service. Check above stack trace to know more");
+        }
+
         this.prisonDataStore = new PrisonDataStore(this);
         try {
             this.prisonDataStore.init();
@@ -102,14 +119,22 @@ public final class NotAPrisonCore {
 
     public void onDisable() {
         prisonManagers.onShutdown();
-        this.dataHolder.onDisable();
-        this.prisonDataStore.disable();
+        if(this.dataHolder != null){
+            this.dataHolder.onDisable();
+        }
+        if(this.prisonDataStore != null){
+            this.prisonDataStore.disable();
+        }
         if(this.databaseProvider != null){
             try {
                 this.databaseProvider.disconnect();
             }catch (Exception e){
                 e.printStackTrace();
             }
+        }
+
+        if(this.messageService != null){
+            this.messageService.close();
         }
     }
 
@@ -133,10 +158,16 @@ public final class NotAPrisonCore {
         return dataHolder;
     }
 
+    public PrisonMessageService getMessageService() {
+        return messageService;
+    }
+
     private void disableBukkitPlugin(String reason){
         getLogger().warning(reason);
         bukkitPlugin.getServer().getPluginManager().disablePlugin(this.bukkitPlugin);
     }
+
+
 
 
 }

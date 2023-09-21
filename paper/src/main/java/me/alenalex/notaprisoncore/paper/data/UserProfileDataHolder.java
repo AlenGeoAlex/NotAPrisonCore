@@ -84,11 +84,13 @@ public class UserProfileDataHolder implements IProfileDataHolder {
     @Override
     public void setLoading(@NotNull UUID bukkitPlayer) {
         this.onLoadingSet.add(bukkitPlayer);
+        System.out.println("Added "+bukkitPlayer);
     }
 
     @Override
     public void releaseLoading(@NotNull UUID bukkitPlayer) {
         this.onLoadingSet.remove(bukkitPlayer);
+        System.out.println("Removed "+bukkitPlayer);
     }
 
     @Override

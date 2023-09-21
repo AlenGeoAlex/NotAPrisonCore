@@ -1,4 +1,4 @@
-package me.alenalex.notaprisoncore.api.common;
+package me.alenalex.notaprisoncore.api.enums;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -41,5 +41,9 @@ public enum RedisKey {
         }
 
         return null;
+    }
+
+    public long getExpiryInSeconds(){
+        return getExpiry()/1000;
     }
 }

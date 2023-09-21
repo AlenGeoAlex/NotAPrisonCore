@@ -3,6 +3,7 @@ package me.alenalex.notaprisoncore.paper.data;
 import me.alenalex.notaprisoncore.api.data.IMineDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,5 +28,10 @@ public class MineDataHolder implements IMineDataHolder {
     @Override
     public void onDisable() {
 
+    }
+
+    @Override
+    public @Nullable IMine get(UUID uuid) {
+        return this.mineMap.get(uuid);
     }
 }
