@@ -1,6 +1,6 @@
 package me.alenalex.notaprisoncore.paper.task;
 
-import me.alenalex.notaprisoncore.message.models.OnlineAnnouncementMessage;
+import me.alenalex.notaprisoncore.message.models.HeartbeatMessage;
 import me.alenalex.notaprisoncore.paper.abstracts.AbstractTask;
 
 public class HeartbeatTask extends AbstractTask {
@@ -15,7 +15,7 @@ public class HeartbeatTask extends AbstractTask {
     @Override
     public void run() {
         try {
-            getPluginInstance().getMessageService().getHeartbeatService().sendMessage(new OnlineAnnouncementMessage.OnlineAnnouncementRequest(firstTime));
+            getPluginInstance().getMessageService().getHeartbeatService().sendMessage(new HeartbeatMessage.OnlineAnnouncementRequest(firstTime));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

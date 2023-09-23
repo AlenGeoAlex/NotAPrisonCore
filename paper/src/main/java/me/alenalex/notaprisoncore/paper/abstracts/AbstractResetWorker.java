@@ -158,7 +158,7 @@ public abstract class AbstractResetWorker implements IMineResetWorker {
 
     protected ResetterConfiguration getResetterConfiguration(){
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
-        return bootstrap.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().resetterConfiguration();
+        return bootstrap.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getResetterConfiguration();
     }
 
     protected IMineResetter getMineResetter() {

@@ -42,7 +42,7 @@ public class RedisMineStore extends AbstractRedisStore<Mine> implements IRedisMi
             @Override
             public IMine get() {
                 try {
-                    Thread.sleep(prisonDataStore.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().redisSyncConfiguration().getRedisNetworkWaitMillis());
+                    Thread.sleep(prisonDataStore.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getRedisSyncConfiguration().getRedisNetworkWaitMillis());
 
                     IMine redis = new Retry<IMine>(500, 5) {
                         @Override

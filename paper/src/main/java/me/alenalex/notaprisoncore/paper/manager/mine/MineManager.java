@@ -1,14 +1,22 @@
 package me.alenalex.notaprisoncore.paper.manager.mine;
 
 import me.alenalex.notaprisoncore.api.config.entry.MinePositionalKeys;
+import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.entity.mine.MinePositionalKey;
+import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.exceptions.DuplicateMineIdentifier;
+import me.alenalex.notaprisoncore.api.exceptions.mine.FailedMineClaimException;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.managers.IMineManager;
 import me.alenalex.notaprisoncore.api.provider.IMineMetaProvider;
+import me.alenalex.notaprisoncore.message.models.MineCreateMessage;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.config.MineIdentifierConfiguration;
+import me.alenalex.notaprisoncore.paper.constants.LocaleConstants;
+import me.alenalex.notaprisoncore.paper.data.DataHolder;
+import me.alenalex.notaprisoncore.paper.data.MineDataHolder;
+import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.generator.MineGenerator;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
@@ -42,7 +50,7 @@ public class MineManager implements IMineManager {
 
     @Override
     public void registerMineIdentifiers(String schematic, MinePositionalKey key) throws DuplicateMineIdentifier {
-        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.getPlugin().getPrisonManagers().configurationManager().getMineIdentifierConfiguration();
+        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.getPlugin().getPrisonManagers().getConfigurationManager().getMineIdentifierConfiguration();
         MinePositionalKeys minePositionalKeys = configuration.getOrCreate(schematic);
         boolean exists = minePositionalKeys.stream().anyMatch(minePositionalKey -> minePositionalKey.getIdentifier() == key.getIdentifier());
         if(exists)
@@ -53,7 +61,7 @@ public class MineManager implements IMineManager {
 
     @Override
     public void registerMineIdentifiersOnAllSchematics(MinePositionalKey key) throws DuplicateMineIdentifier {
-        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.getPlugin().getPrisonManagers().configurationManager().getMineIdentifierConfiguration();
+        MineIdentifierConfiguration configuration = (MineIdentifierConfiguration) this.getPlugin().getPrisonManagers().getConfigurationManager().getMineIdentifierConfiguration();
         Collection<MinePositionalKeys> keys = configuration.getKeys();
         for (MinePositionalKeys positionalKeys : keys) {
             registerMineIdentifiers(positionalKeys.getMineName(), key);
@@ -66,7 +74,7 @@ public class MineManager implements IMineManager {
         AtomicBoolean completed = new AtomicBoolean(true);
         this.managers.getPluginInstance()
                 .getPrisonDataStore()
-                .mineMetaStore()
+                .getMineMetaStore()
                 .createAsync(meta)
                 .whenComplete((optionalId, err) -> {
                    if(err != null){
@@ -92,7 +100,7 @@ public class MineManager implements IMineManager {
                         getPlugin().getLogger().warning("The meta is already registered under different meta id. The older meta would be deleted");
                         this.managers.getPluginInstance()
                                 .getPrisonDataStore()
-                                .mineMetaStore()
+                                .getMineMetaStore()
                                 .deleteAsync(meta.getMetaId());
                     }
                     getPlugin().getLogger().info("Successfully created meta with id "+meta.getMetaId()+" on "+meta.getSpawnPoint());
@@ -100,6 +108,53 @@ public class MineManager implements IMineManager {
                 });
 
         return future;
+    }
+
+    @Override
+    public CompletableFuture<IMine> claimMineForUser(IPrisonUserProfile profile) {
+        CompletableFuture<IMine> mineFuture = new CompletableFuture<>();
+        if(profile.hasMine()){
+            mineFuture.completeExceptionally(new FailedMineClaimException("The player has already claimed the mine"));
+            return mineFuture;
+        }
+
+        DataHolder dataHolder = this.managers.getPluginInstance().getDataHolder();
+        MineMeta mineMeta = (MineMeta) dataHolder.getMineMetaDataHolder().getUnclaimedMeta().orElse(null);
+
+        if(mineMeta == null){
+            mineFuture.completeExceptionally(new FailedMineClaimException("No mine is available to be claimed!"));
+            return mineFuture;
+        }
+        profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_START);
+        Mine mine = new Mine(profile.getUserId(), mineMeta);
+        mine.setDefaults(this.managers);
+        mine.setDefaultLocalStorage();
+        this.getPlugin().getPrisonDataStore().getMineStore()
+                .createMine(mine)
+                .whenComplete((optionalId, err) -> {
+                    if(err != null){
+                        dataHolder.getMineMetaDataHolder().releaseLockedMeta(mineMeta);
+                        mineFuture.completeExceptionally(err);
+                        return;
+                    }
+
+                    if(!optionalId.isPresent()){
+                        mineFuture.completeExceptionally(new FailedMineClaimException("Failed to get a valid mine id from data store"));
+                        return;
+                    }
+
+                    mine.setMineId(optionalId.get());
+                    dataHolder.getMineMetaDataHolder().claimMeta(mineMeta);
+                    ((MineDataHolder)dataHolder.getMineDataHolder()).load(mine);
+                    mineFuture.complete(mine);
+                    try {
+                        this.getPlugin().getMessageService().getMineCreationService().sendMessage(new MineCreateMessage(mine.getId(), mine.getOwnerId(), mine.getMetaId()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        return mineFuture;
     }
 
     public PrisonManagers getManagers() {

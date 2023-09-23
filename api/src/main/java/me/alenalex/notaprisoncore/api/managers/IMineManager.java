@@ -1,7 +1,9 @@
 package me.alenalex.notaprisoncore.api.managers;
 
+import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.entity.mine.MinePositionalKey;
+import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.exceptions.DuplicateMineIdentifier;
 import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.provider.IMineMetaProvider;
@@ -41,5 +43,7 @@ public interface IMineManager {
     void registerMineIdentifiersOnAllSchematics(MinePositionalKey key) throws DuplicateMineIdentifier;
 
     CompletableFuture<Boolean> registerMineMeta(IMineMeta meta);
+
+    CompletableFuture<IMine> claimMineForUser(IPrisonUserProfile profile);
 
 }

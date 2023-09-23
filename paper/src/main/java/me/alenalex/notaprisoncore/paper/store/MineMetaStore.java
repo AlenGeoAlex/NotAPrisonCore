@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStore;
-import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.exceptions.database.sql.DatabaseNotAvailableException;
 import me.alenalex.notaprisoncore.api.exceptions.database.sql.FailedDatabaseException;
@@ -114,8 +113,8 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
 
     @Override
     public CompletableFuture<Collection<IMineMeta>> reserveMetas() {
-        String serverName = this.store.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getServerName();
-        int metaReservationCount = this.store.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getMetaReservationCount();
+        String serverName = this.store.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getServerName();
+        int metaReservationCount = this.store.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getMetaReservationCount();
         return reserveMetas(serverName, metaReservationCount);
     }
 
@@ -132,7 +131,7 @@ public class MineMetaStore extends AbstractDataStore<IMineMeta, UUID> implements
 
     @Override
     public CompletableFuture<Boolean> releaseReservedMetas() {
-        String serverName = this.store.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getServerName();
+        String serverName = this.store.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getServerName();
         return releaseReservedMetas(serverName);
     }
 

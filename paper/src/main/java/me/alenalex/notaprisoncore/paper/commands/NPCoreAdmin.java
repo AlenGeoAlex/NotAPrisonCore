@@ -13,14 +13,10 @@ import dev.triumphteam.cmd.bukkit.annotation.Permission;
 import dev.triumphteam.cmd.core.annotations.Command;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
-import me.alenalex.notaprisoncore.api.exceptions.NoSchematicFound;
-import me.alenalex.notaprisoncore.api.generator.IMineGenerator;
 import me.alenalex.notaprisoncore.api.provider.IMineMetaProvider;
 import me.alenalex.notaprisoncore.paper.abstracts.AbstractCommand;
 import me.alenalex.notaprisoncore.paper.commands.help.CommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.commands.help.SubcommandHelpProvider;
-import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
-import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
 import me.alenalex.notaprisoncore.paper.manager.CommandManager;
 import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.bukkit.Bukkit;
@@ -60,7 +56,7 @@ public class NPCoreAdmin extends AbstractCommand {
 
     @Command("expand")
     public void claim(CommandSender sender) {
-        Optional<IMineMeta> unclaimedMeta = getCommandManager().getPrisonManagers().getPluginInstance().getDataHolder().mineMetaDataHolder().getUnclaimedMeta();
+        Optional<IMineMeta> unclaimedMeta = getCommandManager().getPrisonManagers().getPluginInstance().getDataHolder().getMineMetaDataHolder().getUnclaimedMeta();
         IMineMeta meta = unclaimedMeta.orElse(null);
         if (meta == null) {
             System.out.println("Meta is null");
@@ -120,7 +116,7 @@ public class NPCoreAdmin extends AbstractCommand {
 //
     @Command("test2")
     public void onCommand2(CommandSender sender, String id){
-        getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().mineStore().id(UUID.fromString("002e1d18-4ffa-11ee-9938-020017006c0c")).whenComplete((m, er) -> {
+        getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().getMineStore().id(UUID.fromString("002e1d18-4ffa-11ee-9938-020017006c0c")).whenComplete((m, er) -> {
             if(er != null){
                 er.printStackTrace();
                 return;
@@ -132,8 +128,8 @@ public class NPCoreAdmin extends AbstractCommand {
                 System.out.println("No Mine");
                 return;
             }
-            getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().redisMineStore().set(mine);
-            getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().redisMineStore().get(mine.getId())
+            getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().getRedisMineStore().set(mine);
+            getCommandManager().getPrisonManagers().getPluginInstance().getPrisonDataStore().getRedisMineStore().get(mine.getId())
                     .whenComplete((iMine, err) -> {
                         System.out.println("123");
                         try {
@@ -167,7 +163,7 @@ public class NPCoreAdmin extends AbstractCommand {
             }
         }
 
-        IMineMetaProvider metaProvider = getCommandManager().getPrisonManagers().mineManager().metaProvider();
+        IMineMetaProvider metaProvider = getCommandManager().getPrisonManagers().getMineManager().metaProvider();
 
         if(metaProvider.isPastingInProgress()){
             sendFormattedMessage(sender, ChatColor.RED+"An existing pasting/generation is on progress, Try again later");

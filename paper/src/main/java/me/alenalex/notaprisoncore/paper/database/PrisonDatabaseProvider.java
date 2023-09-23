@@ -18,8 +18,8 @@ public class PrisonDatabaseProvider implements IDatabaseProvider {
     private final PrisonSqlDatabase sqlDatabase;
     public PrisonDatabaseProvider(NotAPrisonCore pluginInstance) {
         this.pluginInstance = pluginInstance;
-        this.redisDatabase = new PrisonRedisDatabase(this.pluginInstance.getLogger(), this.pluginInstance.getPrisonManagers().configurationManager().getPluginConfiguration().redisConfiguration());
-        this.sqlDatabase = new PrisonSqlDatabase(this.pluginInstance.getPrisonManagers().configurationManager().getPluginConfiguration().sqlConfiguration().asHikariConfig("mariadb"), this.pluginInstance.getLogger());
+        this.redisDatabase = new PrisonRedisDatabase(this.pluginInstance.getLogger(), this.pluginInstance.getPrisonManagers().getConfigurationManager().getPluginConfiguration().getRedisConfiguration());
+        this.sqlDatabase = new PrisonSqlDatabase(this.pluginInstance.getPrisonManagers().getConfigurationManager().getPluginConfiguration().getSqlConfiguration().asHikariConfig("mariadb"), this.pluginInstance.getLogger());
     }
 
     public ConnectionResponse connect(){

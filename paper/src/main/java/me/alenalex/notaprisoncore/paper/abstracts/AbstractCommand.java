@@ -8,11 +8,20 @@ import me.alenalex.notaprisoncore.api.locale.LocaleKey;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.commands.help.CommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.constants.Permission;
+import me.alenalex.notaprisoncore.paper.data.DataHolder;
+import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
+import me.alenalex.notaprisoncore.paper.entity.profile.PrisonUserProfile;
 import me.alenalex.notaprisoncore.paper.manager.CommandManager;
+import me.alenalex.notaprisoncore.paper.manager.ConfigurationManager;
+import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 @Getter
 @EqualsAndHashCode
@@ -107,5 +116,60 @@ public abstract class AbstractCommand {
 
     protected boolean isConsole(CommandSender sender){
         return !isPlayer(sender);
+    }
+
+    public DataHolder getDataHolder(){
+        return this.commandManager.getPrisonManagers().getPluginInstance().getDataHolder();
+    }
+
+    @Nullable
+    protected Mine getMine(UUID uuid){
+        return (Mine) getDataHolder().getMineDataHolder().get(uuid);
+    }
+
+    @Nullable
+    protected Mine getMineOf(Player player){
+        return getMineOf(player.getUniqueId());
+    }
+
+    @Nullable
+    protected Mine getMineOf(IPrisonUserProfile profile){
+        if(!profile.hasMine())
+            return null;
+
+        return getMine(profile.getMineId());
+    }
+
+    protected Mine getMineOf(UUID playerUid){
+        PrisonUserProfile profile = getProfile(playerUid);
+        if(profile == null)
+            return null;
+
+        return getMineOf(profile);
+    }
+
+
+    protected boolean isPlayerDataLoaded(@NotNull Player player){
+        return isPlayerDataLoaded(player.getUniqueId());
+    }
+
+    protected boolean isPlayerDataLoaded(UUID playerUid){
+        return getDataHolder().getProfileDataHolder().isLoaded(playerUid);
+    }
+
+    protected PrisonUserProfile getProfile(@NotNull Player player){
+        return getProfile(player.getUniqueId());
+    }
+
+    protected PrisonUserProfile getProfile(@NotNull UUID playerUid){
+        return (PrisonUserProfile) getDataHolder().getProfileDataHolder().get(playerUid);
+    }
+
+    protected ConfigurationManager getConfigurationManager(){
+        return (ConfigurationManager) this.commandManager.getPrisonManagers().getConfigurationManager();
+    }
+
+    protected PrisonDataStore getDataStore(){
+        return this.commandManager.getPrisonManagers().getPluginInstance().getPrisonDataStore();
     }
 }

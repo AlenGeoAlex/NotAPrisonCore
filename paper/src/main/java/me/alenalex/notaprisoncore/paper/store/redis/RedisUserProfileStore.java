@@ -73,7 +73,7 @@ public class RedisUserProfileStore extends AbstractRedisStore<IPrisonUserProfile
 
     private void setUserOnSwitchInternal(IPrisonUserProfile userProfile){
         String key = RedisKey.SERVER_SWITCH.keyOf(userProfile.getUserId().toString());
-        pushString(key, this.prisonDataStore.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getServerName(), RedisKey.SERVER_SWITCH.getExpiryInSeconds())
+        pushString(key, this.prisonDataStore.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getServerName(), RedisKey.SERVER_SWITCH.getExpiryInSeconds())
                 .exceptionally((err) -> {
                     if(err != null){
                         err.printStackTrace();

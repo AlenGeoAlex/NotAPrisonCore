@@ -4,7 +4,6 @@ import me.alenalex.notaprisoncore.api.data.IMineMetaDataHolder;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.api.exceptions.dataholder.LockExistException;
 import me.alenalex.notaprisoncore.paper.entity.mine.MineMeta;
-import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -69,7 +68,7 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         this.reservedMetaSet.clear();
         this.getDataHolder().getPlugin().getLogger().info("Starting to acquire lock...");
-        this.dataHolder.getPlugin().getPrisonDataStore().mineMetaStore().reserveMetas()
+        this.dataHolder.getPlugin().getPrisonDataStore().getMineMetaStore().reserveMetas()
                 .whenComplete((res, err) -> {
                     if(err != null){
                         lockingInProgress.set(false);
@@ -92,7 +91,7 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
 
     @Override
     public void onEnable(){
-        Collection<?> joined = this.dataHolder.getPlugin().getPrisonDataStore().mineMetaStore()
+        Collection<?> joined = this.dataHolder.getPlugin().getPrisonDataStore().getMineMetaStore()
                 .reserveMetas()
                 .handle((metaCollection, err) -> {
                     if (err != null) {
@@ -126,7 +125,7 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
     @Override
     public void onDisable(){
         Boolean finalResponse = this.dataHolder.getPlugin().getPrisonDataStore()
-                .mineMetaStore()
+                .getMineMetaStore()
                 .releaseReservedMetas()
                 .handle((response, err) -> {
                     if (err != null) {
@@ -153,7 +152,7 @@ public class MineMetaDataHolder implements IMineMetaDataHolder {
     }
 
     private void checkAsync(){
-        int min = this.dataHolder.getPlugin().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getMinMetaReservedCount();
+        int min = this.dataHolder.getPlugin().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getMinMetaReservedCount();
         if(this.reservedMetaSet.size() < min){
             this.dataHolder.getPlugin().getLogger().info("Cached metas are below minimum, Acquiring new locks and caching metas!");
             try {

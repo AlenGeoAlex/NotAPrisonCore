@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.ILocaleProfile;
 import me.alenalex.notaprisoncore.api.entity.IEntityMetaDataHolder;
-import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.locale.IPluginMessage;
 import me.alenalex.notaprisoncore.api.locale.LocaleKey;
@@ -16,7 +15,6 @@ import me.alenalex.notaprisoncore.paper.config.LocaleProfile;
 import me.alenalex.notaprisoncore.paper.constants.Defaults;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.LocalEntityMetaDataHolder;
 import me.alenalex.notaprisoncore.paper.entity.dataholder.SharedEntityMetaDataHolder;
-import me.alenalex.notaprisoncore.paper.entity.mine.Mine;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -187,12 +185,12 @@ public final class PrisonUserProfile implements IPrisonUserProfile {
     private void cacheLocaleProfile(){
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
         NotAPrisonCore pluginInstance = bootstrap.getPluginInstance();
-        Optional<ILocaleProfile> optionalILocaleProfile = pluginInstance.getPrisonManagers().localeManager().getLocale(this.localeType);
+        Optional<ILocaleProfile> optionalILocaleProfile = pluginInstance.getPrisonManagers().getLocaleManager().getLocale(this.localeType);
         ILocaleProfile localeProfile = (ILocaleProfile) optionalILocaleProfile.orElse(null);
         Optional<Player> playerOptional = getPlayer();
         String playerIdentifier =  playerOptional.isPresent() ? playerOptional.get().getName() : playerUniqueId.toString();
         if(localeProfile == null){
-            localeProfile = pluginInstance.getPrisonManagers().localeManager().getDefaultLocale();
+            localeProfile = pluginInstance.getPrisonManagers().getLocaleManager().getDefaultLocale();
             pluginInstance.getLogger().info("Failed to locate the locale of player [Name/UUID="+playerIdentifier+"]. The specified player locale type is [LocaleType"+localeType+"]. Falling back to the default locale");
         }
         this.cachedLocaleProfile = (LocaleProfile) localeProfile;

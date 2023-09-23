@@ -4,14 +4,14 @@ import org.jetbrains.annotations.NotNull;
 
 public interface IPrisonManagers {
 
-    @NotNull IConfigurationManager configurationManager();
+    @NotNull IConfigurationManager getConfigurationManager();
 
-    @NotNull ISchematicManager schematicManager();
+    @NotNull ISchematicManager getSchematic();
 
-    @NotNull ILocaleManager localeManager();
+    @NotNull ILocaleManager getLocaleManager();
 
-    @NotNull IWorldManager worldManager();
+    @NotNull IWorldManager getWorldManager();
 
-    @NotNull IMineManager mineManager();
+    @NotNull IMineManager getMineManager();
 
 }

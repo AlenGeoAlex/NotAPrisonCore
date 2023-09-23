@@ -24,17 +24,12 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ToString
 @EqualsAndHashCode
@@ -207,7 +202,7 @@ public class Mine implements IMine {
         IMine me = this;
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
 
-        CompletableFuture<Boolean> updateFuture = bootstrap.getPluginInstance().getPrisonDataStore().mineStore()
+        CompletableFuture<Boolean> updateFuture = bootstrap.getPluginInstance().getPrisonDataStore().getMineStore()
                 .updateAsync(me)
                 .thenApply(result -> true);
 
@@ -241,7 +236,7 @@ public class Mine implements IMine {
             @Override
             public Boolean get() {
                 Bootstrap plugin = (Bootstrap) Bootstrap.getJavaPlugin();
-                MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().mineStore();
+                MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().getMineStore();
 
                 String base64String = null;
                 try {
@@ -269,7 +264,7 @@ public class Mine implements IMine {
             @Override
             public Boolean get() {
                 Bootstrap plugin = (Bootstrap) Bootstrap.getJavaPlugin();
-                MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().mineStore();
+                MineStore mineStore = (MineStore) plugin.getPluginInstance().getPrisonDataStore().getMineStore();
                 try {
                     mineStore.writeLocal(mineId.toString(), ((LocalEntityMetaDataHolder) getLocalMetaDataHolder()).encode());
                 } catch (IOException e) {
@@ -298,12 +293,7 @@ public class Mine implements IMine {
         }
 
         CompletableFuture<Void> future = new CompletableFuture<>();
-        Location lowerMiningPoint = this.meta.getLowerMiningPoint();
-        Vector lowerVector = new Vector(lowerMiningPoint.getBlockX(), lowerMiningPoint.getBlockY(), lowerMiningPoint.getBlockZ());
-        this.localEntityMetaDataHolder.set(MineConstants.KEY_LOCAL_LOWER_MINING_VECTOR, GsonWrapper.singleton().gson().toJson(lowerVector));
-        Location upperMiningPoint = this.meta.getLowerMiningPoint();
-        Vector upperVector = new Vector(upperMiningPoint.getBlockX(), upperMiningPoint.getBlockY(), upperMiningPoint.getBlockZ());
-        this.localEntityMetaDataHolder.set(MineConstants.KEY_LOCAL_UPPER_MINING_VECTOR, GsonWrapper.singleton().gson().toJson(upperVector));
+        this.setDefaultLocalStorage();
         CompletableFuture<Boolean> saveFuture = saveLocalMetaDataAsync();
         //TODO Send message to others
 
@@ -321,11 +311,19 @@ public class Mine implements IMine {
 
 
     public void setDefaults(PrisonManagers prisonManagers){
-        this.mineAccess = prisonManagers.configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultMineAccess();
+        this.mineAccess = prisonManagers.getConfigurationManager().getPluginConfiguration().getDefaultMineConfiguration().getDefaultMineAccess();
         this.blockChoices.clearAndSetDefault();
-        this.mineVault.setBalance(new BigDecimal(prisonManagers.configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultVaultBalance().toString()));
+        this.mineVault.setBalance(new BigDecimal(prisonManagers.getConfigurationManager().getPluginConfiguration().getDefaultMineConfiguration().getDefaultVaultBalance().toString()));
     }
 
+    public void setDefaultLocalStorage(){
+        Location lowerMiningPoint = this.meta.getLowerMiningPoint();
+        Vector lowerVector = new Vector(lowerMiningPoint.getBlockX(), lowerMiningPoint.getBlockY(), lowerMiningPoint.getBlockZ());
+        this.localEntityMetaDataHolder.set(MineConstants.KEY_LOCAL_LOWER_MINING_VECTOR, GsonWrapper.singleton().gson().toJson(lowerVector));
+        Location upperMiningPoint = this.meta.getLowerMiningPoint();
+        Vector upperVector = new Vector(upperMiningPoint.getBlockX(), upperMiningPoint.getBlockY(), upperMiningPoint.getBlockZ());
+        this.localEntityMetaDataHolder.set(MineConstants.KEY_LOCAL_UPPER_MINING_VECTOR, GsonWrapper.singleton().gson().toJson(upperVector));
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

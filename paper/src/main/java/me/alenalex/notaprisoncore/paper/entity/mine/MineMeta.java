@@ -2,7 +2,6 @@ package me.alenalex.notaprisoncore.paper.entity.mine;
 
 import com.google.common.base.Objects;
 import com.sk89q.worldedit.regions.Region;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import me.alenalex.notaprisoncore.api.entity.mine.IMineMeta;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 @ToString
 public class MineMeta implements IMineMeta {
@@ -130,7 +128,7 @@ public class MineMeta implements IMineMeta {
     private CompletableFuture<Boolean> saveAsync(){
         IMineMeta me = this;
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
-        return bootstrap.getPluginInstance().getPrisonDataStore().mineMetaStore().updateAsync(me);
+        return bootstrap.getPluginInstance().getPrisonDataStore().getMineMetaStore().updateAsync(me);
     }
 
     @Override

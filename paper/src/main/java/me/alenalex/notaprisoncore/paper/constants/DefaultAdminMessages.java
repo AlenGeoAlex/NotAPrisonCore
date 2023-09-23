@@ -14,6 +14,8 @@ public class DefaultAdminMessages {
 
     public static final String FAILURE_KICK_MESSAGE = ChatColor.translateAlternateColorCodes('&', "&cFailed to load your prison data! Please retry or contact admins after multiple try");
     public static class MineCommand{
+        public static final String PROFILE_NOT_LOADED_SENDER = ChatColor.translateAlternateColorCodes('&', PREFIX+"&cThe profile for the provided player is not yet loaded!!");
+        public static final String PROFILE_NOT_LOADED = ChatColor.translateAlternateColorCodes('&', PREFIX+"&cYour profile is not yet loaded, Please try again later or contact admins!");
         public static final String TARGET_REQUIRED_FOR_CONSOLE_COMMAND = ChatColor.translateAlternateColorCodes('&', PREFIX+"This command is now run from a console. If running from console please provide the target player as /mine [TARGET_PLAYER]");
     }
 }

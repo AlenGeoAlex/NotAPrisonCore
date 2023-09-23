@@ -5,7 +5,6 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractDataStoreWithDirectory;
 import me.alenalex.notaprisoncore.api.common.Octet;
-import me.alenalex.notaprisoncore.api.common.Triplet;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
@@ -48,7 +47,7 @@ public class UserProfileStore extends AbstractDataStoreWithDirectory<IPrisonUser
     public UserProfileStore(PrisonDataStore prisonDataStore) {
         super(prisonDataStore.getPluginInstance().getDatabaseProvider().getSqlDatabase(),
                 new File(prisonDataStore.getStoreParentDirectory(), "meta"+File.separator+"profile"),
-                prisonDataStore.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getCompressionConfiguration().isCompressMineLocalData()
+                prisonDataStore.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getCompressionConfiguration().isCompressMineLocalData()
         );
         this.prisonDataStore = prisonDataStore;
         this.userDataDirectory = new File(prisonDataStore.getStoreParentDirectory(), "meta"+File.separator+"user");

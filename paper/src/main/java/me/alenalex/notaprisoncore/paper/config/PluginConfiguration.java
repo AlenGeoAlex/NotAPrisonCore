@@ -22,6 +22,7 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
     private ResetterConfiguration resetterConfiguration;
     private RedisConfiguration redisConfiguration;
     private RedisSyncConfiguration redisSyncConfiguration;
+    private ClaimQueueConfiguration claimQueueConfiguration;
     public PluginConfiguration(ConfigurationManager configurationManager) {
         super(configurationManager.getPrisonManagers().getPluginInstance().getLogger(),
                 new File(configurationManager.getPrisonManagers().getPluginInstance().getBukkitPlugin().getDataFolder(), "config.yml"),
@@ -32,38 +33,43 @@ public class PluginConfiguration extends AbstractConfiguration implements IPlugi
 
 
     @Override
-    public @NotNull SQLConfiguration sqlConfiguration() {
+    public @NotNull SQLConfiguration getSqlConfiguration() {
         return sqlConfiguration;
     }
 
     @Override
-    public @NotNull MineWorldConfiguration mineWorldConfiguration() {
+    public @NotNull MineWorldConfiguration getMineWorldConfiguration() {
         return mineWorldConfiguration;
     }
 
     @Override
-    public @NotNull ServerConfiguration serverConfiguration() {
+    public @NotNull ServerConfiguration getServerConfiguration() {
         return serverConfiguration;
     }
 
     @Override
-    public @NotNull DefaultMineConfiguration defaultMineConfiguration() {
+    public @NotNull DefaultMineConfiguration getDefaultMineConfiguration() {
         return defaultMineConfiguration;
     }
 
     @Override
-    public @NotNull RedisConfiguration redisConfiguration() {
+    public @NotNull RedisConfiguration getRedisConfiguration() {
         return redisConfiguration;
     }
 
     @Override
-    public @NotNull ResetterConfiguration resetterConfiguration() {
+    public @NotNull ResetterConfiguration getResetterConfiguration() {
         return resetterConfiguration;
     }
 
     @Override
-    public @NotNull RedisSyncConfiguration redisSyncConfiguration() {
+    public @NotNull RedisSyncConfiguration getRedisSyncConfiguration() {
         return redisSyncConfiguration;
+    }
+
+    @Override
+    public @NotNull ClaimQueueConfiguration getClaimQueueConfiguration() {
+        return this.claimQueueConfiguration;
     }
 
     @Override

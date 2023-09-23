@@ -4,11 +4,12 @@ import me.alenalex.notaprisoncore.api.abstracts.AbstractMessageService;
 import me.alenalex.notaprisoncore.api.config.options.ServerConfiguration;
 import me.alenalex.notaprisoncore.api.exceptions.message.MessageBusExistsException;
 import me.alenalex.notaprisoncore.message.AbstractMessageBuilder;
-import me.alenalex.notaprisoncore.message.models.OnlineAnnouncementMessage;
+import me.alenalex.notaprisoncore.message.models.MineCreateMessage;
 import me.alenalex.notaprisoncore.message.service.IMessageServiceBus;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
-import me.alenalex.notaprisoncore.paper.message.bus.OnlineAnnouncementMessageBus;
+import me.alenalex.notaprisoncore.paper.message.bus.HeartbeatMessageBus;
+import me.alenalex.notaprisoncore.paper.message.bus.MineCreationMessageBus;
 import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +23,8 @@ import java.net.URL;
 public class PrisonMessageService extends AbstractMessageService {
 
     private final NotAPrisonCore pluginInstance;
-    private IMessageServiceBus<OnlineAnnouncementMessage.OnlineAnnouncementRequest> heartbeatService;
+    private IMessageServiceBus<me.alenalex.notaprisoncore.message.models.HeartbeatMessage.OnlineAnnouncementRequest> heartbeatService;
+    private IMessageServiceBus<MineCreateMessage> mineCreationService;
 
     public PrisonMessageService(NotAPrisonCore plugin) {
         super(plugin.getDatabaseProvider(), GsonWrapper.singleton());
@@ -32,7 +34,7 @@ public class PrisonMessageService extends AbstractMessageService {
     @Override
     public void onEnable() throws MessageBusExistsException {
         new AbstractMessageBuilder(){
-            private final ServerConfiguration configuration = ((Bootstrap) (Bootstrap.getJavaPlugin())).getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration();
+            private final ServerConfiguration configuration = ((Bootstrap) (Bootstrap.getJavaPlugin())).getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration();
             private final String serverAddress = this.buildAddress();
             @Override
             public String sourceName() {
@@ -90,8 +92,10 @@ public class PrisonMessageService extends AbstractMessageService {
             }
 
         }.build();
-        this.heartbeatService = new OnlineAnnouncementMessageBus(getProvider().getRedisDatabase(), getJsonWrapper(), this.pluginInstance.getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration(), AbstractMessageBuilder.get().sourceAddress());
+        this.heartbeatService = new HeartbeatMessageBus(getProvider().getRedisDatabase(), getJsonWrapper(), this.pluginInstance.getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration(), AbstractMessageBuilder.get().sourceAddress());
+        this.mineCreationService = new MineCreationMessageBus(getProvider().getRedisDatabase(), getJsonWrapper(), this.pluginInstance.getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration(), AbstractMessageBuilder.get().sourceAddress());
         this.registerMessageBus(this.heartbeatService);
+        this.registerMessageBus(this.mineCreationService);
     }
 
     @Override
@@ -107,7 +111,12 @@ public class PrisonMessageService extends AbstractMessageService {
 
     @Override
     @NotNull
-    public IMessageServiceBus<OnlineAnnouncementMessage.OnlineAnnouncementRequest> getHeartbeatService() {
+    public IMessageServiceBus<me.alenalex.notaprisoncore.message.models.HeartbeatMessage.OnlineAnnouncementRequest> getHeartbeatService() {
         return this.heartbeatService;
+    }
+
+    @Override
+    public IMessageServiceBus<MineCreateMessage> getMineCreationService() {
+        return this.mineCreationService;
     }
 }

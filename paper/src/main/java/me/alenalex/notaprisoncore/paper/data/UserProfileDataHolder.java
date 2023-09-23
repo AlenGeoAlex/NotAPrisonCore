@@ -58,7 +58,7 @@ public class UserProfileDataHolder implements IProfileDataHolder {
             return hardLoad(uuid)
                     .thenApply(res -> {
                         this.profileMap.put(uuid, res.getFirstItem());
-                        MineDataHolder mineDataHolder = (MineDataHolder) this.dataHolder.getPlugin().getDataHolder().mineDataHolder();
+                        MineDataHolder mineDataHolder = (MineDataHolder) this.dataHolder.getPlugin().getDataHolder().getMineDataHolder();
                         mineDataHolder.load(res.getThirdItem());
                         //Load user socials
                         return res.getFirstItem();
@@ -115,7 +115,7 @@ public class UserProfileDataHolder implements IProfileDataHolder {
     private CompletableFuture<IPrisonUserProfile> softLoad(UUID uuid){
         return this.dataHolder.getPlugin()
                 .getPrisonDataStore()
-                .userProfileStore()
+                .getUserProfileStore()
                 .id(uuid)
                 .handle((res, err) -> {
                     if (err != null) {
@@ -137,7 +137,7 @@ public class UserProfileDataHolder implements IProfileDataHolder {
     private CompletableFuture<Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean>> hardLoad(UUID uuid){
         return this.dataHolder.getPlugin()
                 .getPrisonDataStore()
-                .userProfileStore()
+                .getUserProfileStore()
                 .getOrCreateUserProfile(uuid)
                 .handle((res, err) -> {
                     if(err != null)

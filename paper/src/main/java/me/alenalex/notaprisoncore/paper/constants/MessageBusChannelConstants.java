@@ -2,6 +2,7 @@ package me.alenalex.notaprisoncore.paper.constants;
 
 public class MessageBusChannelConstants {
 
-    public static final String ONLINE_ANNOUNCEMENT_MESSAGE = "npc-online-announcement";
+    public static final String HEARTBEAT_ANNOUNCEMENT_CHANNEL = "npc-heartbeat";
+    public static final String MINE_CREATION_CHANNEL = "npc-mine-creation";
 
 }

@@ -36,21 +36,21 @@ public class ConnectionListener extends AbstractEventListener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
         DataHolder dataHolder = getDataHolder();
-        if(dataHolder.profileDataHolder().isLoading(playerId)){ //Quick disconnects and reconnects can cause this
+        if(dataHolder.getProfileDataHolder().isLoading(playerId)){ //Quick disconnects and reconnects can cause this
             getPlugin().getLogger().info("Cancelling player saving as the player data is already set to load");
             return;
         }
-        IPrisonUserProfile profile = dataHolder.profileDataHolder().get(player);
-        if(!dataHolder.profileDataHolder().isLoaded(player) || profile == null){
+        IPrisonUserProfile profile = dataHolder.getProfileDataHolder().get(player);
+        if(!dataHolder.getProfileDataHolder().isLoaded(player) || profile == null){
             getPlugin().getLogger().info("Cancelling player saving as the player data is not yet loaded");
             return;
         }
         long startTime = System.currentTimeMillis();
         CompletableFuture<Void> redisTask = null;
-        CompletableFuture<Void> userSwitchFuture = getStore().redisUserProfileStore().setUserOnSwitch(profile);
-        IMine mine = dataHolder.mineDataHolder().get(profile);
+        CompletableFuture<Void> userSwitchFuture = getStore().getRedisUserProfileStore().setUserOnSwitch(profile);
+        IMine mine = dataHolder.getMineDataHolder().get(profile);
         if(profile.hasMine() && mine != null){
-            CompletableFuture<Boolean> mineSetFuture = getStore().redisMineStore().set(mine);
+            CompletableFuture<Boolean> mineSetFuture = getStore().getRedisMineStore().set(mine);
             redisTask = CompletableFuture.allOf(userSwitchFuture, mineSetFuture);
         }else {
             redisTask = CompletableFuture.allOf(userSwitchFuture);
@@ -70,9 +70,9 @@ public class ConnectionListener extends AbstractEventListener {
 
         //CompletableFuture<Void> completeTaskFuture = null;
 
-        CompletableFuture<Boolean> profileSaveDbFuture = getStore().userProfileStore().updateAsync(profile);
+        CompletableFuture<Boolean> profileSaveDbFuture = getStore().getUserProfileStore().updateAsync(profile);
         if(mine != null){
-            CompletableFuture<Boolean> mineSaveDbFuture = getStore().mineStore().updateAsync(mine);
+            CompletableFuture<Boolean> mineSaveDbFuture = getStore().getMineStore().updateAsync(mine);
             CompletableFuture.allOf(redisTask, profileSaveDbFuture, mineSaveDbFuture)
                     .whenComplete((res, err) -> {
                         if(err != null){
@@ -104,13 +104,13 @@ public class ConnectionListener extends AbstractEventListener {
         Player player = event.getPlayer();
         DataHolder dataHolder = getDataHolder();
         UUID playerId = player.getUniqueId();
-        if(dataHolder.profileDataHolder().isLoading(playerId)){ //Quick disconnects and reconnects can cause this
+        if(dataHolder.getProfileDataHolder().isLoading(playerId)){ //Quick disconnects and reconnects can cause this
             getPlugin().getLogger().info("Cancelling player loading as the player data is already set to load");
             return;
         }
         long startTime = System.currentTimeMillis();
-        dataHolder.profileDataHolder().setLoading(playerId);
-        if(getConfiguration().getPluginConfiguration().serverConfiguration().isFreezePlayerOnLoadEnabled()){
+        dataHolder.getProfileDataHolder().setLoading(playerId);
+        if(getConfiguration().getPluginConfiguration().getServerConfiguration().isFreezePlayerOnLoadEnabled()){
             Utils.Freeze.freeze(playerId);
         }
 
@@ -118,12 +118,12 @@ public class ConnectionListener extends AbstractEventListener {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(getConfiguration().getPluginConfiguration().redisSyncConfiguration().getRedisNetworkWaitMillis());
+                    Thread.sleep(getConfiguration().getPluginConfiguration().getRedisSyncConfiguration().getRedisNetworkWaitMillis());
                 }catch (Exception e){
                     e.printStackTrace();
                     getPlugin().getLogger().warning("Failed to apply network wait for the joining player...");
                 }finally {
-                    getStore().redisUserProfileStore()
+                    getStore().getRedisUserProfileStore()
                             .isUserOnSwitch(playerId)
                             .handle((res, err) -> {
                                 if(err != null){
@@ -136,7 +136,7 @@ public class ConnectionListener extends AbstractEventListener {
                             .thenCompose((isUserSwitching) -> {
                                 System.out.println("Is User switching "+isUserSwitching.getFirstItem());
                                 if(isUserSwitching.getFirstItem()){
-                                    IPrisonUserProfile userProfile = getStore().userProfileStore().id(playerId)
+                                    IPrisonUserProfile userProfile = getStore().getUserProfileStore().id(playerId)
                                             .handle((res, err) -> {
                                                 if(err != null){
                                                     err.printStackTrace();
@@ -151,7 +151,7 @@ public class ConnectionListener extends AbstractEventListener {
                                     if(!userProfile.hasMine()){
                                         return CompletableFuture.completedFuture(new Triplet<Boolean, Boolean, List<IUserSocial>>(true, false, null)); //First boolean is success or not, 2nd boolean is newUser or not, 3rd is user's social
                                     }
-                                    IMine mine = getStore().redisMineStore().get(userProfile.getMineId())
+                                    IMine mine = getStore().getRedisMineStore().get(userProfile.getMineId())
                                             .handle((res, err) -> {
                                                 if(err != null){
                                                     err.printStackTrace();
@@ -162,13 +162,13 @@ public class ConnectionListener extends AbstractEventListener {
                                             .join();
                                     if(mine == null)
                                         throw new LoadPlayerException("Failed to compose the player data from sql. The player data has been loaded, but the mine data from redis has been returned as null for mine id "+userProfile.getMineId().toString()+" for user "+playerId.toString());
-                                    UserProfileDataHolder profileDataHolder = (UserProfileDataHolder) getDataHolder().profileDataHolder();
+                                    UserProfileDataHolder profileDataHolder = (UserProfileDataHolder) getDataHolder().getProfileDataHolder();
                                     profileDataHolder.load(userProfile);
-                                    MineDataHolder mineDataHolder = (MineDataHolder) getDataHolder().mineDataHolder();
+                                    MineDataHolder mineDataHolder = (MineDataHolder) getDataHolder().getMineDataHolder();
                                     mineDataHolder.load(mine);
                                     return CompletableFuture.completedFuture(new Triplet<Boolean, Boolean, List<IUserSocial>>(true, false, null)); //First boolean is success or not, 2nd boolean is newUser or not, 3rd is user's social
                                 }else{
-                                    Optional<Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean>> optionalData = getStore().userProfileStore().getOrCreateUserProfile(playerId)
+                                    Optional<Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean>> optionalData = getStore().getUserProfileStore().getOrCreateUserProfile(playerId)
                                             .handle((res, err) -> {
                                                 if(err != null){
                                                     err.printStackTrace();
@@ -184,11 +184,11 @@ public class ConnectionListener extends AbstractEventListener {
 
 
                                     Octet<IPrisonUserProfile, List<IUserSocial>, IMine, Boolean> dataOctet = optionalData.get();
-                                    UserProfileDataHolder profileDataHolder = (UserProfileDataHolder) getDataHolder().profileDataHolder();
+                                    UserProfileDataHolder profileDataHolder = (UserProfileDataHolder) getDataHolder().getProfileDataHolder();
                                     profileDataHolder.load(dataOctet.getFirstItem());
                                     dataOctet.getFirstItem().sendLocalizedMessage(LocaleConstants.FIRST_JOIN_LOCALE);
                                     if(dataOctet.hasThird()){
-                                        MineDataHolder mineDataHolder = (MineDataHolder) getDataHolder().mineDataHolder();
+                                        MineDataHolder mineDataHolder = (MineDataHolder) getDataHolder().getMineDataHolder();
                                         mineDataHolder.load(dataOctet.getThirdItem());
                                     }
 
@@ -199,7 +199,7 @@ public class ConnectionListener extends AbstractEventListener {
                                 //TODO load user socials and other stuffs
 
                                 //Releasing the player loading should be the first thing to do
-                                dataHolder.profileDataHolder().releaseLoading(playerId);
+                                dataHolder.getProfileDataHolder().releaseLoading(playerId);
                                 if(err != null || res.getFirstItem() == null || (!res.getFirstItem())){
                                     if(err != null){
                                         getPlugin().getLogger().warning("Failed to load player data, Stack trace would be provided below");
@@ -208,7 +208,7 @@ public class ConnectionListener extends AbstractEventListener {
                                         getPlugin().getLogger().warning("Failed to load player data.");
                                     }
 
-                                    if(getConfiguration().getPluginConfiguration().serverConfiguration().isKickOnLoadFailureEnabled()){
+                                    if(getConfiguration().getPluginConfiguration().getServerConfiguration().isKickOnLoadFailureEnabled()){
                                         doSync(new Runnable() {
                                             @Override
                                             public void run() {
@@ -225,13 +225,13 @@ public class ConnectionListener extends AbstractEventListener {
 
                                 List<IUserSocial> userSocials = res.getThirdItem();
                                 if(userSocials != null){
-                                    UserSocialDataHolder socialDataHolder = (UserSocialDataHolder) getDataHolder().userSocialDataHolder();
+                                    UserSocialDataHolder socialDataHolder = (UserSocialDataHolder) getDataHolder().getUserSocialDataHolder();
                                     socialDataHolder.load(userSocials);
                                 }
 
                                 long timeTook = System.currentTimeMillis() - startTime;
                                 getPlugin().getLogger().info("Successfully loaded player in "+timeTook+" ms");
-                                if(getConfiguration().getPluginConfiguration().serverConfiguration().isFreezePlayerOnLoadEnabled()){
+                                if(getConfiguration().getPluginConfiguration().getServerConfiguration().isFreezePlayerOnLoadEnabled()){
                                     Utils.Freeze.removeFreeze(playerId);
                                 }
                             });

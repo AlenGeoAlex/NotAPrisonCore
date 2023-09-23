@@ -2,11 +2,14 @@ package me.alenalex.notaprisoncore.paper.commands;
 
 import dev.triumphteam.cmd.core.annotations.Command;
 import dev.triumphteam.cmd.core.annotations.Optional;
+import me.alenalex.notaprisoncore.api.exceptions.mine.FailedMineClaimException;
 import me.alenalex.notaprisoncore.paper.abstracts.AbstractCommand;
 import me.alenalex.notaprisoncore.paper.commands.help.CommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.commands.help.SubcommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.constants.DefaultAdminMessages;
+import me.alenalex.notaprisoncore.paper.constants.LocaleConstants;
 import me.alenalex.notaprisoncore.paper.constants.Permission;
+import me.alenalex.notaprisoncore.paper.entity.profile.PrisonUserProfile;
 import me.alenalex.notaprisoncore.paper.manager.CommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,9 +45,49 @@ public class MineCommand extends AbstractCommand {
             return;
         }
 
-        if(isPlayer(sender))
+        boolean other = false;
+        if(!isPlayer(sender)){
             target = asPlayer(sender);
+            other = true;
+        }
 
+        PrisonUserProfile profile = getProfile(target);
+        if(profile == null){
+            target.sendMessage(DefaultAdminMessages.MineCommand.PROFILE_NOT_LOADED);
+            if(other)
+                sender.sendMessage(DefaultAdminMessages.MineCommand.PROFILE_NOT_LOADED_SENDER);
+            return;
+        }
 
+/*        if (getConfigurationManager().getPluginConfiguration().getClaimQueueConfiguration().isEnabled()) {
+            if (!ClaimQueueTask.getInstance().submit(target)) {
+                profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_QUEUE_EXISTS);
+            }
+        }else{
+            getCommandManager().getPrisonManagers().getMineManager().claimMineForUser(profile)
+                    .whenComplete((res, err) -> {
+                        if (err != null) {
+                            if(err instanceof FailedMineClaimException){
+                                System.out.println(err.getMessage());
+                            }
+                            profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_FAILED);
+                            return;
+                        }
+                        profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_SUCCESS);
+                        return;
+                    });
+        }*/
+        getCommandManager().getPrisonManagers().getMineManager().claimMineForUser(profile)
+                .whenComplete((res, err) -> {
+                    if (err != null) {
+                        if(err instanceof FailedMineClaimException){
+                            System.out.println(err.getMessage());
+                        }
+                        profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_FAILED);
+                        return;
+                    }
+                    profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_SUCCESS);
+                    return;
+                });
     }
 }

@@ -2,7 +2,6 @@ package me.alenalex.notaprisoncore.paper.abstracts;
 
 import me.alenalex.notaprisoncore.api.entity.mine.IMine;
 import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
-import me.alenalex.notaprisoncore.api.managers.IConfigurationManager;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.data.DataHolder;
@@ -72,7 +71,7 @@ public abstract class AbstractEventListener implements Listener {
 
     @NotNull
     protected ConfigurationManager getConfiguration(){
-        return (ConfigurationManager) this.plugin.getPrisonManagers().configurationManager();
+        return (ConfigurationManager) this.plugin.getPrisonManagers().getConfigurationManager();
     }
 
     protected void doSync(Runnable runnable){

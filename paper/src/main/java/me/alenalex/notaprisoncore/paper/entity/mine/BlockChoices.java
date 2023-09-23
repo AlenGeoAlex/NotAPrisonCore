@@ -59,7 +59,7 @@ public class BlockChoices implements IBlockChoices {
     public void clearAndSetDefault() {
         this.playerChoices.clear();
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
-        HashSet<BlockEntry> blockList = bootstrap.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultResetBlockList();
+        HashSet<BlockEntry> blockList = bootstrap.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getDefaultMineConfiguration().getDefaultResetBlockList();
         this.playerChoices.addAll(blockList);
     }
 
@@ -100,7 +100,7 @@ public class BlockChoices implements IBlockChoices {
     private void checkInternal(){
         if(this.playerChoices.isEmpty()){
             Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
-            HashSet<BlockEntry> blockList = bootstrap.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().defaultMineConfiguration().getDefaultResetBlockList();
+            HashSet<BlockEntry> blockList = bootstrap.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getDefaultMineConfiguration().getDefaultResetBlockList();
             this.playerChoices.addAll(blockList);
         }
     }

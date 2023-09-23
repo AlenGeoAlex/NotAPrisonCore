@@ -5,11 +5,12 @@ import org.jetbrains.annotations.NotNull;
 
 public interface IPluginConfiguration {
 
-    @NotNull SQLConfiguration sqlConfiguration();
-    @NotNull MineWorldConfiguration mineWorldConfiguration();
-    @NotNull ServerConfiguration serverConfiguration();
-    @NotNull DefaultMineConfiguration defaultMineConfiguration();
-    @NotNull RedisConfiguration redisConfiguration();
-    @NotNull ResetterConfiguration resetterConfiguration();
-    @NotNull RedisSyncConfiguration redisSyncConfiguration();
+    @NotNull SQLConfiguration getSqlConfiguration();
+    @NotNull MineWorldConfiguration getMineWorldConfiguration();
+    @NotNull ServerConfiguration getServerConfiguration();
+    @NotNull DefaultMineConfiguration getDefaultMineConfiguration();
+    @NotNull RedisConfiguration getRedisConfiguration();
+    @NotNull ResetterConfiguration getResetterConfiguration();
+    @NotNull RedisSyncConfiguration getRedisSyncConfiguration();
+    @NotNull ClaimQueueConfiguration getClaimQueueConfiguration();
 }

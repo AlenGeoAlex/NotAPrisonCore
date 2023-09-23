@@ -1,11 +1,8 @@
 package me.alenalex.notaprisoncore.paper.store;
 
 import me.alenalex.notaprisoncore.api.abstracts.store.AbstractFileStore;
-import me.alenalex.notaprisoncore.api.enums.ConfigType;
-import me.alenalex.notaprisoncore.api.exceptions.FailedConfigurationException;
 import me.alenalex.notaprisoncore.api.exceptions.store.world.WorldDataSaveException;
 import me.alenalex.notaprisoncore.api.store.IWorldStore;
-import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.constants.StoreConstants;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +25,7 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
             set();
         }
         this.distance = new AtomicInteger(this.getStoreDocument().getInt(StoreConstants.WorldStoreConstants.DISTANCE_KEY));
-        this.defaultLocation = this.getPrisonDataStore().getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().mineWorldConfiguration().getDefaultLocation().to().orElse(null);
+        this.defaultLocation = this.getPrisonDataStore().getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getMineWorldConfiguration().getDefaultLocation().to().orElse(null);
     }
 
 
@@ -68,7 +65,7 @@ public class WorldStore extends AbstractFileStore implements IWorldStore {
         if (np == 0) {
             return this.defaultLocation;
         }
-        int dx = this.getPrisonDataStore().getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().mineWorldConfiguration().getMineDistance();
+        int dx = this.getPrisonDataStore().getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getMineWorldConfiguration().getMineDistance();
         int dy = 0;
         int segment_length = 1;
         int x = 0;

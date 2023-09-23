@@ -10,6 +10,17 @@ server-configuration:
     mine-local-meta: true
     user-profile-local-meta: true
 
+claim-queue-configuration:
+  enabled: true
+  max-in-queue: 10
+  enable-change-hook: true
+  priority:
+    default-weight: 10
+    weight-map:
+      "queue-weight-15": 15
+      "queue-weight-20": 20
+
+
 redis-configuration:
   host: ""
   port: 6379

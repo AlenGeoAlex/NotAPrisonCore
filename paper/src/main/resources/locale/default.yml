@@ -13,6 +13,13 @@ profile:
     - "[TITLE-SETTING]40;100;40"
 
 mine:
+  claim:
+    exists: "Already in queue"
+    queue: "Queue has been started"
+    start: "start"
+    success: "Success"
+    failed: "Failed"
+    queue-update: "Queue Update {pos}"
   reset:
     start: "&cThe mine has been started to reset"
     completed: "&cThe mine completed its reset"

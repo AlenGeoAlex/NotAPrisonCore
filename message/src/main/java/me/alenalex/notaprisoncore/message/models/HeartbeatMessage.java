@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-public class OnlineAnnouncementMessage {
+public class HeartbeatMessage {
 
     @AllArgsConstructor
     @Getter

@@ -11,6 +11,7 @@ import me.alenalex.notaprisoncore.paper.listener.ConnectionListener;
 import me.alenalex.notaprisoncore.paper.listener.PlayerListener;
 import me.alenalex.notaprisoncore.paper.manager.PrisonManagers;
 import me.alenalex.notaprisoncore.paper.message.PrisonMessageService;
+import me.alenalex.notaprisoncore.paper.queue.PrisonQueueProvider;
 import me.alenalex.notaprisoncore.paper.scheduler.PrisonScheduler;
 import me.alenalex.notaprisoncore.paper.store.PrisonDataStore;
 import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
@@ -30,12 +31,14 @@ public final class NotAPrisonCore {
     private boolean shouldRunEnable;
     private PrisonMessageService messageService;
     private final PrisonScheduler prisonScheduler;
+    private final PrisonQueueProvider prisonQueueProvider;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
         this.dataHolder = new DataHolder(this);
         this.shouldRunEnable = true;
         this.prisonScheduler = new PrisonScheduler(this);
+        this.prisonQueueProvider = new PrisonQueueProvider(this);
     }
 
     public void onLoad(){
@@ -180,7 +183,11 @@ public final class NotAPrisonCore {
         bukkitPlugin.getServer().getPluginManager().disablePlugin(this.bukkitPlugin);
     }
 
+    public PrisonScheduler getPrisonScheduler() {
+        return prisonScheduler;
+    }
 
-
-
+    public PrisonQueueProvider getPrisonQueueProvider() {
+        return prisonQueueProvider;
+    }
 }

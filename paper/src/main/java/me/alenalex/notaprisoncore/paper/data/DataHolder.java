@@ -33,22 +33,22 @@ public class DataHolder implements IDataHolder {
     }
 
     @Override
-    public IMineMetaDataHolder mineMetaDataHolder() {
+    public IMineMetaDataHolder getMineMetaDataHolder() {
         return mineMetaDataHolder;
     }
 
     @Override
-    public IProfileDataHolder profileDataHolder() {
+    public IProfileDataHolder getProfileDataHolder() {
         return this.userProfileDataHolder;
     }
 
     @Override
-    public IMineDataHolder mineDataHolder() {
+    public IMineDataHolder getMineDataHolder() {
         return this.mineDataHolder;
     }
 
     @Override
-    public IUserSocialDataHolder userSocialDataHolder() {
+    public IUserSocialDataHolder getUserSocialDataHolder() {
         return this.userSocialDataHolder;
     }
 

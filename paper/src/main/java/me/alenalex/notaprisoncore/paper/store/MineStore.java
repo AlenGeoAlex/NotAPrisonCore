@@ -37,7 +37,7 @@ public class MineStore extends AbstractDataStoreWithDirectory<IMine, UUID> imple
     public MineStore(PrisonDataStore prisonDataStore) {
         super(prisonDataStore.getPluginInstance().getDatabaseProvider().getSqlDatabase(),
                 new File(prisonDataStore.getStoreParentDirectory(), "meta"+File.separator+"mine"),
-                prisonDataStore.getPluginInstance().getPrisonManagers().configurationManager().getPluginConfiguration().serverConfiguration().getCompressionConfiguration().isCompressMineLocalData()
+                prisonDataStore.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getServerConfiguration().getCompressionConfiguration().isCompressMineLocalData()
         );
         this.prisonDataStore = prisonDataStore;
     }
@@ -268,11 +268,11 @@ public class MineStore extends AbstractDataStoreWithDirectory<IMine, UUID> imple
 
     @Override
     public CompletableFuture<Optional<UUID>> createAsync(IMine entity) {
-        return claimMine(entity);
+        return createMine(entity);
     }
 
     @Override
-    public CompletableFuture<Optional<UUID>> claimMine(IMine mine) {
+    public CompletableFuture<Optional<UUID>> createMine(IMine mine) {
         if(mine == null){
             CompletableFuture<Optional<UUID>> future = new CompletableFuture<>();
             future.completeExceptionally(new DatastoreException("Failed to claim a mine when the provided mine is null"));

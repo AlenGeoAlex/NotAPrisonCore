@@ -15,7 +15,7 @@ public class WorldManager implements IWorldManager {
     }
 
     public void load(){
-        this.worldConfiguration = this.prisonManagers.configurationManager().getPluginConfiguration().mineWorldConfiguration();
+        this.worldConfiguration = this.prisonManagers.getConfigurationManager().getPluginConfiguration().getMineWorldConfiguration();
         if(this.worldConfiguration.isCreateVoidWorldIfAbsent()){
             World mineWorld = getMineWorld(false);
             if(mineWorld == null){

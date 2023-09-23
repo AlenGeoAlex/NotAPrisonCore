@@ -48,37 +48,37 @@ public class PrisonDataStore implements IPrisonDataStore {
     }
 
     @Override
-    public IWorldStore worldStore() {
+    public IWorldStore getWorldStore() {
         return worldStore;
     }
 
     @Override
-    public IMineMetaStore mineMetaStore() {
+    public IMineMetaStore getMineMetaStore() {
         return mineMetaStore;
     }
 
     @Override
-    public IMineStore mineStore() {
+    public IMineStore getMineStore() {
         return mineStore;
     }
 
     @Override
-    public IRedisMineStore redisMineStore() {
+    public IRedisMineStore getRedisMineStore() {
         return redisMineStore;
     }
 
     @Override
-    public IUserSocialStore userSocialStore() {
+    public IUserSocialStore getUserSocialStore() {
         return userSocialStore;
     }
 
     @Override
-    public IUserProfileStore userProfileStore() {
+    public IUserProfileStore getUserProfileStore() {
         return userProfileStore;
     }
 
     @Override
-    public IRedisUserProfileStore redisUserProfileStore() {
+    public IRedisUserProfileStore getRedisUserProfileStore() {
         return redisUserProfileStore;
     }
 

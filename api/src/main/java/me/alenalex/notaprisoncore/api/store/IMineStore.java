@@ -8,6 +8,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IMineStore extends IEntityStore<IMine, UUID> {
 
-    CompletableFuture<Optional<UUID>> claimMine(IMine mine);
+    CompletableFuture<Optional<UUID>> createMine(IMine mine);
 
 }

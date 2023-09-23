@@ -53,26 +53,26 @@ public class PrisonManagers implements IPrisonManagers {
 
     @NotNull
     @Override
-    public IConfigurationManager configurationManager() {
+    public IConfigurationManager getConfigurationManager() {
         return this.configurationManager;
     }
 
     @Override
-    public @NotNull ISchematicManager schematicManager() {
+    public @NotNull ISchematicManager getSchematic() {
         return this.schematicManager;
     }
     @Override
-    public @NotNull ILocaleManager localeManager() {
+    public @NotNull ILocaleManager getLocaleManager() {
         return this.localeManager;
     }
 
     @Override
-    public @NotNull IWorldManager worldManager() {
+    public @NotNull IWorldManager getWorldManager() {
         return worldManager;
     }
 
     @Override
-    public @NotNull IMineManager mineManager() {
+    public @NotNull IMineManager getMineManager() {
         return mineManager;
     }
 

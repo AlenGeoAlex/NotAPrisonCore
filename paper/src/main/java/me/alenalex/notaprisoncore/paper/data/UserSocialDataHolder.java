@@ -50,7 +50,7 @@ public class UserSocialDataHolder implements IUserSocialDataHolder {
         CompletableFuture<IUserSocial> future = new CompletableFuture<>();
 
         Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
-        bootstrap.getPluginInstance().getPrisonDataStore().userSocialStore()
+        bootstrap.getPluginInstance().getPrisonDataStore().getUserSocialStore()
                 .createAsync(newSocial)
                 .whenComplete((resId, err) -> {
                     if(err != null){

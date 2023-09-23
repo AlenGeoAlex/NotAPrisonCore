@@ -47,13 +47,13 @@ public class MineGenerator implements IMineGenerator {
 
     @Override
     public Optional<IMineMeta> generateMine(CommandSender requester, String schematicName) throws NoSchematicFound {
-        ISchematicFileManager schematicFileManager = this.mineManager.getPlugin().getPrisonManagers().schematicManager().getSchematicFileManager();
+        ISchematicFileManager schematicFileManager = this.mineManager.getPlugin().getPrisonManagers().getSchematic().getSchematicFileManager();
         Optional<File> optionalSchematicFile = schematicFileManager.getSchematicFileOfName(schematicName);
         if(!optionalSchematicFile.isPresent()){
             throw new NoSchematicFound("The schematic with the name "+schematicName+" was not found in the plugin cache");
         }
         File schematicFile = optionalSchematicFile.get();
-        @NotNull Optional<?> schematicOptional = this.mineManager.getPlugin().getPrisonManagers().schematicManager().getHookedSchematicProvider().getSchematic(schematicFile);
+        @NotNull Optional<?> schematicOptional = this.mineManager.getPlugin().getPrisonManagers().getSchematic().getHookedSchematicProvider().getSchematic(schematicFile);
         if(!schematicOptional.isPresent()){
             throw new NoSchematicFound("Failed to load schematic with the name "+schematicName);
         }
@@ -62,15 +62,15 @@ public class MineGenerator implements IMineGenerator {
         if(clipboard == null){
             throw new NoSchematicFound("Failed to get the schematic with the name "+schematicName+" from world edit");
         }
-        MinePositionalKeys mineIdentifiers = this.mineManager.getManagers().configurationManager().getMineIdentifierConfiguration()
+        MinePositionalKeys mineIdentifiers = this.mineManager.getManagers().getConfigurationManager().getMineIdentifierConfiguration()
                 .ofMine(schematicName)
                 .orElse(null);
 
         if(mineIdentifiers == null){
             throw new FailedMineGenerationException("Mine Identifiers are missing for the mine. Strict fields like spawn-point is missing. Aborting");
         }
-        Location location = this.mineManager.getPlugin().getPrisonDataStore().worldStore().nextFreeLocation();
-        World mineWorld = this.mineManager.getPlugin().getPrisonManagers().worldManager().getMineWorld();
+        Location location = this.mineManager.getPlugin().getPrisonDataStore().getWorldStore().nextFreeLocation();
+        World mineWorld = this.mineManager.getPlugin().getPrisonManagers().getWorldManager().getMineWorld();
         location.setY(clipboard.getOrigin().getY());
         Vector centerVector = BukkitUtil.toVector(location);
         com.sk89q.worldedit.world.World worldEditWorldWrapper = FaweAPI.getWorld(mineWorld.getName());
@@ -95,7 +95,7 @@ public class MineGenerator implements IMineGenerator {
                 e.printStackTrace();
                 return Optional.empty();
             }
-            this.mineManager.getManagers().worldManager().loadChunkAt(new Location(mineWorld, centerVector.getX(), centerVector.getY(), centerVector.getZ()), 30);
+            this.mineManager.getManagers().getWorldManager().loadChunkAt(new Location(mineWorld, centerVector.getX(), centerVector.getY(), centerVector.getZ()), 30);
             mineManager.getPlugin().getLogger().info("Starting to gather meta-data for mines");
             for (Vector next : new FastIterator(region, editSession)) {
                 BaseBlock block = worldEditWorldWrapper.getBlock(next);
