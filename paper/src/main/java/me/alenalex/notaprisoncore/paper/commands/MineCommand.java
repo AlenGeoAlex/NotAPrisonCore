@@ -9,6 +9,7 @@ import me.alenalex.notaprisoncore.paper.commands.help.SubcommandHelpProvider;
 import me.alenalex.notaprisoncore.paper.constants.DefaultAdminMessages;
 import me.alenalex.notaprisoncore.paper.constants.LocaleConstants;
 import me.alenalex.notaprisoncore.paper.constants.Permission;
+import me.alenalex.notaprisoncore.paper.entity.ClaimQueueEntity;
 import me.alenalex.notaprisoncore.paper.entity.profile.PrisonUserProfile;
 import me.alenalex.notaprisoncore.paper.manager.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -59,10 +60,27 @@ public class MineCommand extends AbstractCommand {
             return;
         }
 
-/*        if (getConfigurationManager().getPluginConfiguration().getClaimQueueConfiguration().isEnabled()) {
-            if (!ClaimQueueTask.getInstance().submit(target)) {
+        /*
+       getCommandManager().getPrisonManagers().getMineManager().claimMineForUser(profile)
+                .whenComplete((res, err) -> {
+                    if (err != null) {
+                        if(err instanceof FailedMineClaimException){
+                            System.out.println(err.getMessage());
+                        }
+                        profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_FAILED);
+                        return;
+                    }
+                    profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_SUCCESS);
+                    return;
+                });*/
+
+
+        if (getCommandManager().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getClaimQueueConfiguration().isEnabled()) {
+            if (!getCommandManager().getPrisonManagers().getPluginInstance().getPrisonQueueProvider().getClaimQueue().enqueue(new ClaimQueueEntity(target))) {
                 profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_QUEUE_EXISTS);
+                return;
             }
+            profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_QUEUE);
         }else{
             getCommandManager().getPrisonManagers().getMineManager().claimMineForUser(profile)
                     .whenComplete((res, err) -> {
@@ -76,18 +94,6 @@ public class MineCommand extends AbstractCommand {
                         profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_SUCCESS);
                         return;
                     });
-        }*/
-        getCommandManager().getPrisonManagers().getMineManager().claimMineForUser(profile)
-                .whenComplete((res, err) -> {
-                    if (err != null) {
-                        if(err instanceof FailedMineClaimException){
-                            System.out.println(err.getMessage());
-                        }
-                        profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_FAILED);
-                        return;
-                    }
-                    profile.sendLocalizedMessage(LocaleConstants.MINE_CLAIM_SUCCESS);
-                    return;
-                });
+        }
     }
 }

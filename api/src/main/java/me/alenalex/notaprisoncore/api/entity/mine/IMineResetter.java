@@ -10,8 +10,11 @@ public interface IMineResetter {
     }
     long lastResetOn();
     IBlockChoices getBlockChoices();
+    boolean hasTemporaryBlocks();
+    IBlockChoices getTemporaryBlockChoices();
     IMineMeta getMineMeta();
     @Nullable IMineResetWorker currentWorker();
     @NotNull IMineResetWorker createWorker();
+    IBlockChoices getDefaultBlockChoice();
 
 }

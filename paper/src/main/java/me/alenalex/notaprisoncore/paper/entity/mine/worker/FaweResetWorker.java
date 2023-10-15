@@ -47,7 +47,7 @@ public class FaweResetWorker extends AbstractResetWorker {
             public void run() {
                 try {
                     CuboidRegion region = new CuboidRegion(BukkitUtil.toVector(getMineResetter().getMineMeta().getLowerMiningPoint()), BukkitUtil.toVector(getMineResetter().getMineMeta().getUpperMiningPoint()));
-                    List<BlockEntry> choices = getMineResetter().getBlockChoices().getChoices();
+                    List<BlockEntry> choices = getMineResetter().getDefaultBlockChoice().getChoices();
                     List<BaseBlock> blocks = new ArrayList<>();
                     for (BlockEntry choice : choices) {
                         Material type = choice.getMaterialType();

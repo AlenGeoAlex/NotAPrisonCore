@@ -32,7 +32,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @ToString
-@EqualsAndHashCode
 public class Mine implements IMine {
 
     private UUID mineId;
@@ -42,6 +41,7 @@ public class Mine implements IMine {
     private MineAccess mineAccess;
     private final ThreadSafeMineVault mineVault;
     private final BlockChoices blockChoices;
+    private final TemporaryBlockChoices temporaryBlockChoices;
     private final MineResetter mineResetter;
     private final LocalEntityMetaDataHolder localEntityMetaDataHolder;
     private final SharedEntityMetaDataHolder sharedEntityMetaDataHolder;
@@ -54,7 +54,8 @@ public class Mine implements IMine {
         this.mineAccess = MineAccess.CLOSED;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault();
-        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.temporaryBlockChoices = new TemporaryBlockChoices();
+        this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices , this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
@@ -66,7 +67,8 @@ public class Mine implements IMine {
         this.mineId = mineId;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault();
-        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.temporaryBlockChoices = new TemporaryBlockChoices();
+        this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices ,this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
     }
@@ -78,7 +80,8 @@ public class Mine implements IMine {
         this.mineId = mineId;
         this.blockChoices = new BlockChoices();
         this.mineVault = new ThreadSafeMineVault(amount);
-        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.temporaryBlockChoices = new TemporaryBlockChoices();
+        this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices , this.meta);
         this.localEntityMetaDataHolder = localMeta;
         this.sharedEntityMetaDataHolder = sharedMeta;
     }
@@ -92,7 +95,8 @@ public class Mine implements IMine {
         this.blockChoices = new BlockChoices();
         this.blockChoices.addChoices(blockEntryList);
         this.mineVault = new ThreadSafeMineVault(account);
-        this.mineResetter = new MineResetter(this.blockChoices, this.meta);
+        this.temporaryBlockChoices = new TemporaryBlockChoices();
+        this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices , this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = sharedMeta;
         this.mineAccess = mineAccess;
@@ -283,6 +287,11 @@ public class Mine implements IMine {
             return;
 
         player.sendMessage(message);
+    }
+
+    @Override
+    public IBlockChoices getTemporaryBlockChoice() {
+        return this.temporaryBlockChoices;
     }
 
     @Override

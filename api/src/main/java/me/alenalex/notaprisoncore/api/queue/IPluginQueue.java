@@ -7,7 +7,7 @@ import java.util.List;
 public interface IPluginQueue<T> {
 
     long getActiveCount();
-    boolean enqueue(T entity) throws FailedQueueOperationException;
+    boolean enqueue(T entity);
     T dequeue();
     List<T> dequeue(int count);
     boolean remove(T entity);

@@ -11,13 +11,15 @@ import org.jetbrains.annotations.Nullable;
 public class MineResetter implements IMineResetter {
 
     private final BlockChoices blockChoices;
+    private final TemporaryBlockChoices temporaryBlockChoices;
     private final MineMeta meta;
     private IMineResetWorker resetWorker;
     private long lastResetOn;
 
-    public MineResetter(BlockChoices blockChoices, MineMeta meta) {
+    public MineResetter(BlockChoices blockChoices, TemporaryBlockChoices temporaryBlockChoices,  MineMeta meta) {
         this.blockChoices = blockChoices;
         this.meta = meta;
+        this.temporaryBlockChoices = temporaryBlockChoices;
         this.lastResetOn = System.currentTimeMillis();
     }
 
@@ -32,6 +34,16 @@ public class MineResetter implements IMineResetter {
     }
 
     @Override
+    public boolean hasTemporaryBlocks() {
+        return this.temporaryBlockChoices.getChoiceCount() > 0;
+    }
+
+    @Override
+    public IBlockChoices getTemporaryBlockChoices() {
+        return this.temporaryBlockChoices;
+    }
+
+    @Override
     public IMineMeta getMineMeta() {
         return meta;
     }
@@ -41,9 +53,18 @@ public class MineResetter implements IMineResetter {
         return resetWorker;
     }
 
+
     @Override
     public @NotNull IMineResetWorker createWorker() {
         return new FaweResetWorker(this);
+    }
+
+    @Override
+    public IBlockChoices getDefaultBlockChoice() {
+        if(hasTemporaryBlocks())
+            return getTemporaryBlockChoices();
+
+        return getBlockChoices();
     }
 
     public void resetStarted(IMineResetWorker resetWorker){

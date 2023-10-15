@@ -146,7 +146,6 @@ public abstract class AbstractResetWorker implements IMineResetWorker {
             if(!player.getWorld().equals(mineWorld))
                 continue;
 
-            System.out.println("Is inside "+player.getName());
             player.sendMessage("Reset complete");
             if(mineMeta.isInsideMine(player)){
                 player.teleport(location);

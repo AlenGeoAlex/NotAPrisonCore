@@ -6,86 +6,41 @@ import lombok.ToString;
 import me.alenalex.notaprisoncore.api.config.entry.BlockEntry;
 import me.alenalex.notaprisoncore.api.entity.mine.IBlockChoices;
 import me.alenalex.notaprisoncore.api.provider.IRandomProvider;
+import me.alenalex.notaprisoncore.paper.abstracts.AbstractBlockChoices;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.wrapper.GsonWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
-public class BlockChoices implements IBlockChoices {
+public class BlockChoices extends AbstractBlockChoices {
 
-    private final List<BlockEntry> playerChoices;
 
     public BlockChoices() {
-        this.playerChoices = new ArrayList<>();
+        super();
         clearAndSetDefault();
     }
 
     public BlockChoices(List<BlockEntry> playerChoices) {
-        this.playerChoices = playerChoices;
+        super(playerChoices);
         checkInternal();
-    }
-
-    @Override
-    public void addChoice(BlockEntry... entry) {
-        for (BlockEntry blockEntry : entry) {
-            if(blockEntry == null)
-                continue;
-
-            this.playerChoices.add(blockEntry);
-        }
-    }
-
-    @Override
-    public void addChoices(Collection<BlockEntry> blockEntries) {
-        for (BlockEntry blockEntry : blockEntries) {
-            if(blockEntry == null)
-                continue;
-
-            this.playerChoices.add(blockEntry);
-        }
     }
 
     @Override
     public void setChoices(Collection<BlockEntry> entryCollections) {
-        this.playerChoices.clear();
-        addChoices(entryCollections);
+        super.setChoices(entryCollections);
         checkInternal();
-    }
-
-    @Override
-    public void clearAndSetDefault() {
-        this.playerChoices.clear();
-        Bootstrap bootstrap = (Bootstrap) Bootstrap.getJavaPlugin();
-        HashSet<BlockEntry> blockList = bootstrap.getPluginInstance().getPrisonManagers().getConfigurationManager().getPluginConfiguration().getDefaultMineConfiguration().getDefaultResetBlockList();
-        this.playerChoices.addAll(blockList);
     }
 
     @Override
     public void removeChoice(BlockEntry entry) {
-        this.playerChoices.remove(entry);
+        super.removeChoice(entry);
         if(this.playerChoices.isEmpty()){
             ((Bootstrap) Bootstrap.getJavaPlugin()).getLogger().warning("Cannot set a block choice to empty. Replacing with default");
         }
         checkInternal();
-    }
-
-    @Override
-    public List<BlockEntry> getChoices() {
-        return new ArrayList<>(playerChoices);
-    }
-
-    @Override
-    public @NotNull Iterator<BlockEntry> iterator() {
-        return new ArrayList<>(playerChoices).iterator();
-    }
-
-
-    @Override
-    public @NotNull BlockEntry atRandom() {
-        return IRandomProvider.getRandomFromList(playerChoices);
     }
 
     @Override

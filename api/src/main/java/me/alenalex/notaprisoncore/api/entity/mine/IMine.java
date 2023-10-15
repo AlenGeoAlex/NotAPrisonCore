@@ -50,5 +50,6 @@ public interface IMine {
         access(MineAccess.OPEN);
     }
     void sendPluginNotification(String message);
+    IBlockChoices getTemporaryBlockChoice();
     CompletableFuture<Void> expandMiningRegion(Vector min, Vector max);
 }

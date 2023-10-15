@@ -14,6 +14,7 @@ public interface IBlockChoices {
     void setChoices(Collection<BlockEntry> entryCollections);
     void clearAndSetDefault();
     void removeChoice(BlockEntry entry);
+    int getChoiceCount();
     List<BlockEntry> getChoices();
     @NotNull Iterator<BlockEntry> iterator();
     @NotNull BlockEntry atRandom();
