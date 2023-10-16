@@ -3,6 +3,7 @@ package me.alenalex.notaprisoncore.paper;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Getter;
 import me.alenalex.notaprisoncore.api.abstracts.AbstractMessageService;
+import me.alenalex.notaprisoncore.api.data.IDataHolder;
 import me.alenalex.notaprisoncore.paper.data.DataHolder;
 import me.alenalex.notaprisoncore.paper.database.PrisonDatabaseProvider;
 import me.alenalex.notaprisoncore.paper.database.PrisonSqlDatabase;
@@ -27,11 +28,12 @@ public final class NotAPrisonCore {
     private final PrisonManagers prisonManagers;
     private PrisonDatabaseProvider databaseProvider;
     private PrisonDataStore prisonDataStore;
-    private final DataHolder dataHolder;
+    private final IDataHolder dataHolder;
     private boolean shouldRunEnable;
     private PrisonMessageService messageService;
     private final PrisonScheduler prisonScheduler;
     private final PrisonQueueProvider prisonQueueProvider;
+    private NotAPrisonCoreApi apiProvider;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
         this.prisonManagers = new PrisonManagers(this);
@@ -116,7 +118,7 @@ public final class NotAPrisonCore {
 
         getLogger().info("Initializing data holder for plugin");
         try {
-            this.dataHolder.onEnable();
+            ((DataHolder)this.dataHolder).onEnable();
         }catch (Exception e){
             e.printStackTrace();
             disableBukkitPlugin("Failed to load the data holder. Check the stack trace above for more error log");
@@ -127,12 +129,13 @@ public final class NotAPrisonCore {
         getBukkitPlugin().getServer().getPluginManager().registerEvents(new DevelopmentListener(this), this.getBukkitPlugin());
         new ConnectionListener(this);
         new PlayerListener(this);
+        this.apiProvider = new NotAPrisonCoreApi(this);
     }
 
     public void onDisable() {
         prisonManagers.onShutdown();
         if(this.dataHolder != null){
-            this.dataHolder.onDisable();
+            ((DataHolder)this.dataHolder).onDisable();
         }
         if(this.prisonDataStore != null){
             this.prisonDataStore.disable();
@@ -170,7 +173,7 @@ public final class NotAPrisonCore {
         return this.prisonDataStore;
     }
 
-    public DataHolder getDataHolder() {
+    public IDataHolder getDataHolder() {
         return dataHolder;
     }
 

@@ -5,6 +5,7 @@ public enum MineAccessResponse {
     DENIED,
     REQUEST_PENDING,
     APPROVED,
-    BLOCKED
+    BLOCKED,
+    OFFLINE
 
 }

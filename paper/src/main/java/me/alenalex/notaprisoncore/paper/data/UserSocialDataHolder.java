@@ -4,7 +4,7 @@ import me.alenalex.notaprisoncore.api.entity.user.IPrisonUserProfile;
 import me.alenalex.notaprisoncore.api.entity.user.IUserSocial;
 import me.alenalex.notaprisoncore.api.enums.SocialStatus;
 import me.alenalex.notaprisoncore.api.exceptions.store.DatastoreException;
-import me.alenalex.notaprisoncore.api.provider.IUserSocialDataHolder;
+import me.alenalex.notaprisoncore.api.data.IUserSocialDataHolder;
 import me.alenalex.notaprisoncore.paper.bootstrap.Bootstrap;
 import me.alenalex.notaprisoncore.paper.entity.profile.UserSocial;
 

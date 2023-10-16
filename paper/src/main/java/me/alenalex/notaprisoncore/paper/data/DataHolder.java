@@ -4,7 +4,7 @@ import me.alenalex.notaprisoncore.api.data.IDataHolder;
 import me.alenalex.notaprisoncore.api.data.IMineDataHolder;
 import me.alenalex.notaprisoncore.api.data.IMineMetaDataHolder;
 import me.alenalex.notaprisoncore.api.data.IProfileDataHolder;
-import me.alenalex.notaprisoncore.api.provider.IUserSocialDataHolder;
+import me.alenalex.notaprisoncore.api.data.IUserSocialDataHolder;
 import me.alenalex.notaprisoncore.paper.NotAPrisonCore;
 
 public class DataHolder implements IDataHolder {

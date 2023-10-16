@@ -108,6 +108,7 @@ public class ConnectionListener extends AbstractEventListener {
             getPlugin().getLogger().info("Cancelling player loading as the player data is already set to load");
             return;
         }
+        getStore().getRedisUserSocialStore().setName(player.getUniqueId(), player.getName());
         long startTime = System.currentTimeMillis();
         dataHolder.getProfileDataHolder().setLoading(playerId);
         if(getConfiguration().getPluginConfiguration().getServerConfiguration().isFreezePlayerOnLoadEnabled()){

@@ -25,12 +25,8 @@ public interface IUserSocial {
     default boolean isBlocked(){
         return getStatus() == SocialStatus.BLOCKED;
     }
-
     @NotNull String getTargetName();
-
     void setSocialStatus(SocialStatus status, boolean alertPlayers);
-
     void setSocialStatus(SocialStatus status);
-
     void alertPlayers();
 }
