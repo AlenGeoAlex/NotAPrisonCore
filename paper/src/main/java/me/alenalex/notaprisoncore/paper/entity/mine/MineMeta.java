@@ -104,6 +104,29 @@ public class MineMeta implements IMineMeta {
     }
 
     @Override
+    public Region getMineRegion() {
+        return this.mineSchematicRegion;
+    }
+
+    @Override
+    public void setRegion(Region region) {
+        this.mineSchematicRegion = region;
+    }
+
+    @Override
+    public boolean updateIfChanged(Region region) {
+        if(
+                this.mineSchematicRegion.getMaximumPoint().equals(region.getMaximumPoint()) ||
+                this.mineSchematicRegion.getMinimumPoint().equals(region.getMinimumPoint())
+        ){
+            this.setRegion(region);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean hasIdentifier(String key) {
         return this.locationIdentifier.containsKey(key);
     }

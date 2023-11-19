@@ -45,6 +45,7 @@ public class Mine implements IMine {
     private final MineResetter mineResetter;
     private final LocalEntityMetaDataHolder localEntityMetaDataHolder;
     private final SharedEntityMetaDataHolder sharedEntityMetaDataHolder;
+    private final MineExpander mineExpander;
 
     //TODO Call defaults after initializing this constructor
     public Mine(UUID ownerId, MineMeta meta){
@@ -58,6 +59,7 @@ public class Mine implements IMine {
         this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices , this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
+        this.mineExpander = new MineExpander(this);
     }
 
     public Mine(UUID ownerId, UUID mineId, MineMeta meta) {
@@ -71,6 +73,7 @@ public class Mine implements IMine {
         this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices ,this.meta);
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = new SharedEntityMetaDataHolder();
+        this.mineExpander = new MineExpander(this);
     }
 
     public Mine(UUID ownerId, UUID mineId, MineMeta meta, BigDecimal amount, LocalEntityMetaDataHolder localMeta, SharedEntityMetaDataHolder sharedMeta) {
@@ -84,6 +87,7 @@ public class Mine implements IMine {
         this.mineResetter = new MineResetter(this.blockChoices, this.temporaryBlockChoices , this.meta);
         this.localEntityMetaDataHolder = localMeta;
         this.sharedEntityMetaDataHolder = sharedMeta;
+        this.mineExpander = new MineExpander(this);
     }
 
     //From Gson Deserializer
@@ -100,6 +104,7 @@ public class Mine implements IMine {
         this.localEntityMetaDataHolder = new LocalEntityMetaDataHolder();
         this.sharedEntityMetaDataHolder = sharedMeta;
         this.mineAccess = mineAccess;
+        this.mineExpander = new MineExpander(this);
     }
 
     @Override
@@ -141,7 +146,12 @@ public class Mine implements IMine {
     }
 
     @Override
-    public IMineResetter getMineResetter() {
+    public IMineExpander getMineExpander() {
+        return null;
+    }
+
+    @Override
+    public IMineResetter getMineResetWorkerFactory() {
         return this.mineResetter;
     }
 
@@ -316,6 +326,11 @@ public class Mine implements IMine {
         });
 
         return future;
+    }
+
+    @Override
+    public void sendServerInternalMessage(MineMessage message) {
+
     }
 
 

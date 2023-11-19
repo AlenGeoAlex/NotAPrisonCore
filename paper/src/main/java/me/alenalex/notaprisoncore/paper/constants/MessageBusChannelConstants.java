@@ -4,5 +4,6 @@ public class MessageBusChannelConstants {
 
     public static final String HEARTBEAT_ANNOUNCEMENT_CHANNEL = "npc-heartbeat";
     public static final String MINE_CREATION_CHANNEL = "npc-mine-creation";
+    public static final String MINE_COMMUNICATION_CHANNEL = "npc-mine-internal";
 
 }

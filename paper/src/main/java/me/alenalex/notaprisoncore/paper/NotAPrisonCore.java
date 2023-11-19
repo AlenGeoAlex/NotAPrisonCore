@@ -25,14 +25,22 @@ public final class NotAPrisonCore {
 
     @Getter
     private final JavaPlugin bukkitPlugin;
+    @Getter
     private final PrisonManagers prisonManagers;
+    @Getter
     private PrisonDatabaseProvider databaseProvider;
+    @Getter
     private PrisonDataStore prisonDataStore;
+    @Getter
     private final IDataHolder dataHolder;
     private boolean shouldRunEnable;
+    @Getter
     private PrisonMessageService messageService;
+    @Getter
     private final PrisonScheduler prisonScheduler;
+    @Getter
     private final PrisonQueueProvider prisonQueueProvider;
+    @Getter
     private NotAPrisonCoreApi apiProvider;
     public NotAPrisonCore(JavaPlugin bukkitPlugin) {
         this.bukkitPlugin = bukkitPlugin;
@@ -161,36 +169,9 @@ public final class NotAPrisonCore {
         return this.bukkitPlugin.getLogger();
     }
 
-    public PrisonDatabaseProvider getDatabaseProvider() {
-        return databaseProvider;
-    }
-
-    public PrisonManagers getPrisonManagers() {
-        return prisonManagers;
-    }
-
-    public PrisonDataStore getPrisonDataStore(){
-        return this.prisonDataStore;
-    }
-
-    public IDataHolder getDataHolder() {
-        return dataHolder;
-    }
-
-    public PrisonMessageService getMessageService() {
-        return messageService;
-    }
-
     private void disableBukkitPlugin(String reason){
         getLogger().warning(reason);
         bukkitPlugin.getServer().getPluginManager().disablePlugin(this.bukkitPlugin);
     }
 
-    public PrisonScheduler getPrisonScheduler() {
-        return prisonScheduler;
-    }
-
-    public PrisonQueueProvider getPrisonQueueProvider() {
-        return prisonQueueProvider;
-    }
 }

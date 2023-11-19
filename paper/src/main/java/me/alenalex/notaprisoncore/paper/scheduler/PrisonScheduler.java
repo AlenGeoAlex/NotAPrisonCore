@@ -33,12 +33,12 @@ public class PrisonScheduler implements IPrisonScheduler {
     public void onDisable(){
         this.scheduledExecutorService.shutdown();
         if(this.claimQueueScheduler.isEnabled() && this.claimQueueScheduler.isAlive()) {
-            this.claimQueueScheduler.stop();
+            this.claimQueueScheduler.interrupt();
             this.claimQueueScheduler.setEnabled(false);
         }
     }
 
-    public ScheduledFuture<?> schedule(Runnable runnable, long interval, long delay, TimeUnit unit){
+    private ScheduledFuture<?> schedule(Runnable runnable, long interval, long delay, TimeUnit unit){
         return this.scheduledExecutorService.scheduleAtFixedRate(runnable, interval, delay, unit);
     }
 

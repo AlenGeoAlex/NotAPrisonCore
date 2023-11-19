@@ -103,6 +103,25 @@
             <version>2.11.3</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.isharipov</groupId>
+            <artifactId>gson-adapters</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.boydti.fawe</groupId>
+            <artifactId>FastAsyncWorldEdit-bukkit</artifactId>
+            <version>21.03.26-5ff3a9b-1286-22.3.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/FastAsyncWorldEdit-bukkit-21.03.26-5ff3a9b-1286-22.3.9.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>WorldEdit-bukkit</artifactId>
+            <version>6.1.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/worldedit-bukkit-6.1.9.jar</systemPath>
+        </dependency>
     </dependencies>
 
 </project>

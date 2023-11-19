@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.api.entity.mine;
 
+import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -24,6 +25,9 @@ public interface IMineMeta {
     Location getSpawnPoint();
     Vector getMineSchematicUpperPoint();
     Vector getMineSchematicLowerPoint();
+    Region getMineRegion();
+    void setRegion(Region region);
+    boolean updateIfChanged(Region region);
     boolean hasIdentifier(String key);
     Optional<Location> getLocationOfIdentifier(String key);
     HashMap<String, Location> getLocationIdentifier();

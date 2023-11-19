@@ -146,21 +146,7 @@
         <dependency>
             <groupId>dev.triumphteam</groupId>
             <artifactId>triumph-cmd-bukkit</artifactId>
-            <version>2.0.0-ALPHA-8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.boydti.fawe</groupId>
-            <artifactId>FastAsyncWorldEdit-bukkit</artifactId>
-            <version>21.03.26-5ff3a9b-1286-22.3.9</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/FastAsyncWorldEdit-bukkit-21.03.26-5ff3a9b-1286-22.3.9.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>FastAsyncWorldEdit-bukkit</artifactId>
-            <version>6.1.9</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/worldedit-bukkit-6.1.9.jar</systemPath>
+            <version>2.0.0-ALPHA-9</version>
         </dependency>
         <dependency>
             <groupId>io.papermc</groupId>

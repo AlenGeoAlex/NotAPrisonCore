@@ -1,6 +1,8 @@
 package me.alenalex.notaprisoncore.api.abstracts.message;
 
 import me.alenalex.notaprisoncore.api.common.json.IJsonWrapper;
+import me.alenalex.notaprisoncore.api.core.CoreApi;
+import me.alenalex.notaprisoncore.api.core.ICoreApi;
 import me.alenalex.notaprisoncore.api.database.redis.IRedisDatabase;
 import me.alenalex.notaprisoncore.message.AbstractMessageBuilder;
 import me.alenalex.notaprisoncore.message.MessageCommunicationStatus;
@@ -13,13 +15,15 @@ import java.util.logging.Logger;
 
 public abstract class AbstractMessageBus<R> implements IMessageServiceBus<R> {
     private static final Logger LOGGER = Logger.getLogger("NPC-MessageServiceBus");
-
+    private static final ICoreApi API = CoreApi.getCore();
     private final IRedisDatabase redisDatabase;
     private final IJsonWrapper jsonWrapper;
 
     public AbstractMessageBus(IRedisDatabase redisDatabase, IJsonWrapper jsonWrapper) {
         this.redisDatabase = redisDatabase;
         this.jsonWrapper = jsonWrapper;
+        if(API == null)
+            throw new RuntimeException("Accessed Core before init");
     }
 
     @Override
@@ -54,5 +58,9 @@ public abstract class AbstractMessageBus<R> implements IMessageServiceBus<R> {
 
     protected void logSevere(String message){
         LOGGER.severe(message);
+    }
+
+    protected ICoreApi getPluginApi(){
+        return API;
     }
 }

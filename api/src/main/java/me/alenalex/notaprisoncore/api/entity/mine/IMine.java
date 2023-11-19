@@ -19,7 +19,8 @@ public interface IMine {
     UUID getOwnerId();
     IBlockChoices getBlockChoices();
     IMineVault getVault();
-    IMineResetter getMineResetter();
+    IMineExpander getMineExpander();
+    IMineResetter getMineResetWorkerFactory();
     //TODO: Remember to kick out other players inside the mine if
     MineAccess access(MineAccess access);
     void teleport(Player player);
@@ -52,4 +53,5 @@ public interface IMine {
     void sendPluginNotification(String message);
     IBlockChoices getTemporaryBlockChoice();
     CompletableFuture<Void> expandMiningRegion(Vector min, Vector max);
+    void sendServerInternalMessage(MineMessage message);
 }

@@ -1,5 +1,6 @@
 package me.alenalex.notaprisoncore.api.abstracts.message;
 
+import me.alenalex.notaprisoncore.api.entity.mine.MineMessage;
 import me.alenalex.notaprisoncore.api.exceptions.message.MessageBusExistsException;
 import me.alenalex.notaprisoncore.message.models.HeartbeatMessage;
 import me.alenalex.notaprisoncore.message.models.MineCreateMessage;
@@ -21,4 +22,5 @@ public interface IMessageService {
     IMessageServiceBus<?> getService(String messageChannel);
     IMessageServiceBus<HeartbeatMessage.OnlineAnnouncementRequest> getHeartbeatService();
     IMessageServiceBus<MineCreateMessage> getMineCreationService();
+    IMessageServiceBus<MineMessage> getMineCommunicationService();
 }
